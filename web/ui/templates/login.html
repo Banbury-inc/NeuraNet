@@ -1,0 +1,15 @@
+{{define "content"}}
+  <h1>Login</h1>
+  <form method="POST" action="/login">
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" name="email" id="email" required>
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" name="password" id="password" required>
+    </div>
+    <button type="submit">Login</button>
+  </form>
+  <p>Don't have an account? <a href="/signup">Sign up</a> now!</p>
+{{end}}

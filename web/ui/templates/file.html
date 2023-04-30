@@ -1,0 +1,7 @@
+{{define "content"}}
+  <h1>{{.Name}}</h1>
+  <p><strong>Hash:</strong> {{.Hash}}</p>
+  <p><strong>Description:</strong> {{.Description}}</p>
+  <p><strong>Uploaded:</strong> {{.Uploaded.Format "Jan 2, 2006 at 3:04pm"}}</p>
+  <p><a href="/download/{{.Hash}}">Download</a></p>
+{{end}}

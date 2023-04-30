@@ -1,0 +1,8 @@
+{{define "content"}}
+  <h1>Error</h1>
+  {{if .ErrorMessage}}
+    <p>{{.ErrorMessage}}</p>
+  {{else}}
+    <p>Oops, something went wrong.</p>
+  {{end}}
+{{end}}

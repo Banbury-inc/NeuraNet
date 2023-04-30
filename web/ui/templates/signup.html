@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Upload File</title>
+  </head>
+  <body>
+    <header>
+      <h1></h1>
+      <nav>
+        <ul>
+          <li><a href="/home.html">Home</a></li>
+          <li><a href="/signup.html">Signup</a></li>
+          <li><a href="/upload.html">Upload</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <h1>Sign Up</h1>
+      <form method="POST" action="/signup">
+        <div>
+          <label for="name">Name:</label>
+          <input type="text" name="name" id="name" required>
+        </div>
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" name="email" id="email" required>
+        </div>
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" name="password" id="password" required>
+        </div>
+        <button type="submit">Sign Up</button>
+      </form>
+      <p>Already have an account? <a href="/login">Log in</a> now!</p>    </main>
+    <footer>
+      <p>&copy; 2023 Banbury Enterprises</p>
+    </footer>
+    <script src="{{.Static}}/js/main.js"></script>
+  </body>
+</html>
