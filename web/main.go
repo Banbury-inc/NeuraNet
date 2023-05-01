@@ -59,6 +59,15 @@ func main() {
 			if err := templates.ExecuteTemplate(w, "download.html", data); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
+		} else if r.URL.Path == "/nodeslist.html" {
+			data := struct {
+				Title string
+			}{
+				Title: "Nodes",
+			}
+			if err := templates.ExecuteTemplate(w, "nodeslist.html", data); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 		} else {
 			// Serve the file content when a link is clicked
 			filePath := filepath.Join("static", r.URL.Path)
@@ -82,6 +91,9 @@ func main() {
 
 	http.HandleFunc("/upload", handlers.UploadHandler)
 	http.HandleFunc("/download", handlers.DownloadHandler)
+	http.HandleFunc("/nodes-online", handlers.NodesOnlineHandler)
+	http.HandleFunc("/nodes", handlers.HomeHandler)
+	http.HandleFunc("/lessnodes", handlers.LessHomeHandler)
 
 	// Start server
 	log.Println("Starting server on :8081")

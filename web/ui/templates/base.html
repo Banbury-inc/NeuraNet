@@ -13,17 +13,57 @@
           <li><a href="/signup.html">Signup</a></li>
           <li><a href="/upload.html">Upload</a></li>
           <li><a href="/download.html">Download</a></li>
+          <li><a href="/nodeslist.html">Nodes</a></li>
         </ul>
       </nav>
     </header>
     <main>
       <h2>{{.Title}}</h2>
       <p>Welcome to Athena, the file storage app.</p>
-      <p>{{.content}}</p>
+      <p>Number of nodes online: <span id="nodesOnline"></span></p>
     </main>
     <footer>
-      <p>&copy; 2023 Banbury Enterprises</p>
+      <p>2023 Banbury Enterprises</p>
     </footer>
-    <script src="{{.Static}}/js/main.js"></script>
+    <script>
+      function updateNodesOnline() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            document.getElementById("nodesOnline").innerHTML = this.responseText;
+          }
+        };
+        xhr.open("GET", "/nodes-online", true);
+        xhr.send();
+      }
+      
+      // update the number of nodes online every second
+      setInterval(updateNodesOnline, 1000);
+      
+      window.onload = function() {
+        var xhr1 = new XMLHttpRequest();
+        xhr1.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            document.getElementById("nodesOnline").innerHTML = this.responseText;
+          }
+        };
+        xhr1.open("GET", "/nodes-online", true);
+        xhr1.send();
+    
+        var xhr2 = new XMLHttpRequest();
+        xhr2.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            console.log("Page loaded");
+          }
+        };
+        xhr2.open("GET", "/nodes", true);
+        xhr2.send();
+      };
+      window.onbeforeunload = function() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/lessnodes", true);
+        xhr.send();
+      };
+    </script>
   </body>
 </html>
