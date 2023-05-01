@@ -50,6 +50,15 @@ func main() {
 			if err := templates.ExecuteTemplate(w, "upload.html", data); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
+		} else if r.URL.Path == "/download.html" {
+			data := struct {
+				Title string
+			}{
+				Title: "Download",
+			}
+			if err := templates.ExecuteTemplate(w, "download.html", data); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 		} else {
 			// Serve the file content when a link is clicked
 			filePath := filepath.Join("static", r.URL.Path)
@@ -72,10 +81,11 @@ func main() {
 	})
 
 	http.HandleFunc("/upload", handlers.UploadHandler)
+	http.HandleFunc("/download", handlers.DownloadHandler)
 
 	// Start server
-	log.Println("Starting server on :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	log.Println("Starting server on :8081")
+	if err := http.ListenAndServe(":8081", nil); err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}
 }

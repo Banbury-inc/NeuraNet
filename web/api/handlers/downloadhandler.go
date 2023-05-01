@@ -1,43 +1,70 @@
 package handlers
 
 import (
+	"fmt"
 	"io"
+	"mime"
 	"net/http"
-
-	"github.com/ipfs/go-cid"
-	shell "github.com/ipfs/go-ipfs-api"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
-	// Connect to local IPFS node
-	sh := shell.NewShell("localhost:5001")
-
-	// Get the CID from the query parameters
-	query := r.URL.Query()
-	cidStr := query.Get("cid")
-
-	// Decode the CID string
-	cidObj, err := cid.Decode(cidStr)
-	if err != nil {
-		http.Error(w, "Invalid CID", http.StatusBadRequest)
-		return
-	}
+	// Get the CID of the file to download
+	var cid string
+	fmt.Print("Enter the CID of the file to download: ")
+	fmt.Scanln(&cid)
 
 	// Download the file from IPFS
-	reader, err := sh.Cat(cidObj.String())
+	res, err := http.Get(fmt.Sprintf("https://ipfs.io/ipfs/%s", cid))
 	if err != nil {
-		http.Error(w, "Error downloading file", http.StatusInternalServerError)
+		fmt.Printf("Error downloading file: %v\n", err)
+		return
+	}
+	defer res.Body.Close()
+	if res.StatusCode != http.StatusOK {
+		fmt.Printf("Unexpected status code: %d\n", res.StatusCode)
 		return
 	}
 
-	// Set the Content-Type header based on the file type
-	contentType := http.DetectContentType([]byte(cidObj.String()))
-	w.Header().Set("Content-Type", contentType)
+	// Get the filename and file type from the Content-Disposition header
+	filename := ""
+	contentType := ""
+	contentDisposition := res.Header.Get("Content-Disposition")
+	if contentDisposition != "" {
+		_, params, err := mime.ParseMediaType(contentDisposition)
+		if err == nil {
+			filename = params["filename"]
+			contentType = params["type"]
+		}
+	}
 
-	// Write the file contents to the response writer
-	_, err = io.Copy(w, reader)
+	// Prompt the user to save the file to their computer
+	if filename == "" {
+		fmt.Print("Enter a filename for the downloaded file: ")
+		fmt.Scanln(&filename)
+		contentType = mime.TypeByExtension(filepath.Ext(filename))
+	}
+	filePath := filepath.Join(os.Getenv("HOME"), "Downloads", filename)
+	file, err := os.Create(filePath)
 	if err != nil {
-		http.Error(w, "Error writing file to response", http.StatusInternalServerError)
+		fmt.Printf("Error creating file: %v\n", err)
 		return
 	}
+	defer file.Close()
+	if _, err := io.Copy(file, res.Body); err != nil {
+		fmt.Printf("Error writing file to disk: %v\n", err)
+		return
+	}
+
+	if contentType != "" {
+		if err := os.Rename(filePath, filePath+"."+strings.Split(contentType, "/")[1]); err != nil {
+			fmt.Printf("Error renaming file: %v\n", err)
+			return
+		}
+		filePath += "." + strings.Split(contentType, "/")[1]
+	}
+
+	fmt.Printf("File downloaded and saved to %s\n", filePath)
 }

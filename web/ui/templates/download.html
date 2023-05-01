@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Upload File</title>
+    <title>Download File</title>
   </head>
   <body>
     <header>
@@ -18,13 +18,13 @@
     </header>
     <main>
       <h2>{{.Title}}</h2>
-      <p>This is where you can upload a file</p>
-      <form method="POST" enctype="multipart/form-data" action="/upload">
+      <p>This is where you can download a file</p>
+      <form method="GET" action="/download">
         <div>
-          <label for="file">File:</label>
-          <input type="file" name="file" id="file" required>
+          <label for="cid">CID:</label>
+          <input type="text" name="cid" id="cid" required>
         </div>
-        <button type="submit">Upload</button>
+        <button type="submit">Download</button>
       </form>
       {{if .Message}}
         <p>{{.Message}}</p>
