@@ -7,7 +7,10 @@ import (
 	"log"
 	"mymodule/web/api/handlers"
 	"net/http"
+	"os"
 	"path/filepath"
+
+	"github.com/fsnotify/fsnotify"
 )
 
 func main() {
@@ -68,6 +71,15 @@ func main() {
 			if err := templates.ExecuteTemplate(w, "nodeslist.html", data); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
+		} else if r.URL.Path == "/file.html" {
+			data := struct {
+				Title string
+			}{
+				Title: "Files",
+			}
+			if err := templates.ExecuteTemplate(w, "file.html", data); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 		} else {
 			// Serve the file content when a link is clicked
 			filePath := filepath.Join("static", r.URL.Path)
@@ -94,10 +106,62 @@ func main() {
 	http.HandleFunc("/nodes-online", handlers.NodesOnlineHandler)
 	http.HandleFunc("/nodes", handlers.HomeHandler)
 	http.HandleFunc("/lessnodes", handlers.LessHomeHandler)
-
+	http.HandleFunc("/addnode", handlers.CreateNodeHandler)
+	http.HandleFunc("/nodesdata", handlers.CreateNodeHandler)
+	http.HandleFunc("/files", handlers.LogFiles)
 	// Start server
 	log.Println("Starting server on :8081")
 	if err := http.ListenAndServe(":8081", nil); err != nil {
 		log.Fatalf("Error starting server: %v", err)
+	}
+	// Reload server when changes are made
+	// Create a file watcher
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer watcher.Close()
+
+	// Watch for changes in the current directory and its subdirectories
+	err = filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return watcher.Add(path)
+		}
+		return nil
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Start the HTTP server in a separate goroutine
+	go func() {
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, "Hello, world!")
+		})
+		log.Fatal(http.ListenAndServe(":8081", nil))
+	}()
+
+	// Watch for file changes and restart the server
+	for {
+		select {
+		case event, ok := <-watcher.Events:
+			if !ok {
+				return
+			}
+			log.Println("event:", event)
+			if event.Op&fsnotify.Write == fsnotify.Write {
+				log.Println("modified file:", event.Name)
+				// Restart the server by killing the current process and starting a new one
+				os.Exit(0)
+			}
+		case err, ok := <-watcher.Errors:
+			if !ok {
+				return
+			}
+			log.Println("error:", err)
+		}
 	}
 }

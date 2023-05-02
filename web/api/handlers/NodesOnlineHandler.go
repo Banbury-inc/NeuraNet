@@ -10,6 +10,14 @@ var onlineNodeCount int
 var numNodes int
 var mu sync.Mutex
 
+// NodeInfo represents information about an IPFS node
+type NodeInfo struct {
+	ID      string `json:"id"`
+	Version string `json:"version"`
+	Addr    string `json:"address"`
+	Proto   string `json:"protocol"`
+}
+
 func NodesOnlineHandler(w http.ResponseWriter, r *http.Request) {
 	mu.Lock()
 	defer mu.Unlock()

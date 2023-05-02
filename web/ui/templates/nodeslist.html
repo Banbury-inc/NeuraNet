@@ -14,6 +14,7 @@
           <li><a href="/upload.html">Upload</a></li>
           <li><a href="/download.html">Download</a></li>
           <li><a href="/nodeslist.html">Nodes</a></li>
+          <li><a href="/file.html">Files</a></li>
         </ul>
       </nav>
     </header>
@@ -24,9 +25,10 @@
       <table>
         <thead>
           <tr>
-            <th>Node Name</th>
-            <th>Total Storage</th>
-            <th>Uptime</th>
+            <th>Node ID</th>
+            <th>Agent Version</th>
+            <th>Protocol Version</th>
+            <th>Address</th>
           </tr>
         </thead>
         <tbody id="nodeTableBody"></tbody>
@@ -58,15 +60,18 @@
             for (var i = 0; i < nodeData.length; i++) {
               var node = nodeData[i];
               var tr = document.createElement("tr");
-              var nameTd = document.createElement("td");
-              nameTd.textContent = node.name;
-              var storageTd = document.createElement("td");
-              storageTd.textContent = node.totalStorage;
-              var uptimeTd = document.createElement("td");
-              uptimeTd.textContent = node.uptime;
-              tr.appendChild(nameTd);
-              tr.appendChild(storageTd);
-              tr.appendChild(uptimeTd);
+              var idTd = document.createElement("td");
+              idTd.textContent = node.id;
+              var agentVersionTd = document.createElement("td");
+              agentVersionTd.textContent = node.agentVersion;
+              var protocolVersionTd = document.createElement("td");
+              protocolVersionTd.textContent = node.protocolVersion;
+              var addressTd = document.createElement("td");
+              addressTd.textContent = node.address;
+              tr.appendChild(idTd);
+              tr.appendChild(agentVersionTd);
+              tr.appendChild(protocolVersionTd);
+              tr.appendChild(addressTd);
               tbody.appendChild(tr);
             }
           }

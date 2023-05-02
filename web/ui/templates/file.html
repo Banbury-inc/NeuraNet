@@ -1,7 +1,83 @@
-{{define "content"}}
-  <h1>{{.Name}}</h1>
-  <p><strong>Hash:</strong> {{.Hash}}</p>
-  <p><strong>Description:</strong> {{.Description}}</p>
-  <p><strong>Uploaded:</strong> {{.Uploaded.Format "Jan 2, 2006 at 3:04pm"}}</p>
-  <p><a href="/download/{{.Hash}}">Download</a></p>
-{{end}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>{{.Title}}</title>
+  </head>
+  <body>
+    <header>
+      <h1></h1>
+      <nav>
+        <ul>
+          <li><a href="/home.html">Home</a></li>
+          <li><a href="/signup.html">Signup</a></li>
+          <li><a href="/upload.html">Upload</a></li>
+          <li><a href="/download.html">Download</a></li>
+          <li><a href="/nodeslist.html">Nodes</a></li>
+          <li><a href="/file.html">Files</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <h2>{{.Title}}</h2>
+      <p>Please find a list of the available files:</p>
+      <p><span id=".Files"></span></p>
+    </main>
+    <footer>
+      <p>2023 Banbury Enterprises</p>
+    </footer>
+    <script>
+      function updateNodesOnline() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            document.getElementById(".Files").innerHTML = this.responseText;
+            
+          }
+        };
+        xhr.open("GET", "/files", true);
+        xhr.send();
+      }
+      
+      // update the number of nodes online every second
+      setInterval(updateNodesOnline, 1000);
+
+      window.onload = function() {
+        var xhr1 = new XMLHttpRequest();
+        xhr1.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            document.getElementById("nodesOnline").innerHTML = this.responseText;
+          }
+        };
+        xhr1.open("GET", "/", true);
+        xhr1.send();
+      }
+      window.onload = function() {
+        var xhr1 = new XMLHttpRequest();
+        xhr1.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            document.getElementById("nodesOnline").innerHTML = this.responseText;
+          }
+        };
+        xhr1.open("GET", "/nodes-online", true);
+        xhr1.send();
+    
+        var xhr2 = new XMLHttpRequest();
+        xhr2.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            console.log("Page loaded");
+          }
+        };
+        xhr2.open("GET", "/nodes", true);
+        xhr2.send();
+        xhr2.open("GET", "/addnode", true);
+        xhr2.send();
+      };
+      window.onbeforeunload = function() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/lessnodes", true);
+        xhr.send();
+      };
+    </script>
+  </body>
+</html>

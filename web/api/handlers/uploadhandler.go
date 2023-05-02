@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -48,25 +49,33 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		Content: "",
 		FileCID: cid,
 	}
+	// Read the existing HTML page
+	existingPage, err := ioutil.ReadFile("web/ui/templates/upload.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	// Set the response headers
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
+
+	// Write the existing page to the response writer
+	fmt.Fprintf(w, string(existingPage))
 
 	// Write the HTML page to the response writer
 	fmt.Fprintf(w, "<!DOCTYPE html>\n")
 	fmt.Fprintf(w, "<html>\n")
 	fmt.Fprintf(w, "<head>\n")
 	fmt.Fprintf(w, "<meta charset=\"utf-8\">\n")
-	fmt.Fprintf(w, "<title>%s</title>\n", pageData.Title)
-	fmt.Fprintf(w, "<link rel=\"stylesheet\" href=\"%s/css/style.css\">\n", pageData.Static)
+
 	fmt.Fprintf(w, "</head>\n")
 	fmt.Fprintf(w, "<body>\n")
-	fmt.Fprintf(w, "<h1>%s</h1>\n", pageData.Title)
 
 	// Write the file CID as a label
-	fmt.Fprintf(w, "<label>File uploaded successfully with CID %s</label>\n", cid)
+	fmt.Fprintf(w, "<label>File uploaded successfully with CID %s</label>\n", pageData.FileCID)
 
 	fmt.Fprintf(w, "</body>\n")
 	fmt.Fprintf(w, "</html>\n")
+
 }

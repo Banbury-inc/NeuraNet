@@ -14,11 +14,12 @@
           <li><a href="/upload.html">Upload</a></li>
           <li><a href="/download.html">Download</a></li>
           <li><a href="/nodeslist.html">Nodes</a></li>
+          <li><a href="/file.html">Files</a></li>
         </ul>
       </nav>
     </header>
     <main>
-      <h2>{{.Title}}</h2>
+      <h2>File Upload</h2>
       <p>This is where you can upload a file</p>
       <form method="POST" enctype="multipart/form-data" action="/upload">
         <div>
@@ -27,9 +28,6 @@
         </div>
         <button type="submit">Upload</button>
       </form>
-      {{if .Message}}
-        <p>{{.Message}}</p>
-      {{end}}
     </main>
     <footer>
       <p>&copy; 2023 Banbury Enterprises</p>

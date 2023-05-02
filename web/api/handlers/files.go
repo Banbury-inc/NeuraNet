@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
+	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -10,7 +12,13 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	shell "github.com/ipfs/go-ipfs-api"
 )
+
+type FilesData struct {
+	Title string
+	Files []string
+}
 
 // HandleFileUpload handles POST requests to /api/files, which uploads a file.
 func HandleFileUpload(w http.ResponseWriter, r *http.Request) {
@@ -122,4 +130,39 @@ func handleGetFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+func LogFiles(w http.ResponseWriter, r *http.Request) {
+
+	sh := shell.NewShell("localhost:5001")
+
+	http.HandleFunc("/files", func(w http.ResponseWriter, r *http.Request) {
+		var files []string
+		lsList, err := sh.FilesLs(context.Background(), "/files")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		for _, file := range lsList {
+			if file.Type == 1 {
+				files = append(files, file.Name)
+			}
+		}
+
+		data := FilesData{
+			Title: "Available Files",
+			Files: files,
+		}
+		tmpl, err := template.ParseFiles("template.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = tmpl.Execute(w, data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	})
+
+	http.ListenAndServe(":8081", nil)
 }

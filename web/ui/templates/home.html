@@ -14,18 +14,20 @@
           <li><a href="/upload.html">Upload</a></li>
           <li><a href="/download.html">Download</a></li>
           <li><a href="/nodeslist.html">Nodes</a></li>
+          <li><a href="/file.html">Files</a></li>
         </ul>
       </nav>
     </header>
     <main>
       <h2>{{.Title}}</h2>
-      <p>Welcome to Athena, the file storage app.</p>
+      <p>Welcome to Athena, the next form of Artificial General Intelligence</p>
       <p>Number of nodes online: <span id="nodesOnline"></span></p>
     </main>
     <footer>
       <p>2023 Banbury Enterprises</p>
     </footer>
     <script>
+
       function updateNodesOnline() {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -57,6 +59,8 @@
           }
         };
         xhr2.open("GET", "/nodes", true);
+        xhr2.send();
+        xhr2.open("GET", "/addnode", true);
         xhr2.send();
       };
       window.onbeforeunload = function() {
