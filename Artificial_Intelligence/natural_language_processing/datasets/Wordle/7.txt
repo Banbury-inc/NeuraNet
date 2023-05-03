@@ -1,0 +1,9 @@
+Error: Timeout 30000ms exceeded =========================== logs ===========================
+navigating to "https://apps apple com/us/app/wordle/id1095569891", waiting until "load"
+============================================================ ===
+
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="robots" content="noindex, nofollow"/><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, maximum-scale=1"/><title>Rhumbl - Watson Visual Recognition</title><link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css"/><link rel="stylesheet" href="css/main.css"/>
+
+<!-- Load the Rhumbl services -->
+<script src="vendor/jquery/dist/jquery.min.js"></script>
+<script src="vendor/boots

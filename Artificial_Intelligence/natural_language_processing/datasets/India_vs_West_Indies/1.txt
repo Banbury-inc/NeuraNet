@@ -1,0 +1,109 @@
+WI v IND | 2022 India tour of West Indies and United States of America | Live Score, Schedule, NewsMatches (6)IPL 2023 (3)SL-W v BAN-W (1)PAK v NZ (1)ZIM-A v PAK-A (1) PreviousRESULT • 44th Match • IPL 2023 •  T20 •  AhmedabadDC130/8GT(20 ov, T:131) 125/6Capitals won by 5 runsScheduleTableReportSeriesABANDONED • 2nd ODI •  Colombo (PSS)SL-WBD-WMatch abandoned without a ball bowledScheduleSeriesTomorrow, 6:30 AM • 3rd ODI •  KarachiPakistanNew ZealandMatch yet to beginScheduleVideosSeriesTomorrow, 6:00 AM • 45th Match • IPL 2023 •  T20 •  LucknowLucknow Super GiantsChennai Super KingsMatch yet to beginScheduleTableVideosSeriesTomorrow, 10:00 AM • 46th Match • IPL 2023 •  T20 •  MohaliPunjab KingsMumbai IndiansMatch yet to beginScheduleTableVideosSeriesTomorrow, 4:00 AM • 1st Unofficial TEST •  KwekweZimbabwe APakistan AMatch starts in
+5
+hrs
+3
+minsScheduleSeries NextLive ScoresSeriesTeamsNewsFeaturesVideosStatsIPL 2023Edition USIndia tour of West Indies and United States of AmericaHomeFixtures and ResultsMVPVideosStatsSquadsPhotosRESULT5th T20I, Lauderhill, August 07, 2022, India tour of West Indies and United States of AmericaIND188/7WI(15 4/20 ov, T:189) 100India won by 88 runsRESULT4th T20I, Lauderhill, August 06, 2022, India tour of West Indies and United States of AmericaIND191/5WI(19 1/20 ov, T:192) 132India won by 59 runsRESULT3rd T20I, Basseterre, August 02, 2022, India tour of West Indies and United States of AmericaWI164/5IND(19/20 ov, T:165) 165/3India won by 7 wickets (with 6 balls remaining)RESULT2nd T20I, Basseterre, August 01, 2022, India tour of West Indies and United States of AmericaIND138WI(19 2/20 ov, T:139) 141/5West Indies won by 5 wickets (with 4 balls remaining)RESULT1st T20I, Tarouba, July 29, 2022, India tour of West Indies and United States of AmericaIND190/6WI(20 ov, T:191) 122/8India won by 68 runsRESULT3rd ODI, Port of Spain, July 27, 2022, India tour of West Indies and United States of AmericaIND(36/36 ov) 225/3WI(26/35 ov, T:257) 137India won by 119 runs (D/L method)RESULT2nd ODI, Port of Spain, July 24, 2022, India tour of West Indies and United States of AmericaWI311/6IND(49 4/50 ov, T:312) 312/8India won by 2 wickets (with 2 balls remaining)RESULT1st ODI, Port of Spain, July 22, 2022, India tour of West Indies and United States of AmericaIND308/7WI(50 ov, T:309) 305/6India won by 3 runsView All ResultsSweating buckets, raining sixes: a fan watches India in FloridaAt Central Broward Park, the weather is beastly but the cricket is thrillingHas any Zimbabwe player made a higher score in a successful ODI chase than Sikandar Raza And has a team ever fielded 11 left-handed batters in an international match How Rohit Sharma is leading an Indian revolution in T20 cricketThe captain wants his batters
+to be a lot more aggressive and he's taken the first step towards that himself1:31Simmons: 'We are capable of competing, but we never put everything together'On Obed McCoy proving expensive: "He's shown that he can bowl, so he will come back from it"1:25Arshdeep Singh -'Trying to keep things simple and execute what I practice'The fast bowler returned seven wickets in the five T20Is against West IndiesWhat West Indies need: 'Consistency and knowing how to play situations,' says SimmonsWest Indies not close to finalising the squad for the T20 World Cup, concedes head coachHardik 'more than happy' to take over full-time captaincy in the futureRohit says it's "fantastic" and "very exciting to create so many leaders around the team"2:42Series takeaways: Kuldeep sends reminder, Iyer vs Hooda, is Karthik a certainty We take a look at how some of India's back-up options might have increased their selection chances for the Asia Cup and T20 World CupAxar, Bishnoi and Kuldeep share all ten wickets as India go 4-1 with commanding winChasing 189, West Indies slumped to 100 all out with Shimron Hetmyer playing a lone hand of 563:45Avesh Khan gets his groove backA look at some of the key takeaways for India from the series-clinching win in the fourth T20I Smart StatsTotal ImpactImpact RunsImpact Wickets Suryakumar YadavIND, Rhb204 18Impact ptsRuns: 135Wickets: - Rohit SharmaIND, Rhb158 44Impact ptsRuns: 108Wickets: - Obed McCoyWI, Lfm157 9Impact ptsRuns: 2Wickets: 9View full listTop Wicket TakersODIT20IShardul Thakur Rm7Innings: 3Average: 17 85Yuzvendra Chahal Lbg7Innings: 3Average: 20 57Alzarri Joseph Rf4Innings: 2Average: 26 75View all statsTop Run ScorersODIT20IShubman Gill Rhb205Innings: 3Average: 102 50Shikhar Dhawan Lhb168Innings: 3Average: 56 00Shreyas Iyer Rhb161Innings: 3Average: 53 66View all statsInstant answers to T20 questionsWhich team has the worst economy rate in the Powerplay in IPL 2023 What is the highest run-rate for a 50-plus partnership in IPL history What is the record for most sixes hit by a batter against a bowler in the IPL Ask a questionTerms of Use|Privacy Policy|Your US State Privacy Rights|Children's Online Privacy Policy|Interest - Based Ads|Do Not Sell My Personal Information|Feedback© 2023 ESPN Sports Media Ltd All rights reserved .
+//
+
+import SwiftUI
+
+
+struct HalloftonesView: View {
+    var snapshotData: Data? = nil
+    var playing = false
+    var active = false
+    var instruction = "Tap on a flower to play its song"
+    var completed = false
+    var playcount: Int = 0 {
+        didSet {
+            instruction = "Tap on a trumpet to play its tone"
+        }
+    }
+    
+    var startgame = false
+    
+    var snapshot: UIImage? = nil
+    var viewWorld: World!
+    
+    
+    
+    var body: some View {
+        VStack{
+            
+            //            Text("Usage:")
+            //            Text("Ball Roll: \(viewWorld.movieCount)")
+            
+            if(viewWorld.movieCount == 0) {
+                Button(action: {
+                    self.viewWorld.addBox()
+                    self.startgame = true
+                    
+                    self.snapshotData = self.viewWorld.snapshotScene().pngData()
+                    self.viewWorld.movieCount += 1
+                }) {
+                    Text("Ball Roll")
+                }
+            }
+            
+            VStack {
+                Text("Welcome to Ball Roll!")
+                Text("Tap on the screen to add a ball.")
+            }.padding(.bottom, 200)
+            
+            if (startgame == true) {
+                viewWorld
+                    .padding()
+                    .overlay(
+                        GeometryReader {gc in
+                            ... // Add your overlay control here
+                        }
+                )
+                .environmentObject(viewWorld)
+                .frame(width: 500, height: 700)
+                .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 1.0))
+                .background(Image("Mask").resizable().scaledToFit().blur(radius: 0.2))                //                    HStack{
+                //                        self.snapshot.map{Text("\($0.north)")}
+                //                        self.snapshot.map{Text("Welcome \($0)")}
+                //                    }
+                //                    Button(action: {
+                //                       self.snapshotData = self.viewWorld.snapshotScene().pngData()
+
+            }
+            
+            
+            if((viewWorld.movieCount == 7) && !completed) {
+                completed = true
+                viewWorld.removeBox()
+                viewWorld.removeBall()
+                viewWorld.movieCount = 0
+                struct tester:ViewModifier {
+                    func body(content: Content) -> some View {
+                        content.foregroundColor(.clear)
+                    }
+
+                }
+                Spacer()
+                
+                VStack{
+                    Text("Good Job!")
+                    
+                    Button(action: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Action@*/.empty/*@END_MENU_TOKEN@*/) {
+                        Image("Good-Job-Button")
+                    }
+                    Button(action: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Action@*/.empty/*@END_MENU_TOKEN@*/) {
+                        Text("Start").font(. HEADLINE)
+                    }
+                }
+            }
+            
+
+        }
+    }
+}
+
+struct HalloftonesView_Previews: PreviewProvider {
+    static var previews: some View {
+        HalloftonesView()
+    }
+}

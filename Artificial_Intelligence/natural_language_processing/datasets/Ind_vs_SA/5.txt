@@ -1,0 +1,158 @@
+India vs South Africa Schedule - IND vs SA Schedule & Time Table
+×
+CricketWWENBANFLMMATennisPOP Culture
+GolfMLBAEWFortniteIPL 2023FootballHealth and FitnessGamingMinecraftF1MotorsportsFantasy CricketUFC
+Log in
+Manage your profile
+Logout
+India vs South Africa 2022
+Cricket Home
+Schedule
+IPL 2023
+PAK vs NZ
+DPDL
+ECS Cyprus T10
+Plunket Shield
+ICCA Arabian T20 League
+Sharjah Hundred League
+Sheffield Shield
+Kuwait T10
+QCA Cup T20
+Vincy Premier League T10
+RCA T20 Cup 2023
+Home
+News
+India vs South Africa Schedule
+Cricket News
+India vs South Africa 2022
+Schedule
+India vs South Africa Schedule
+28 Sep 2022 - 11 Oct 2022
+Share
+No Upcoming matches at the moment
+This section will be updated as soon as there are any Upcoming matches
+IND vs SA 2022 Match DatesThe South African cricket team will begin their tour of India with a T20 series on September 28th, 2022 at Greenfield International Stadium, Thiruvananthapuram, as shown in the India vs South Africa Time Table The second Twenty20 match will take place on October 2nd, 2022 at Barsapara Cricket Stadium, Guwahati The third and fourth T20 matches will be held on the 4th and 6th of October 2022, respectively, at Indore and Lucknow, and the final two T20 matches will be held on the 9th and 11th of October 2022 in Ranchi and Delhi Also see - IND vs SA Head to Head
+Trending Topics
+• IPL 2023 Live Score
+• Love is Blind
+• New OTT Releases
+• March Madness 2023
+• Video Games Coming Out in 2023
+• 2023 Madrid Open
+• The Mandalorian
+• AKA Netflix
+• NFL Players with the most Super Bowl wins
+• Max Verstappen
+• Google Pixel 6 vs 6A
+• C J Gardner Johnson
+• ATP Rankings 2023
+• Madrid Open Results
+• Andreeva vsSabalenka
+• NFL Draft Prospects
+• 10 animes everyone is hyped for in 2023
+• WTA Rankings 2023
+• Bruce Willis
+• Drake's 2023 Tour
+• Best Met Gala Looks
+• Met Gala Dresses
+• Duran Duran's Tour
+• Lil Wayne Tour 2023
+• Puma x Gen G
+• MAMAMOO US Tour 2023
+• Madrid Open Schedule
+• Maroon 5 2023 Tour
+• Pitbull 2023 Tour
+• Malone 2023 Tour
+• WrestleMania 39
+• DC vs SRH Live
+• The Masked Singer
+• Tom Schwartz
+• Vanderpump Rules
+• UFC 287
+• Israel Adesanya
+• Pereira vs Adesanya
+• Mock Draft Simulator
+• 2023 Met Gala
+• WWE Backlash 2023
+• Pokemon GO May 2023
+Important Links
+About Us
+Affiliate Program
+Editoral Standards
+Careers
+Fact Check
+Contact Us
+Policies
+Download App
+Sportskeeda's Terms and Privacy Policy
+Copyright @ 2023 Sportskeeda
+1
+✕
+🔍 Search
+No Results Found
+Get the free App now
+Advertise On SK
+🔥 Popular
+🏃🏻‍♀️ Sports (30+)
+CricketCricket HomeScheduleIPL 2023PAK vs NZDPDLECS Cyprus T10Plunket ShieldICCA Arabian T20 LeagueSharjah Hundred LeagueSheffield ShieldKuwait T10QCA Cup T20Vincy Premier League T10RCA T20 Cup 2023 FootballFootball HomeNewslettersScheduleEPLChampions LeagueNations LeagueLa LigaLigue 1MLS Bundesliga Serie A
+WWEWWE HomeWWE WrestleMania 39Sportskeeda Wrestling AwardsRumor RoundupRAWNewslettersSmackDownResultsRosterChampionsWWE Crown Jewel 2022PPV ScheduleAEW EsportsEsports HomeFortniteCounter-Strike 2MinecraftRobloxGenshin ImpactModern warfare 2GTAValorantPop CultureAnimeFIFA 23PUBGStreamersBGMIGaming TechWiki Guides TennisTennis HomeTennis calendarMadrid Open 2023ATP Barcelona Open 2023ATP RankingsStuttgart Open 2023WTA RankingsRoger FedererRafael NadalCarlos AlcarazNovak DjokovicSerena WilliamsAndy Murray MMAMMA HomeUFC NewsONE ChampionshipUFC Fight NightScheduleRankingsResultsUFC Fights TonightONE Championship ResultsONE Championship ScheduleONE Championship Rankings KabaddiKabaddi HomePKL 2022PKL SchedulePKL Points TableKabaddi Rules WikiWiki HomeMinecraft WikiNaruto WikiTikTok WikiYoutube WikiGTA WikiTerraria WikiOne Piece WikiCommunity Hub MoreSportsBasketballIndian FootballNFLMinecraftFormula 1NascarPop CultureCollege FootballHockeyGolfAthleticsBadmintonGymnasticsWrestlingSwimmingTennisShootingBoxingArcheryWinter SportsRobloxFree PicksSkateboardingKho KhoLifestyleMMO
+🔗 LINKS
+About Us
+Write For Us
+Policies
+Editorial Standards
+Journalism Awards
+Fact Check
+Affiliate Program
+Careers
+CSR
+Privacy Policy
+Contact Us
+Edition:
+English
+English
+हिन्दी العربيةதமிழ்తెలుగుবাংলা（简体）中文 (简体)中文 (繁體)日本語한국어PolskiPortuguêsРусскийSvenskaTürkçeTiếng ViệtУкраїнська
+Blogs
+ Translate »
+⚡️ Trending
+Latest
+Local
+New York
+Los Angeles
+National
+World
+Lifestyle
+Entertainment
+Technology
+Sports
+Business
+Health
+Opinion
+Anime
+Comics
+Cartoons
+Manga
+Video Games
+Movies
+TV
+Music
+Comic Con
+Events
+About Us
+Affiliate Program
+Editoral Standards
+Careers
+Fact Check
+Contact Us
+Policies
+Download App
+Sportskeeda's Terms and Privacy Policy
+Copyright @ 2023 Sportskeeda
+Powered by WordPress.com VIP
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default Article
