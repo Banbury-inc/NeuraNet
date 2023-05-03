@@ -8,3 +8,7 @@ model_20.h5: QmXhpPzDbWCDbdqSXW9fNqbhFJxirKaE1RSUgkhnijYJx1
 model_21.h5: QmWXBGcjof2UVRt1V14qoZL5nYDFtJtHeT51CrRAM1i1fi
 model_22.h5: QmVxmDwfC2si9e3raEik9YzmoYqwa89qTvrZr7rgCH6npW
 model_23.h5: QmdWLrAGhnyVh1K55mtvhAEzYAeZ96juLLYnSLuJxQ17fN
+model_24.h5: QmSjcyXqofbXAFbmRF39r4QjK5ZmnUw1bNSKDScZyY8DSM
+model_25.h5: QmcHwZhu5ksH2kAriRyGX8jQoGaY8VjLYQ5DDQFTfzFsJY
+model_26.h5: QmccJieUoyUpX4r9iyiX2tvTVSwzjWHC3cyEZh8yAGjL1X
+model_27.h5: QmbrwfXmAs3TfCBs1vcqDHxhFUxQi7cNre48oFiYfG4Nqp

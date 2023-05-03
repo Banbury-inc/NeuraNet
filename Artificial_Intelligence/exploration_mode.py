@@ -267,23 +267,19 @@ def reddit():
         search_results = reddit.subreddit('all').hot(limit=50)
 def google_trends():
 
-    # Set up the TrendReq object
-    pytrends = TrendReq()
+    # Set the language and timezone
+    pytrends = TrendReq(hl='en-US', tz=360)
 
-    # Build the payload
-    kw_list = ["search term 1", "search term 2", "search term 3"]
-    top_searches = pytrends.top_charts("2022", geo='GLOBAL')
+    # Get the real-time trending searches for US
+    searches = pytrends.realtime_trending_searches(pn='US')
 
-    # Extract the second column as a list
-    searches_list = []
-    for row in top_searches.values:
-        searches_list.append(row[0])
-
-    # Limit the number of trends returned to the first 100
-    searches_list = searches_list[:100]
-
-    # Return the list
-    return searches_list
+    # Extract entity names from each row and combine them into a list
+    entity_names = []
+    for index, row in searches.iterrows():
+        entities = row['entityNames']
+        for entity in entities:
+            entity_names.append(entity)
+    return entity_names
 def google():
     # return the results of a google search
     # Define the search query
@@ -299,7 +295,7 @@ def google():
     # iterate over the search results and save the summaries as .txt files
     num_summaries = 0
     for url in search(query, num_results=10):
-        num_results = 10
+        num_results = 100
         print(f"Summarizing URL {num_summaries} of {num_results}")
         text = scrape_text(url)
         summary = summarize_text(text)
@@ -342,8 +338,14 @@ def scrape_text(url: str) -> str:
             browser.close()
 
     return text
+def summarize_text(text):
+    
+    
+    summary = text
 
-def summarize_text(text, max_tokens=2048):
+    return summary
+
+def summarize_text_deprecated(text, max_tokens=2048):
     if max_tokens == 0:
         return ""
     
@@ -399,7 +401,7 @@ def summarize_text(text, max_tokens=2048):
 
 def main():
     # set up the OpenAI API key
-    openai.api_key = "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"
+    openai.api_key = ""
     start_interaction_loop()
     emotions = get_emotion()
     
