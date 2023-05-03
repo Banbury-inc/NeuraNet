@@ -66,11 +66,20 @@ model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
               optimizer='adam',
               metrics=['accuracy'])
 
-epochs = 10
+epochs = 50
+
+# define a callback function to stop training when accuracy hits 90
+class MyCallback(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs={}):
+        if logs.get('val_accuracy') > 0.9:
+            print("\nReached 90% accuracy, so stopping training.")
+            self.model.stop_training = True
+            
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=epochs)
+    epochs=epochs,
+    callbacks=[MyCallback()])
 
 # create a counter to keep track of the number of datasets generated, and 
 # write the number of datasets to a file

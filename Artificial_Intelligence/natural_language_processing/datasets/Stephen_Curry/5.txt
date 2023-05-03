@@ -1,0 +1,4 @@
+Error: Timeout 30000ms exceeded.
+=========================== logs ===========================
+navigating to "https://www.basketball-reference.com/players/c/curryst01.html", waiting until "load"
+============================================================

@@ -29,7 +29,6 @@ def start_interaction_loop():
         print("I need to learn about " + str(topic))
         print("Googling and returning text about " + str(topic))
         text = google()
-        print("Summarizing the text")
         os.system('python3 natural_language_processing/train.py')
 
 def determine_next_topic():
@@ -294,7 +293,7 @@ def google():
 
     # iterate over the search results and save the summaries as .txt files
     num_summaries = 0
-    for url in search(query, num_results=10):
+    for url in search(query, num_results=100):
         num_results = 100
         print(f"Summarizing URL {num_summaries} of {num_results}")
         text = scrape_text(url)
