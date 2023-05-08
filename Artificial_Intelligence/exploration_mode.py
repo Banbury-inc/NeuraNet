@@ -16,6 +16,18 @@ from playwright.sync_api import sync_playwright
 import openai
 import re
 
+def is_it_my_birthday():
+    
+    # check if it is my birthday
+    # April 30, 2023
+    
+    today = dt.date.today()
+    birthday = dt.date(today.year, 4, 30)
+    
+    if today == birthday:
+        print("Happy Birthday to me... happy birthday to me... happy birthday to me... happy birthday to me... happy birthday to me")
+    else:
+        return False
 def start_interaction_loop():
     print("Hello World!")
     while True:
@@ -399,6 +411,8 @@ def summarize_text_deprecated(text, max_tokens=2048):
 
 
 def main():
+    
+    is_it_my_birthday()
     # set up the OpenAI API key
     openai.api_key = ""
     start_interaction_loop()
