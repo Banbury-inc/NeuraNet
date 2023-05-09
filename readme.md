@@ -18,3 +18,4 @@ This is a project that I have been working on that combines the concepts of web 
 * " What will the weather be like this week?"
 * "can you add tennis with hillman at 6 pm on thursday to my google calendar
 * " what time does cvs pharmacy close?
+* if response comes with less than 25% confidence, get help from openai API
