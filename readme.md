@@ -12,3 +12,6 @@ This is a project that I have been working on that combines the concepts of web 
 * train on openwebtext dataset: https://github.com/karpathy/nanoGPT/tree/master/data/openwebtext#:~:text=GPT%2D2%20paper-,OpenWebText,-dataset
 * better web scraping capabilities: https://github.com/dragnet-org/dragnet
 * general language model, not classification
+* voice to text generator
+* a voice for athena
+* multiple voices for athena
