@@ -15,3 +15,6 @@ This is a project that I have been working on that combines the concepts of web 
 * voice to text generator https://github.com/openai/whisper
 * a voice for athena
 * multiple voices for athena
+* " What will the weather be like this week?"
+* "can you add tennis with hillman at 6 pm on thursday to my google calendar
+* " what time does cvs pharmacy close?
