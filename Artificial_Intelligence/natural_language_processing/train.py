@@ -5,12 +5,11 @@ tfds.disable_progress_bar()
 import matplotlib.pyplot as plt
 import os
 import sys
-sys.path.append('/Users/michaelmills/Documents/GitHub/Athena/Artificial_Intelligence')
+sys.path.append('Artificial_Intelligence')
 from tensorflow.keras.layers import TextVectorization
-import exploration_mode
 import subprocess
 
-url = '/Users/michaelmills/Documents/GitHub/Athena/Artificial_Intelligence/natural_language_processing/datasets'
+url = 'Artificial_Intelligence\\natural_language_processing\\datasets'
 
 base_dir = url
 
@@ -87,17 +86,17 @@ history = model.fit(
 
 # determine the value of counter based on what the number is in Number_of_Datasets.txt
 
-with open("/Users/michaelmills/Documents/GitHub/Athena/Artificial_Intelligence/Number_of_Datasets.txt", "r") as f:
+with open("Artificial_Intelligence\\Number_of_Datasets.txt", "r") as f:
     counter = int(f.read())
     counter += 1
-with open("/Users/michaelmills/Documents/GitHub/Athena/Artificial_Intelligence/Number_of_Datasets.txt", "w") as f:
+with open("Artificial_Intelligence\\Number_of_Datasets.txt", "w") as f:
     #write the value of counter to the file
     f.write(str(counter))
     f.close()
 
 
 # specify the directory path to create
-directory = "/Users/michaelmills/Saved_Models/"+str(counter)
+directory = "E:\Models"+str(counter)
 
 # check if directory already exists
 if not os.path.exists(directory):
@@ -112,10 +111,10 @@ else:
     
 # generate a unique file name for the saved model
 model_name = f"model_{counter}.h5"
-file_path = f"/Users/michaelmills/Saved_Models/{model_name}"
+file_path = f"E:\\Models\\{model_name}"
 
 # save the model to the file path
-model.save(file_path)
+tf.keras.models.save_model(model, file_path)
 
 # Start a new IPFS daemon process using the 'ipfs daemon' command
 daemon_process = subprocess.Popen(["ipfs", "daemon"])
@@ -129,7 +128,7 @@ add_output = subprocess.check_output(["ipfs", "add", "-r", file_path])
 file_hash = add_output.split()[1]
 
 # save the hash to CID's.txt file
-with open("/Users/michaelmills/Documents/GitHub/Athena/Artificial_Intelligence/CID's.txt", "a") as f:
+with open("Artificial_Intelligence\\CID's.txt", "a") as f:
     f.write(f"{model_name}: {file_hash.decode()}\n")
 
 # Print the hash to the console
@@ -139,11 +138,11 @@ print(f"Uploaded file '{file_path}' to IPFS with hash '{file_hash.decode()}'")
 daemon_process.terminate()
 
 
-with open("current_topic.txt", "r") as file:
+with open("Artificial_Intelligence\\current_topic.txt", "r") as file:
     topic = file.read().strip()
 print(topic)
 # Open the file for appending and add the new topic
-with open("/Users/michaelmills/Documents/GitHub/Athena/Artificial_Intelligence/topics.txt", "a") as file:
+with open("Artificial_Intelligence\\topics.txt", "a") as file:
   file.write(topic + "\n")
 
 

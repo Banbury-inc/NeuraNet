@@ -46,8 +46,9 @@ def render_response(prompt, model, tokenizer):
     # Generate text
     
     input_ids = tokenizer.encode(prompt, return_tensors='pt')
-    output = model.generate(input_ids=input_ids, max_length=500, num_beams=10, no_repeat_ngram_size=2, early_stopping=False, pad_token_id=tokenizer.eos_token_id, attention_mask=torch.ones(input_ids.shape))
+    output = model.generate(input_ids=input_ids, max_length=50, num_beams=5, no_repeat_ngram_size=2, early_stopping=True, pad_token_id=tokenizer.eos_token_id, attention_mask=torch.ones(input_ids.shape))
     generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
+    print(generated_text)
     response = generated_text
 
     return response
@@ -62,12 +63,9 @@ def main():
 
     # Continue the conversation until the user ends it
     while True:
-        if prompt == "Go to exploration mode":
-            subprocess.run(['python', 'Artificial_Intelligence\exploration_mode.py'])
-        else:
-            response = render_response(prompt, model, tokenizer)
-            print(response)
-            prompt = continue_conversation()
+        response = render_response(prompt, model, tokenizer)
+        print(response)
+        prompt = continue_conversation()
 
 
 if __name__ == "__main__":
