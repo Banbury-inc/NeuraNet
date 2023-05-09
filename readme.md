@@ -19,3 +19,19 @@ This is a project that I have been working on that combines the concepts of web 
 * "can you add tennis with hillman at 6 pm on thursday to my google calendar
 * " what time does cvs pharmacy close?
 * if response comes with less than 25% confidence, get help from openai API
+* determine whether or not a model is overfit or underfit and automatically manipulat the model/data accordingly
+
+# Prerequisites
+```
+pip install tensorflow
+pip install matplotlib
+pip install tiktoken
+pip install hparams
+pip install datasets
+pip install numpy
+pip install googlesearch
+pip install openai
+pip install datetime
+pip install pandas
+npm install -g @web3-storage/w3cli
+```
