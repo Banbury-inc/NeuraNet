@@ -5,6 +5,7 @@ This is a project that I have been working on that combines the concepts of web 
 
 
 ## To-do
+* based on the prompt, create an itinerary of tasks that will be completed until the end goal is complete.
 * search the web for particular topics
 * learn to code
 * demonstrate feelings
