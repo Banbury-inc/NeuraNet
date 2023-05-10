@@ -51,7 +51,7 @@ def load_model():
 
 def render_response(prompt, text_classifier):
     sequence_to_classify = prompt
-    candidate_labels = ['summarization', 'coding', 'conversational', 'translation', 'question-answering']
+    candidate_labels = ['summarization', 'coding', 'conversational', 'translation', 'question-answering', 'task-completion']
     results = text_classifier(sequence_to_classify, candidate_labels)
     max_score = 0
     max_label = None
@@ -60,8 +60,18 @@ def render_response(prompt, text_classifier):
    
     return response
 
-
-
+def summarization(prompt, text_classifier):
+    print("Initiating summarization module")
+def coding(prompt, text_classifier):
+    print("Initiating coding module")
+def conversational(prompt, text_classifier):
+    print("Initiating conversational module")
+def translation(prompt, text_classifier):
+    print("Initiating translation module")
+def question_answering(prompt, text_classifier):
+    print("Initiating question-answering module")
+def task_completion(prompt, text_classifier):
+    print("Initiating task-completion module")
 def main():
     logging.disable(logging.CRITICAL)
     # Start a conversation with the user
@@ -78,15 +88,17 @@ def main():
             response = render_response(prompt, text_classifier)
             print("This prompt is most likely about " + response)
             if response == "summarization":
-                print("Initiating summarization")
+                summarization(prompt, text_classifier)
             elif response == "coding":
-                print("Initiating coding")
+                coding(prompt, text_classifier)
             elif response == "conversational":
-                print("Initiating conversational")
+                conversational(prompt, text_classifier)
             elif response == "translation":
-                print("Initiating translation")
+                translation(prompt, text_classifier)
             elif response == "question-answering":
-                print("Initiating question-answering")
+                question_answering(prompt, text_classifier)
+            elif response == "task-completion":
+                task_completion(prompt, text_classifier)
         prompt = continue_conversation()
 
 
