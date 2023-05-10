@@ -20,6 +20,19 @@ This is a project that I have been working on that combines the concepts of web 
 * " what time does cvs pharmacy close?
 * if response comes with less than 25% confidence, get help from openai API
 * determine whether or not a model is overfit or underfit and automatically manipulat the model/data accordingly
+* commands to complete tasks on the computer
+
+# API's I am looking to integrate
+* Google Calendar API
+* Weather API
+* Google Maps API
+* Google Cloud Translation API
+* Google Search API
+* Twitter API
+* JOJ Unlimited Web Search
+* Shazam API
+* Spotify API
+
 
 # Prerequisites
 wget
