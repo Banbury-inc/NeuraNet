@@ -11,8 +11,9 @@ import subprocess
 from tqdm import tqdm
 import transformers
 import torch
+import logging
 import ipfshttpclient
-from transformers import GPT2LMHeadModel, GPT2Tokenizer, LineByLineTextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
+from transformers import pipeline, T5Tokenizer, T5ForConditionalGeneration, GPT2LMHeadModel, AutoTokenizer, AutoModelForCausalLM, GPT2Tokenizer, LineByLineTextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
 
 
 def start_conversation():
@@ -32,23 +33,39 @@ def continue_conversation():
 def load_model():
     
     # Load the pre-trained GPT-2 model and tokenizer
-    model = GPT2LMHeadModel.from_pretrained('gpt2')
-    tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+    tokenizer = T5Tokenizer.from_pretrained('t5-base', model_max_length=1024)
+    model = T5ForConditionalGeneration.from_pretrained('t5-base')
+
+    # Create the pipeline
+    text_classification_pipeline = pipeline('text-classification', model='distilbert-base-uncased-finetuned-sst-2-english')
+    ner_pipeline = pipeline('ner', model='dslim/bert-base-NER')
+    sentiment_analysis_pipeline = pipeline('sentiment-analysis', model='nlptown/bert-base-multilingual-uncased-sentiment')
+    qa_pipeline = pipeline('question-answering', model='distilbert-base-cased-distilled-squad')
+    
 
     # Set model to evaluation mode
     model.eval
 
 
-    return model, tokenizer
+    return model, tokenizer, text_classification_pipeline, ner_pipeline, sentiment_analysis_pipeline, qa_pipeline
 
 
-def render_response(prompt, model, tokenizer):
+def render_response(prompt, model, tokenizer, text_classification_pipeline, ner_pipeline, sentiment_analysis_pipeline, qa_pipeline):
     # Generate text
     
     input_ids = tokenizer.encode(prompt, return_tensors='pt')
     output = model.generate(input_ids=input_ids, max_length=500, num_beams=10, no_repeat_ngram_size=2, early_stopping=False, pad_token_id=tokenizer.eos_token_id, attention_mask=torch.ones(input_ids.shape))
     generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
-    response = generated_text
+    
+
+    # Use the pipeline to get the output from each model
+    output1 = text_classification_pipeline(prompt)
+    output2 = ner_pipeline(prompt)
+    output3 = sentiment_analysis_pipeline(prompt)
+    output4 = qa_pipeline({'question': 'What did the cat do?', 'context': prompt})
+
+
+    response = [generated_text, output1, output2, output3, output4]
 
     return response
 
@@ -58,15 +75,20 @@ def main():
     prompt = start_conversation()
 
     # Load the pre-trained model and tokenizer
-    model, tokenizer = load_model()
+    model, tokenizer, text_classification_pipeline, ner_pipeline, sentiment_analysis_pipeline, qa_pipeline = load_model()
 
     # Continue the conversation until the user ends it
     while True:
-        if prompt == "Go to exploration mode":
+        if prompt == "go to exploration mode":
             subprocess.run(['python', 'Artificial_Intelligence\exploration_mode.py'])
         else:
-            response = render_response(prompt, model, tokenizer)
-            print(response)
+            response = render_response(prompt, model, tokenizer, text_classification_pipeline, ner_pipeline, sentiment_analysis_pipeline, qa_pipeline)
+            print(response[0])
+            print(response[1])
+            print(response[2])
+            print(response[3])
+            print(response[4])
+            
             prompt = continue_conversation()
 
 

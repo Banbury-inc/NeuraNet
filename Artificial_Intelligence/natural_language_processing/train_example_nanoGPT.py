@@ -25,7 +25,7 @@ import torch.nn as nn
 from torch.nn import functional as F
 from dataclasses import dataclass
 import tokenizers as tk
-from transformers import GPT2LMHeadModel, GPT2Tokenizer, LineByLineTextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
+from transformers import GPT2LMHeadModel, AutoModelForCausalLM, GPT2Tokenizer, LineByLineTextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
 
 
 # saves the openwebtext dataset to a binary file for training. following was helpful:
