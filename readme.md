@@ -32,6 +32,11 @@ This is a project that I have been working on that combines the concepts of web 
 * JOJ Unlimited Web Search
 * Shazam API
 * Spotify API
+* Polygon.io API
+* Jokeapi
+* Soundcloud API
+* OPEN Library API
+* 
 
 
 # Prerequisites
