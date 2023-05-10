@@ -12,7 +12,7 @@ from tqdm import tqdm
 import transformers
 import torch
 import ipfshttpclient
-from transformers import GPT2LMHeadModel, GPT2Tokenizer, LineByLineTextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
+from transformers import GPT2Model, GPT2LMHeadModel, GPT2Tokenizer, LineByLineTextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
 
 
 def start_conversation():
