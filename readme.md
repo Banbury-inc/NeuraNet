@@ -44,6 +44,7 @@ This is a project that I have been working on that combines the concepts of web 
 
 # Prerequisites
 wget
+Microsoft C++ Build Tools
 ```
 
 pip install tensorflow
