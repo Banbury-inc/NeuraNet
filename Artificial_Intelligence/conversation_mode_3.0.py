@@ -1,8 +1,5 @@
 import numpy as np
-import tensorflow_datasets as tfds
 import tensorflow as tf
-tfds.disable_progress_bar()
-import matplotlib.pyplot as plt
 import os
 import sys
 import math
@@ -10,22 +7,15 @@ from tensorflow.keras.layers import TextVectorization
 import subprocess
 from tqdm import tqdm
 import transformers
-import dateparser
-import torch
-import data
+import openai
 import logging
 import datetime
-import ipfshttpclient
 from transformers import pipeline, BertConfig, XLMRobertaForSequenceClassification, XLMRobertaTokenizer,  BertLMHeadModel, AutoModelForCausalLM, BertForSequenceClassification, BertTokenizer, BertModel, T5Tokenizer, T5ForConditionalGeneration, GPT2LMHeadModel, AutoTokenizer, AutoModelForCausalLM, GPT2Tokenizer, LineByLineTextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
-from flair.data import Sentence
-from flair.models import SequenceTagger
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import nltk
-from nltk.corpus import stopwords
 
 
 def start_conversation():
@@ -48,126 +38,71 @@ def continue_conversation():
 
 def load_model():
     
+    # Set up the OpenAI API credentials
+    openai.api_key = "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"
 
-    # load the default text classification pipeline
-    text_classifier = pipeline("zero-shot-classification",
-                      model="facebook/bart-large-mnli")
 
-    # add BART-large-mnli model to the pipeline
-    text_classifier.model.config.model_name_or_path = "facebook/bart-large-mnli"
-    text_classifier.model = text_classifier.model.from_pretrained(
-    text_classifier.model.config.model_name_or_path
+
+
+
+def render_response(prompt):
+    
+    categories = ['summarization', 'coding', 'conversational', 'translation', 'question-answering', 'task-completion', 'add', 'show']
+    # Call the OpenAI API to classify the sentence into one of the categories
+    results = openai.Completion.create(
+        engine= "text-davinci-003",
+        prompt=f"Classify the following sentence into one of the given categories: \"{prompt}\". Categories: {categories}.",
+        max_tokens=200,
+        n=1,
+        stop=None,
+        temperature=0.0,
     )
-    # Load the XLM-RoBERTa tokenizer
-    tokenizer2 = XLMRobertaTokenizer.from_pretrained("xlm-roberta-base")
-
-# Load the fine-tuned XLM-RoBERTa model
-    model2 = XLMRobertaForSequenceClassification.from_pretrained("xlm-roberta-base")
-    # Define the instruction detection pipeline
-    instruction_detector = pipeline('fill-mask', model='xlm-roberta-base'
-    )
-
-    return text_classifier, instruction_detector, tokenizer2, model2
-
-
-def render_response(prompt, text_classifier, instruction_detector, tokenizer2, model2):
-    sequence_to_classify = prompt
-    candidate_labels = ['summarization', 'coding', 'conversational', 'translation', 'question-answering', 'task-completion', 'add', 'show']
-    results = text_classifier(sequence_to_classify, candidate_labels)
-    max_score = 0
-    max_label = None
-    response = results['labels'][0]
-            
-   
-    return response
-def calendar(prompt, text_classifier, instruction_detector, tokenizer2, model2):
+    # Extract the predicted labels from the response
+    label = str(results.choices[0].text.strip())
+    
+    return label
+def calendar(prompt):
     print("Initiating calendar module")
 
-    classifier = pipeline("zero-shot-classification",
-                      model="facebook/bart-large-mnli")
+    
+    # Define the model to use for classification
+    model = "text-davinci-003"
 
-    # Tokenize the text
-    tokens = nltk.word_tokenize(prompt)
-    # Remove stopwords
-    stop_words = set(stopwords.words('english'))
-    filtered_tokens = [word for word in tokens if not word.lower() in stop_words]
-    # Join the filtered tokens back into a string
-    prompt = " ".join(filtered_tokens)
+    # Define the list of categories to choose from
+    categories = ['title', 'date', 'time']
+
+    # Call the OpenAI API to classify the sentence into one of the categories
+    response = openai.Completion.create(
+        engine=model,
+        prompt=f"Extract the following categories in the given sentence: \"{prompt}\". Categories: {categories}.",
+        max_tokens=200,
+        n=1,
+        stop=None,
+        temperature=0.0,
+    )
+
+    print(response)
+    # Extract the predicted labels from the response
+    outputs = response.choices[0].text.split("\n")
+    print(outputs)
+
+    # Initialize variables for title, time, and date
+    title = ""
+    time = ""
+    date = ""
 
 
-    sequence_to_classify = prompt
-    words = sequence_to_classify.split()
-    date_max_score = 0
-    time_max_score = 0
-    title_max_score = 0
-    date_dict = {}
-    time_dict = {}
-    title_dict = {}
-    date_candidate_labels = ['date']
-    words = sequence_to_classify.split()
-    for word in words:
-        results = classifier(word, date_candidate_labels)
-        score = results['scores'][0]
-        date_dict[word] = score
-    # sort the dictionary by values in descending order
-    sorted_date_dict = dict(sorted(date_dict.items(), key=lambda item: item[1], reverse=True))
-    #print the first value of the dictionary
-    date_max_word = next(iter(sorted_date_dict))
-    date_max_score = next(iter(sorted_date_dict.values()))
-    date_second_max_word = list(sorted_date_dict)[1]
-
-    date_candidate_labels = ['time']
-    words = sequence_to_classify.split()
-    for word in words:
-        results = classifier(word, date_candidate_labels)
-        score = results['scores'][0]
-        time_dict[word] = score
-    # sort the dictionary by values in descending order
-    sorted_time_dict = dict(sorted(time_dict.items(), key=lambda item: item[1], reverse=True))
-    #print the first value of the dictionary
-    time_max_word = next(iter(sorted_time_dict))
-    time_max_score = next(iter(sorted_time_dict.values()))
-    time_second_max_word = list(sorted_time_dict)[1]
-    date_candidate_labels = ['activity']
-    words = sequence_to_classify.split()
-    for word in words:
-        results = classifier(word, date_candidate_labels)
-        score = results['scores'][0]
-        title_dict[word] = score
-    # sort the dictionary by values in descending order
-    sorted_title_dict = dict(sorted(title_dict.items(), key=lambda item: item[1], reverse=True))
-    #print the first value of the dictionary
-    title_max_word = next(iter(sorted_title_dict))
-    title_max_score = next(iter(sorted_title_dict.values()))
-    title_second_max_word = list(sorted_title_dict)[1]
-    if date_max_word == time_max_word:
-        if date_max_score > time_max_score:
-            time_max_word = time_second_max_word
-        elif date_max_score < time_max_score:
-            date_max_word = date_second_max_word
-    if time_max_word == title_max_word:
-        if time_max_score > title_max_score:
-            title_max_word = title_second_max_word
-        elif time_max_score < title_max_score:
-            time_max_word = date_second_max_word
-    if date_max_word == title_max_word:
-        if date_max_score > time_max_score:
-            time_max_word = time_second_max_word
-        elif date_max_score < time_max_score:
-            date_max_word = date_second_max_word
-    print ("date: ", date_max_word, "time: ", time_max_word , "title: ", title_max_word)
-    # Example input text
-    text = str(date_max_word) + " " + str(time_max_word)
-
-    # Parse the date using dateparser
-    date_obj = dateparser.parse(text)
-
-    # Format the date as "YYYY-MM-DD HH:MM:SS"
-    formatted_date = date_obj.strftime("%Y-%m-%d")
-    # Format the time as "YYYY-MM-DD HH:MM:SS"
-    formatted_time = date_obj.strftime("%H:%M:%S")
-    print(formatted_date)
-    print(formatted_time)
+    for output in outputs:
+        if output:
+            label, value = output.split(":", 1)
+            value = value.strip()
+            if label.strip() == "Title":
+                title = value
+            elif label.strip() == "Time":
+                time = value
+            elif label.strip() == "Date":
+                date = value
+    print(title, time, date)
 
         
     # If modifying these scopes, delete the file token.json.
@@ -197,11 +132,11 @@ def calendar(prompt, text_classifier, instruction_detector, tokenizer2, model2):
         now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
         print('Adding an event to the calendar')
         event = {
-            'summary': title_max_word,
+            'summary': title,
             'location': 'New York',
             'description': 'A test event for the Google Calendar API',
             'start': {
-                'dateTime': formatted_date+'T'+formatted_time+'-04:00', # Change the date and time as per your needs
+                'dateTime': date+'T'+time+'-04:00', # Change the date and time as per your needs
                 'timeZone': 'America/New_York',
             },
             'end': {
@@ -218,7 +153,7 @@ def calendar(prompt, text_classifier, instruction_detector, tokenizer2, model2):
 
     except HttpError as error:
         print('An error occurred: %s' % error)
-def calendar_remove_last_event(prompt, text_classifier, instruction_detector, tokenizer2, model2):
+def calendar_remove_last_event(prompt):
     # If modifying these scopes, delete the file token.json.
     # If modifying these scopes, delete the file token.json.
     SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/calendar']
@@ -263,7 +198,7 @@ def calendar_remove_last_event(prompt, text_classifier, instruction_detector, to
 
     except HttpError as error:
         print('An error occurred: %s' % error)
-def calender_recent_events(prompt, text_classifier, instruction_detector, tokenizer2, model2):
+def calender_recent_events(prompt):
     # If modifying these scopes, delete the file token.json.
     SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
     """Shows basic usage of the Google Calendar API.
@@ -309,96 +244,145 @@ def calender_recent_events(prompt, text_classifier, instruction_detector, tokeni
 
     except HttpError as error:
         print('An error occurred: %s' % error)
-def weather(prompt, text_classifier, instruction_detector):
+def weather(prompt):
     print("Initiating weather module")
-def maps(prompt, text_classifier, instruction_detector):
+def maps(prompt):
     print("Initiating maps module")
-def twitter(prompt, text_classifier, instruction_detector):
+def twitter(prompt):
     print("Initiating twitter module")
-def spotify(prompt, text_classifier, instruction_detector):
+def spotify(prompt):
     print("Initiating spotify module")
-def google_search(prompt, text_classifier, instruction_detector):
+def google_search(prompt):
     print("Initiating google search module")
-def summarization(prompt, text_classifier, instruction_detector):
+def summarization(prompt):
     print("Initiating summarization module")
-def coding(prompt, text_classifier, instruction_detector):
+def coding(prompt):
     print("Initiating coding module")
-def conversational(prompt, text_classifier, instruction_detector):
+    # organize tasks into functions
+    # Define the model to use for code generation
+    model = "text-davinci-002"
+
+    # Call the OpenAI API to generate code based on the prompt
+    response = openai.Completion.create(
+        engine=model,
+        prompt=prompt,
+        max_tokens=200,
+        n=1,
+        stop=None,
+        temperature=0.5,
+    )
+
+    # Extract the generated code from the response
+    code = response.choices[0].text.strip()
+
+    # Print the generated code
+    print(code)
+def conversational(prompt):
     print("Initiating conversational module")
-def translation(prompt, text_classifier, instruction_detector):
+def translation(prompt):
     print("Initiating translation module")
-def question_answering(prompt, text_classifier, instruction_detector):
+def question_answering(prompt):
     print("Initiating question-answering module")
-def task_completion(prompt, text_classifier, instruction_detector, tokenizer2, model2):
+def task_completion(prompt):
     print("Initiating task-completion module")
-    sequence_to_classify = prompt
-    candidate_labels = ['calendar', 'weather', 'maps', 'twitter', 'spotify', 'google search']
-    results = text_classifier(sequence_to_classify, candidate_labels)
-    response = results['labels'][0]
-    if response == "calendar":
+
+    sentence = prompt
+
+    # Define the model to use for classification
+    model = "text-davinci-003"
+
+    # Define the list of categories to choose from
+    categories = ['calendar', 'weather', 'maps', 'twitter', 'spotify', 'google search']
+
+    # Call the OpenAI API to classify the sentence into one of the categories
+    response = openai.Completion.create(
+        engine=model,
+        prompt=f"Classify the following sentence into one of the given categories: \"{sentence}\". Categories: {categories}.",
+        max_tokens=20,
+        n=1,
+        stop=None,
+        temperature=0.0,
+    )
+
+    label = response.choices[0].text.strip()
+    response = label 
+    print (response)
+    if response == "Calendar":
         print("This prompt is most likely about something related to a calendar")
-        sequence_to_classify = prompt
-        candidate_labels = ['add', 'delete', 'update', 'view']
-        results = text_classifier(sequence_to_classify, candidate_labels)
-        response = results['labels'][0]
-        if response == "add":
+        # Define the model to use for classification
+        model = "text-davinci-003"
+
+        # Define the list of categories to choose from
+        categories = ['add', 'delete', 'update', 'view']
+
+        # Call the OpenAI API to classify the sentence into one of the categories
+        response = openai.Completion.create(
+            engine=model,
+            prompt=f"Classify the following sentence into one of the given categories: \"{sentence}\". Categories: {categories}.",
+            max_tokens=20,
+            n=1,
+            stop=None,
+            temperature=0.0,
+        )
+
+        label = response.choices[0].text.strip()
+        response = label 
+        print (response)
+        if response == "Add":
             print("This prompt is most likely about adding something to the calendar")
-            calendar(prompt, text_classifier, instruction_detector, tokenizer2, model2)
+            calendar(prompt)
         elif response == "delete":
             print("This prompt is most likely about deleting something from the calendar")
-            calendar_remove_last_event(prompt, text_classifier, instruction_detector, tokenizer2, model2)
+            calendar_remove_last_event(prompt)
         elif response == "update":
-            calendar(prompt, text_classifier, instruction_detector, tokenizer2, model2)
+            calendar(prompt)
             print("This prompt is most likely about updating something from the calendar")
         elif response == "view":
             print("This prompt is most likely about viewing something on the calendar")
-            calender_recent_events(prompt, text_classifier, instruction_detector, tokenizer2, model2)
+            calender_recent_events(prompt)
     elif response == "weather":
         print("This prompt is most likely about weather")
-        weather(prompt, text_classifier, instruction_detector)
+        weather(prompt)
     elif response == "maps":
         print("This prompt is most likely about maps")
-        maps(prompt, text_classifier, instruction_detector)
+        maps(prompt)
     elif response == "twitter":
         print("This prompt is most likely about twitter")
-        twitter(prompt, text_classifier, instruction_detector)
+        twitter(prompt)
     elif response == "spotify":
         print("This prompt is most likely about spotify")
-        spotify(prompt, text_classifier, instruction_detector)
+        spotify(prompt)
     elif response == "google search":
         print("This prompt is most likely about google search")
-        google_search(prompt, text_classifier, instruction_detector)
+        google_search(prompt)
 def main():
     logging.disable(logging.CRITICAL)
+    # Set up the OpenAI API credentials
+    openai.api_key = "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"
     # Start a conversation with the user
     prompt = start_conversation()
 
-    # Load the pre-trained model and tokenizer
-    text_classifier, instruction_detector, tokenizer2, model2 = load_model()
+
 
     # Continue the conversation until the user ends it
     while True:
         if prompt == "go to exploration mode":
             subprocess.run(['python', 'Artificial_Intelligence\exploration_mode.py'])
         else:
-            response = render_response(prompt, text_classifier, instruction_detector, tokenizer2, model2)
+            response = render_response(prompt)
             print("This prompt is most likely about " + response)
             if response == "summarization":
-                summarization(prompt, text_classifier, instruction_detector)
-            elif response == "coding":
-                coding(prompt, text_classifier, instruction_detector)
+                summarization(prompt)
+            elif response == "Coding":
+                coding(prompt)
             elif response == "conversational":
-                conversational(prompt, text_classifier, instruction_detector)
+                conversational(prompt)
             elif response == "translation":
-                translation(prompt, text_classifier, instruction_detector)
+                translation(prompt)
             elif response == "question-answering":
-                question_answering(prompt, text_classifier, instruction_detector)
-            elif response == "task-completion":
-                task_completion(prompt, text_classifier, instruction_detector, tokenizer2, model2)
-            elif response == "add":
-                task_completion(prompt, text_classifier, instruction_detector, tokenizer2, model2)
-            elif response == "show":
-                task_completion(prompt, text_classifier, instruction_detector, tokenizer2, model2)
+                question_answering(prompt)
+            elif response == "Task-Completion":
+                task_completion(prompt)
         prompt = continue_conversation()
 
 
