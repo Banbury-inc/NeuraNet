@@ -22,6 +22,8 @@
       <h2>{{.Title}}</h2>
       <p>Welcome to Athena, the next form of Artificial General Intelligence</p>
       <p>Number of nodes online: <span id="nodesOnline"></span></p>
+      <p>List of information about nodes: <span id="online-nodes"></span></p>
+      <button onclick="disconnectPeers()">Disconnect all peers</button>
     </main>
     <footer>
       <p>2023 Banbury Enterprises</p>
@@ -68,6 +70,60 @@
         xhr.open("GET", "/lessnodes", true);
         xhr.send();
       };
+
+      function updateListofNodes() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            document.getElementById("online-nodes").innerHTML = this.responseText;
+          }
+        };
+        xhr.open("GET", "/online-nodes", true);
+        xhr.send();
+      }
+      
+      // update the number of nodes online every second
+      setInterval(updateNodesOnline, 1000);
+     // send a request to the server whenever the page is loaded 
+      window.onload = function() {
+        //request to get the list of online nodes
+        var xhr1 = new XMLHttpRequest();
+        xhr1.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            // update the HTML element with the response from the server
+            document.getElementById("online-nodes").innerHTML = this.responseText;
+          }
+        };
+        xhr1.open("GET", "/online-nodes", true);
+        xhr1.send();
+    // request to get the numbder of nodes
+        var xhr2 = new XMLHttpRequest();
+        xhr2.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            console.log("Page loaded");
+          }
+        };
+        xhr2.open("GET", "/nodes", true);
+        xhr2.send();
+
+        //request to add a node
+        xhr2.open("GET", "/addnode", true);
+        xhr2.send();
+      };
+      // send a request to the server when the page is unloaded
+      window.onbeforeunload = function() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/lessnodes", true);
+        xhr.send();
+      };
+      // send a request to the server to disconnect all bootstrap peers when the button is clicked
+    
+      function disconnectPeers() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/disconnect", true);
+        xhr.send();
+      }
+
     </script>
   </body>
 </html>

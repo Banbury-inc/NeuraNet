@@ -109,6 +109,8 @@ func main() {
 	http.HandleFunc("/addnode", handlers.CreateNodeHandler)
 	http.HandleFunc("/nodesdata", handlers.CreateNodeHandler)
 	http.HandleFunc("/files", handlers.LogFiles)
+	http.HandleFunc("/disconnect", handlers.DisconnectAllPeersHandler)
+	http.HandleFunc("/countpeers", handlers.CountPeersHandler)
 	// Start server
 	log.Println("Starting server on :8081")
 	if err := http.ListenAndServe(":8081", nil); err != nil {
