@@ -101,7 +101,6 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/upload", handlers.UploadHandler)
 	http.HandleFunc("/download", handlers.DownloadHandler)
 	http.HandleFunc("/nodes-online", handlers.NodesOnlineHandler)
 	http.HandleFunc("/nodes", handlers.HomeHandler)
@@ -111,12 +110,18 @@ func main() {
 	http.HandleFunc("/files", handlers.LogFiles)
 	http.HandleFunc("/disconnect", handlers.DisconnectAllPeersHandler)
 	http.HandleFunc("/countpeers", handlers.CountPeersHandler)
+	http.HandleFunc("/listpeers", handlers.ListofPeersHandler)
+	http.HandleFunc("/listfiles", handlers.ListFilesHandler)
+	http.HandleFunc("/upload", handlers.UploadHandler)
+
 	// Start server
 	log.Println("Starting server on :8081")
-	if err := http.ListenAndServe(":8081", nil); err != nil {
-		log.Fatalf("Error starting server: %v", err)
-	}
-	// Reload server when changes are made
+	go func() {
+		if err := http.ListenAndServe(":8081", nil); err != nil {
+			log.Fatalf("Error starting server: %v", err)
+		}
+	}()
+
 	// Create a file watcher
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -138,14 +143,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Start the HTTP server in a separate goroutine
-	go func() {
-		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprintf(w, "Hello, world!")
-		})
-		log.Fatal(http.ListenAndServe(":8081", nil))
-	}()
-
 	// Watch for file changes and restart the server
 	for {
 		select {
@@ -158,6 +155,14 @@ func main() {
 				log.Println("modified file:", event.Name)
 				// Restart the server by killing the current process and starting a new one
 				os.Exit(0)
+				// Start server
+				log.Println("Starting server on :8081")
+				go func() {
+					if err := http.ListenAndServe(":8081", nil); err != nil {
+						log.Fatalf("Error starting server: %v", err)
+					}
+				}()
+
 			}
 		case err, ok := <-watcher.Errors:
 			if !ok {

@@ -30,5 +30,5 @@ func CountPeersHandler(w http.ResponseWriter, r *http.Request) {
 	count := len(items)
 
 	// Print the count
-	fmt.Fprintf(w, "Number of items in bootstrap list: %d\n", count)
+	fmt.Fprintf(w, " %d\n", count)
 }

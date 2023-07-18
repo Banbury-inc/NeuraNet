@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os/exec"
 
 	shell "github.com/ipfs/go-ipfs-api"
 )
@@ -34,13 +35,26 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	defer file.Close()
+	// Get the name of the file from the request
+	fileName := r.FormValue("file-name")
 
 	// Upload file to IPFS
 	cid, err := sh.Add(file)
 	if err != nil {
 		log.Fatalf("Error uploading file: %v", err)
 	}
+	ipfsHash := cid // Replace with the actual IPFS hash
+
+	// Execute the `ipfs files cp` command with the IPFS hash and file name variables
+	cmd := exec.Command("ipfs", "files", "cp", "/ipfs/"+ipfsHash, "/"+fileName)
+
+	// Execute the command
+	err2 := cmd.Run()
+	if err2 != nil {
+		log.Fatalf("Error running command: %v", err2)
+	}
+
+	fmt.Printf("File uploaded successfully with CID %s\n", cid)
 
 	// Set the page data
 	pageData := PageData{
@@ -49,8 +63,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		Content: "",
 		FileCID: cid,
 	}
+
 	// Read the existing HTML page
-	existingPage, err := ioutil.ReadFile("web/ui/templates/upload.html")
+	existingPage, err := ioutil.ReadFile("web/ui/templates/base.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -68,7 +83,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<html>\n")
 	fmt.Fprintf(w, "<head>\n")
 	fmt.Fprintf(w, "<meta charset=\"utf-8\">\n")
-
 	fmt.Fprintf(w, "</head>\n")
 	fmt.Fprintf(w, "<body>\n")
 
@@ -77,5 +91,4 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "</body>\n")
 	fmt.Fprintf(w, "</html>\n")
-
 }

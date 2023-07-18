@@ -47,6 +47,7 @@ func main() {
 	http.HandleFunc("/node-disconnected", NodeDisconnectedHandler)
 	http.HandleFunc("/online-nodes", OnlineNodesHandler)
 	http.HandleFunc("/disconnect", DisconnectAllPeersHandler)
+	http.HandleFunc("/listfiles", ListFilesHandler)
 
 	http.ListenAndServe(":8081", nil)
 }
