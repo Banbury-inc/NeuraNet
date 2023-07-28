@@ -2,8 +2,7 @@
 This is a project that I have been working on that combines the concepts of web 3.0 file services and machine learning. My overal idea is to create a machine learning algorithm that will save and fetch data through a decentralized file sharing network. 
 
 ## Features
-
-
+100% biometric log-in system
 ## To-do
 * based on the prompt, create an itinerary of tasks that will be completed until the end goal is complete.
 * search the web for particular topics
@@ -42,38 +41,18 @@ This is a project that I have been working on that combines the concepts of web 
 * 
 
 
-# Prerequisites
-wget
-Microsoft C++ Build Tools
-```
+# Basic Architecture
+File Management GUI
+Frontend - HTML, CSS, Javascript
+Backend - Go
+Database - IPFS
 
-pip install tensorflow
-pip install matplotlib
-pip install tiktoken
-pip install hparams
-pip install datasets
-pip install numpy
-pip install googlesearch
-pip install openai
-pip install datetime
-pip install pandas
-pip install praw
-pip install pytrends
-pip install bs4
-pip install googlesearch-python
-pip install playwright
-pip install ipfshttpclient==0.8.0
-npm install -g @web3-storage/w3cli
-wget https://dist.ipfs.tech/kubo/v0.20.0/kubo_v0.20.0_windows-amd64.zip -Outfile kubo_v0.20.0.zip
-Expand-Archive -Path kubo_v0.20.0.zip -DestinationPath ~\Apps\kubo_v0.20.0
-cd ~\Apps\kubo_v0.20.0\kubo
-.\ipfs.exe --version
-$GO_IPFS_LOCATION = pwd
-if (!(Test-Path -Path $PROFILE)) { New-Item -ItemType File -Path $PROFILE -Force }
-notepad $PROFILE
-Add-Content $PROFILE "`n[System.Environment]::SetEnvironmentVariable('PATH',`$Env:PATH+';;$GO_IPFS_LOCATION')"
-& $profile   
-cd ~
-ipfs --version
+Artificial Intelligence Scripts
+* Frontend - N/A
+* Backend - Python
+* Database - IPFS
 
-```
+User Management GUI
+* Frontend - HTML, CSS, Javascript
+* Backend - Java
+* Database - MySQL
