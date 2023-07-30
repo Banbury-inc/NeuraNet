@@ -1,4 +1,4 @@
-<img src="<img src="](https://github.com/mmills6060/Athena/blob/f6c871685552045a586e0b7569caacfa003825f8/Athena%20logo.jpeg)">">
+<img src="https://github.com/mmills6060/Athena/blob/f6c871685552045a586e0b7569caacfa003825f8/Athena%20logo.jpeg">
 
 <img src="https://img.shields.io/github/downloads/mmills6060/Athena/total"> <img src="https://img.shields.io/github/repo-size/mmills6060/Athena"> <img src="https://img.shields.io/github/last-commit/mmills6060/Athena">
 
