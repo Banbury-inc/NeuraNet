@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "MyServer",
+            "request": "launch",
+            "mainClass": "MyServer",
+            "projectName": "Athena_9ea3d8d2"
+        },
+        {
             "name": "Launch Localhost",
             "type": "go",
             "request": "launch",

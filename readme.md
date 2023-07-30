@@ -56,3 +56,19 @@ User Management GUI
 * Frontend - HTML, CSS, Javascript
 * Backend - Java
 * Database - MySQL
+
+# Multiple Knapsack Algorithm
+
+
+# Extensions, modifications and optimizations of the Multiple Knapsack Algorithm
+* Priority-based allocation - if certain files are more critical or have higher priorities than others, you can introduce a priority value for each file
+* File duplication - Allow files to be duplicated across devices if necessary. This could be useful to increase redundancy or ensure faster access to frequently used files
+* Device constraints - if devices have additional constraints, include them in the algorithm and optimize the allocation accordingly
+* Limited file sharing - Allow files to be partially shared across devices, meaning that a file can be split into parts and allocated to multiple devices
+* Incremental updates - If the file sizes or device capacities change over time, consider using incremental updates to the dyynamic programming table instead of recomputing it frmo scratch
+* Approximation algorithms - As the Multiple Knapsack Problem is NP-hard, consider using approximation algorithms to find near-opimal solutions more efficiently for large instances. 
+* Heuristic approaches - Develop heuristic algorithms to quickly find reasonably good solutions that might not guarantee optimality but are computationally less expensive
+* Online/offline versions: In some scenarios, you may have to make allocation decisions in real-time as new files arrive or devices change. Develop online algorithms that can handle dynamic updates and make decisions without knowing the future input. 
+* Paralellization - If you have a large number of files or devices, consider paralellizing the computation of the dynamic programming table to speed up the solution process
+* Memory optimixstion - For large instances, optimze the memory usage of the dynamic programming table to reduce memory requirements
+* Handling conflicts - If two files cannot be placed on teh same devices due to some constraints, develop a strategy to resolve such conflicts and make the best allocation decisions.

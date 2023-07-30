@@ -2,5 +2,57 @@
     "cSpell.words": [
         "helloworld",
         "ipfs"
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.dependency.syncWithFolderExplorer": true,
+    "java.project.sourcePaths": [
+        "User_Management\\src\\main\\java\\com\\Athena"
+    ],
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "User_Management\\javax.servlet-api-4.0.1.jar"
+    ],
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Athena",
+            "database": "mysql://bc3121475ab8a4:37c0ffda@us-cdbr-east-06.cleardb.net/heroku_0f94d43e0e25a5a?reconnect=true",
+            "username": "bc3121475ab8a4",
+            "askForPassword": true
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled",
+                "ssl": {}
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "athena",
+            "username": "root",
+            "database": "Local instance MySQL81"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "username": "root",
+            "name": "athena",
+            "database": "new_schema"
+        }
     ]
 }

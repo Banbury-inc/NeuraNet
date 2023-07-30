@@ -1,6 +1,6 @@
 document.getElementById("signupForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    // Handle user registration form submission using AJAX
+  // create a new textbox
+    var newTextBox = document.createElement("input"); 
 });
 
 document.getElementById("loginForm").addEventListener("submit", function(event) {
