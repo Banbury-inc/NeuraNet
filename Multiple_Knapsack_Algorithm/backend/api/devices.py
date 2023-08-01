@@ -1,16 +1,31 @@
-from flask import jsonify, request, Blueprint
+import paramiko
 
-devices_bp = Blueprint("devices", __name__)
+def get_remote_device_info(hostname, username, password):
+    ssh_client = paramiko.SSHClient()
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-# Sample data (in real-world, this would come from a database)
-devices = [
-    {"id": 1, "name": "Device 1", "storage_capacity": 100},
-    {"id": 2, "name": "Device 2", "storage_capacity": 200},
-    # Add more devices here
-]
+    try:
+        # Connect to the remote device
+        ssh_client.connect(hostname, username=username, password=password)
 
-@devices_bp.route("/devices", methods=["GET"])
-def get_devices():
-    return jsonify(devices)
+        # Get the device name using the 'uname' command
+        stdin, stdout, stderr = ssh_client.exec_command("uname -n")
+        device_name = stdout.read().decode().strip()
 
-# Additional API endpoints for adding, updating, and deleting devices
+        # Get storage space information using the 'df' command
+        stdin, stdout, stderr = ssh_client.exec_command("df -h / | tail -1 | awk '{print $4}'")
+        storage_info = stdout.read().decode()
+
+        # Close the SSH connection
+        ssh_client.close()
+
+        return device_name, storage_info
+    except Exception as e:
+        print(f"Error: {e}")
+        return None, None
+
+def add_device_info_to_list(device_list, device_name, storage_info):
+    if device_name and storage_info:
+        device_list.append({"device_name": device_name, "storage_info": storage_info})
+        return True
+    return False
