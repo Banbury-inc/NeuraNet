@@ -1,17 +1,20 @@
 # main.py
+import tkinter as tk
+from backend.utils.choose_file import choose_file
 from backend.api import scan_files
 from backend.api import devices
 from algorithms import knapsack_just_to_store
 
 def main():
     device_list = []
+    file_info_list = []
     while True:
         # give a selection of options to chose from
         print("Welcome, what would you like to do today?")
         print("1. Scan a single folder")
         print("2. Connect a device")
         print("3. List devices")
-        print("4. List files")
+        print("4. List scanned files")
         print("5. Calculate optimal allocation strategy")
         print("6. Quit")
 
@@ -21,10 +24,20 @@ def main():
         # if the user wants to scan a single folder
         if user_input == "1":
             # get the path to the folder
-            path = input("Please enter the path to the folder: ")
-            # scan the folder
-            scan_files.scan_folder(path)
+            path = choose_file()  # Call the function to get the folder path
 
+            if path:
+                # scan the folder
+                file_info_list = scan_files.scan_folder(path)
+                print("Files found in the folder:")
+                for file_info in file_info_list:
+                    print(f"File Name: {file_info['file_name']}")
+                    print(f"File Size (MB): {file_info['file_size']:.2f}")
+                    print(f"File Path: {file_info['file_path']}")
+                    print(f"Priority Level: {file_info['priority_level']}")
+                    print()
+            else:
+                print("No folder selected.")
         # if the user wants to connect a device
         if user_input == "2":
             # Replace these with the actual credentials and remote device's hostname
@@ -36,8 +49,7 @@ def main():
     
             if devices.add_device_info_to_list(device_list, device_name, storage_info):
                 print("Device Name:", device_name)
-                print("Available Storage Space:", storage_info)
-                print(device_list)
+                print("Available Storage Space: " + str(storage_info) + " GB")  # Convert storage_info to string                print(device_list)
             else:
                 print("Failed to obtain remote device information.")
     
@@ -45,36 +57,33 @@ def main():
 
         # if the user wants to list devices
         if user_input == "3":
-            print("This is not implemented yet")
+            print(device_list)
         # list the devices
 
         # if the user wants to list files
         if user_input == "4":
             # list the files
-            print("This is not implemented yet")
+            print(file_info_list)
 
         # If the user wants to calculate optimal allocation strategy
         if user_input == "5":
-            # list the files
-            print("This is not implemented yet")
-            # For scanning a single folder
-            file_info_list = scan_files.file_info_list
-            print(file_info_list)
-            # get just a list of the file sizes in file_info_list
-            file_size_list = scan_files.get_file_sizes(file_info_list)
+            # extract just the file sizes from the file size list
+            file_size_list = [file_info["file_size"] for file_info in file_info_list]
+            # extract just the total storage from the device list
+            device_storage_list = [device_info["storage_space"] for device_info in device_list]
             print(file_size_list)
-            # call the algorithm 
-            devices_list = scan_files.get_devices()
-            parts = 2 # number of parts to split the file
-            total_storage, allocation_strategy = knapsack_just_to_store.multiple_knapsack(file_size_list, devices)
+            print(device_storage_list)
+            # parts = 2 # number of parts to split the file
+            total_storage, allocation_strategy = knapsack_just_to_store.multiple_knapsack(file_size_list, device_storage_list)
             print("Optimal Total Storage:", total_storage)
             print("Optimal Allocation Strategy (file index, device index):", allocation_strategy)
-            total_storage, allocation_strategy = knapsack_just_to_store.multiple_knapsack_with_duplication(file_size_list, devices)
-            print("Optimal Total Storage with Duplication:", total_storage)
-            print("Optimal Allocation Strategy (file index, device index):", allocation_strategy)
-            total_storage, allocation_strategy = knapsack_just_to_store.multiple_knapsack_with_file_sharing(file_size_list, devices, parts)
-            print("Optimal Total Storage with file sharing:", total_storage)
-            print("Optimal Allocation Strategy (file index, device index):", allocation_strategy)
+
+#            total_storage, allocation_strategy = knapsack_just_to_store.multiple_knapsack_with_duplication(file_size_list, device_list)
+#            print("Optimal Total Storage with Duplication:", total_storage)
+#            print("Optimal Allocation Strategy (file index, device index):", allocation_strategy)
+#            total_storage, allocation_strategy = knapsack_just_to_store.multiple_knapsack_with_file_sharing(file_size_list, device_list, parts)
+#            print("Optimal Total Storage with file sharing:", total_storage)
+#            print("Optimal Allocation Strategy (file index, device index):", allocation_strategy)
 
         # if the user wants to quit
         if user_input == "6":
