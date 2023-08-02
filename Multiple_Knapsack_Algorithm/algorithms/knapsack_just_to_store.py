@@ -1,6 +1,45 @@
 # Optimlal Total Storage -- the maximum total size of files that can be shared across all the 
 # devices without exceeding any device's storage capacity. 
+def multiple_knapsack_take_two(files, devices):
+    num_files = len(files)
+    num_devices = len(devices)
 
+    # Calculate the two halves of the file list
+    mid = num_files // 2
+    first_half = files[:mid]
+    second_half = files[mid:]
+
+    # Use memoization to store the results for the first half of files
+    dp1 = [{} for _ in range(1 << mid)]
+    for i in range(1 << mid):
+        for j in range(num_devices + 1):
+            total_size = sum(first_half[file_index] for file_index in range(mid) if i & (1 << file_index))
+            for k in range(num_devices + 1):
+                dp1[i][j, k] = total_size if total_size <= devices[j - 1] else 0
+
+    # Use memoization to store the results for the second half of files
+    dp2 = [{} for _ in range(1 << (num_files - mid))]
+    for i in range(1 << (num_files - mid)):
+        for j in range(num_devices + 1):
+            total_size = sum(second_half[file_index] for file_index in range(num_files - mid) if i & (1 << file_index))
+            for k in range(num_devices + 1):
+                dp2[i][j, k] = total_size if total_size <= devices[j - 1] else 0
+
+    # Find the best combination of first_half and second_half
+    max_storage = 0
+    best_allocation = None
+    for i in range(1 << mid):
+        for j in range(1 << (num_files - mid)):
+            for k in range(num_devices + 1):
+                storage1 = dp1[i][k, num_devices]
+                storage2 = dp2[j][num_devices - k, num_devices]
+                if storage1 + storage2 > max_storage:
+                    max_storage = storage1 + storage2
+                    allocation_from_first_half = [(file_index, device_index) for file_index in range(mid) if i & (1 << file_index) for device_index in range(num_devices) if k & (1 << device_index)]
+                    allocation_from_second_half = [(mid + file_index, device_index) for file_index in range(num_files - mid) if j & (1 << file_index) for device_index in range(num_devices) if (num_devices - k) & (1 << device_index)]
+                    best_allocation = allocation_from_first_half + allocation_from_second_half
+
+    return max_storage, best_allocation
 def multiple_knapsack(files, devices):
     num_files = len(files)
     num_devices = len(devices)
@@ -185,6 +224,9 @@ def main():
     print("Optimal Allocation Strategy (file index, device index):", allocation_strategy)
 
 
+    total_storage, allocation_strategy = multiple_knapsack_take_two(files, devices)
+    print("Optimal Total Storage for take two:", total_storage)
+    print("Optimal Allocation Strategy for take two (file index, device index):", allocation_strategy)
     # call multiple knapsack with file sharing
     total_storage, allocation_strategy = multiple_knapsack_with_file_sharing(files, devices, parts)
 
