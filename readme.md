@@ -2,7 +2,26 @@
 
 `<img src="https://img.shields.io/github/downloads/mmills6060/Athena/total">` `<img src="https://img.shields.io/github/repo-size/mmills6060/Athena">` `<img src="https://img.shields.io/github/last-commit/mmills6060/Athena">`
 
-<a href="https://www.buymeacoffee.com/mmills6060" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+  <a href="https://gitpod.io/#https://github.com/mmills6060/Athena">
+    <img src="https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod&style=flat-square" height="20" alt="Gitpod Ready-to-Code">
+  </a>
+  <a href="https://github.com/TheAlgorithms/Python/blob/master/CONTRIBUTING.md">
+    <img src="https://img.shields.io/static/v1.svg?label=Contributions&message=Welcome&color=0059b3&style=flat-square" height="20" alt="Contributions Welcome">
+  </a>
+  <img src="https://img.shields.io/github/repo-size/Athena/Python.svg?label=Repo%20size&style=flat-square" height="20">
+
+
+  <!-- Second row: -->
+  <br>
+  <a href="https://github.com/mmills6060">
+    <img src="https://img.shields.io/github/actions/workflow/status/TheAlgorithms/Python/build.yml?branch=master&label=CI&logo=github&style=flat-square" height="20" alt="GitHub Workflow Status">
+  </a>
+  <a href="https://github.com/pre-commit/pre-commit">
+    <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=flat-square" height="20" alt="pre-commit">
+  </a>
+  <a href="https://github.com/psf/black">
+    <img src="https://img.shields.io/static/v1?label=code%20style&message=black&color=black&style=flat-square" height="20" alt="code style: black">
+  </a>
 
 # Overview
 
