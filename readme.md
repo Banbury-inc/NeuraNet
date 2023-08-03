@@ -61,7 +61,7 @@ My hope for the future is to gradually continue with the development of this pro
 * Youtube TV
 * store information about the user for future reference
 
-# API's I am looking to integrate
+## API's I am looking to integrate
 
 * Google Calendar API
 * Weather API
@@ -114,3 +114,8 @@ The knapsack, or more specifically the multiple knapsack problem is oftentime su
 * Paralellization - If you have a large number of files or devices, consider paralellizing the computation of the dynamic programming table to speed up the solution process
 * Memory optimixstion - For large instances, optimze the memory usage of the dynamic programming table to reduce memory requirements
 * Handling conflicts - If two files cannot be placed on teh same devices due to some constraints, develop a strategy to resolve such conflicts and make the best allocation decisions.
+
+## User Management
+Since this app is completely decentralized, that means that the user databse is decentralized as well. 
+
+username + password(hashed) --> cid containing file of usernames + passwords --> cid of devices, file directory of that particular user 
