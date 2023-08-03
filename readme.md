@@ -118,4 +118,4 @@ The knapsack, or more specifically the multiple knapsack problem is oftentime su
 ## User Management
 Since this app is completely decentralized, that means that the user databse is decentralized as well. 
 
-username + password(hashed) --> cid containing file of usernames + passwords --> cid of devices, file directory of that particular user 
+username + password(hashed) --> cid containing file of usernames + passwords --> cid of devices, all information needed for file directory of that particular user --> locate desired file and make query to download with cid of that file
