@@ -1,4 +1,8 @@
+import os
 import paramiko
+import ipfshttpclient
+import psutil
+import subprocess
 
 def get_remote_device_info(hostname, username, password):
     ssh_client = paramiko.SSHClient()
@@ -43,13 +47,39 @@ def add_device_info_to_list(device_list, device_name, storage_info):
         return True
     return False
 
-# Example usage:
-hostname = "your_remote_device_hostname_or_ip"
-username = "your_username"
-password = "your_password"
+def start_ipfs_daemon():
+    try:
 
-device_list = []
-device_name, storage_info = get_remote_device_info(hostname, username, password)
-add_device_info_to_list(device_list, device_name, storage_info)
+        # Start the IPFS daemon
+        subprocess.Popen(['ipfs', 'daemon'], check=True)
+        print("IPFS daemon started.")
+        return True
+    except subprocess.CalledProcessError as e:
+        print("Failed to start IPFS daemon:", e)
+        return False
 
-# You can now access the device information in the 'device_list' variable.
+def connect_device_to_ipfs():
+    try:
+        # Execute 'ipfs id' command and capture the output
+        completed_process = subprocess.Popen(['ipfs', 'id'], capture_output=True, text=True, check=True)
+        output = completed_process.stdout
+
+        # Check if the 'Addresses' field is null
+        if '"Addresses": null' in output:
+            print("IPFS node has null Addresses. Starting IPFS daemon...")
+            start_ipfs_daemon()
+            return True
+        else:
+            print("IPFS node is already running.")
+            return False
+    except subprocess.CalledProcessError as e:
+        print("Failed to check IPFS ID:", e)
+        return False
+    
+def main():
+    connect_device_to_ipfs()
+    print("Connection to device is complete")
+if __name__ == "__main__":
+    main()
+
+

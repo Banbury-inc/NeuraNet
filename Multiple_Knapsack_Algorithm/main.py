@@ -21,7 +21,7 @@ def main():
         # get the input from the user
         user_input = input("Please enter a number: ")
 
-        # if the user wants to scan a single folder
+        # scan a single folder
         if user_input == "1":
             # get the path to the folder
             path = choose_file()  # Call the function to get the folder path
@@ -38,7 +38,7 @@ def main():
                     print()
             else:
                 print("No folder selected.")
-        # if the user wants to connect a device
+        # connect a device
         if user_input == "2":
             # Replace these with the actual credentials and remote device's hostname
             # Get user inputs or use default values
@@ -48,24 +48,28 @@ def main():
             device_name, storage_info = devices.get_remote_device_info(remote_hostname, remote_username, remote_password)
     
             if devices.add_device_info_to_list(device_list, device_name, storage_info):
+                ipfs_client = devices.connect_device_to_ipfs()
+                if ipfs_client:
+                   file_path =  "C:\\Users\\mmill\\OneDrive\\Pictures\\Camera Roll\\Athena logo.jpeg"
+                   res = ipfs_client.add(file_path)
+                   print("File added to IPFS with hash:", res['Hash'])
                 print("Device Name:", device_name)
                 print("Available Storage Space: " + str(storage_info) + " GB")  # Convert storage_info to string                print(device_list)
             else:
                 print("Failed to obtain remote device information.")
     
-        # connect the device
 
-        # if the user wants to list devices
+        # list devices
         if user_input == "3":
             print(device_list)
         # list the devices
 
-        # if the user wants to list files
+        # list files
         if user_input == "4":
             # list the files
             print(file_info_list)
 
-        # If the user wants to calculate optimal allocation strategy
+        # calculate optimal allocation strategy
         if user_input == "5":
             # extract just the file sizes from the file size list
             file_size_list = [file_info["file_size"] for file_info in file_info_list]

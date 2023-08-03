@@ -45,3 +45,6 @@ def get_file_sizes(file_info_list):
 
     return file_sizes
 
+
+
+
