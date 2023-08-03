@@ -4,7 +4,9 @@ from backend.utils.choose_file import choose_file
 from backend.api import scan_files
 from backend.api import devices
 from algorithms import knapsack_just_to_store
-
+from decentralized_storage import ipfs
+import pprint
+import getpass
 def main():
     device_list = []
     file_info_list = []
@@ -36,6 +38,7 @@ def main():
                     print(f"File Path: {file_info['file_path']}")
                     print(f"Priority Level: {file_info['priority_level']}")
                     print()
+                    print(f"CID: {file_info['CID']}")
             else:
                 print("No folder selected.")
         # connect a device
@@ -44,30 +47,27 @@ def main():
             # Get user inputs or use default values
             remote_hostname = input("Enter the remote hostname (default: localhost): ") or "localhost"
             remote_username = input("Enter your username: ")
-            remote_password = input("Enter your password: ")
+            remote_password = getpass.getpass("Enter your password: ")
             device_name, storage_info = devices.get_remote_device_info(remote_hostname, remote_username, remote_password)
     
             if devices.add_device_info_to_list(device_list, device_name, storage_info):
                 ipfs_client = devices.connect_device_to_ipfs()
                 if ipfs_client:
-                   file_path =  "C:\\Users\\mmill\\OneDrive\\Pictures\\Camera Roll\\Athena logo.jpeg"
-                   res = ipfs_client.add(file_path)
-                   print("File added to IPFS with hash:", res['Hash'])
-                print("Device Name:", device_name)
-                print("Available Storage Space: " + str(storage_info) + " GB")  # Convert storage_info to string                print(device_list)
+                    print("Device Name:", device_name)
+                    print("Available Storage Space: " + str(storage_info) + " GB")  # Convert storage_info to string                print(device_list)
             else:
                 print("Failed to obtain remote device information.")
     
 
         # list devices
         if user_input == "3":
-            print(device_list)
+            pprint.pprint(device_list)
         # list the devices
 
         # list files
         if user_input == "4":
             # list the files
-            print(file_info_list)
+            pprint.pprint(file_info_list)
 
         # calculate optimal allocation strategy
         if user_input == "5":

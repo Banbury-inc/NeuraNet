@@ -51,7 +51,7 @@ def start_ipfs_daemon():
     try:
 
         # Start the IPFS daemon
-        subprocess.Popen(['ipfs', 'daemon'], check=True)
+        subprocess.Popen(['ipfs', 'daemon'])
         print("IPFS daemon started.")
         return True
     except subprocess.CalledProcessError as e:
@@ -61,7 +61,7 @@ def start_ipfs_daemon():
 def connect_device_to_ipfs():
     try:
         # Execute 'ipfs id' command and capture the output
-        completed_process = subprocess.Popen(['ipfs', 'id'], capture_output=True, text=True, check=True)
+        completed_process = subprocess.run(['ipfs', 'id'], capture_output=True, text=True)
         output = completed_process.stdout
 
         # Check if the 'Addresses' field is null
@@ -75,7 +75,7 @@ def connect_device_to_ipfs():
     except subprocess.CalledProcessError as e:
         print("Failed to check IPFS ID:", e)
         return False
-    
+ 
 def main():
     connect_device_to_ipfs()
     print("Connection to device is complete")

@@ -1,5 +1,5 @@
 import os
-
+from decentralized_storage import ipfs
 def scan_folder(folder_path):
     file_list = []  # Initialize an empty list to store file information
 
@@ -27,13 +27,14 @@ def get_file_info(file_path, priority="normal"):
     file_size_bytes = os.path.getsize(file_path)
     file_size = float(file_size_bytes) / (1024 * 1024)  # Convert bytes to megabytes
     priority_level = priority
-
+    CID = ipfs.ipfs_add(file_path)
     return {
         "file_id": file_id,
         "file_name": file_name,
         "file_size": file_size,
         "file_path": file_path,
         "priority_level": priority_level,
+        "CID": CID,
     }
 
 def get_file_sizes(file_info_list):
