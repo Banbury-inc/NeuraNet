@@ -7,6 +7,7 @@ from algorithms import knapsack_just_to_store
 from decentralized_storage import ipfs
 import pprint
 import getpass
+
 def main():
     device_list = []
     file_info_list = []
@@ -18,7 +19,8 @@ def main():
         print("3. List devices")
         print("4. List scanned files")
         print("5. Calculate optimal allocation strategy")
-        print("6. Quit")
+        print("6. Calculate optimal allocation strategy with example devices/files")
+        print("7. Quit")
 
         # get the input from the user
         user_input = input("Please enter a number: ")
@@ -74,23 +76,82 @@ def main():
             # extract just the file sizes from the file size list
             file_size_list = [file_info["file_size"] for file_info in file_info_list]
             # extract just the total storage from the device list
-            device_storage_list = [device_info["storage_space"] for device_info in device_list]
+            device_storage_list = [round(device_info["storage_space"], 2) for device_info in device_list]
+
             print(file_size_list)
             print(device_storage_list)
             # parts = 2 # number of parts to split the file
-            total_storage, allocation_strategy = knapsack_just_to_store.multiple_knapsack(file_size_list, device_storage_list)
-            print("Optimal Total Storage:", total_storage)
-            print("Optimal Allocation Strategy (file index, device index):", allocation_strategy)
+            print("Allocate Files:")
+            total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files(file_size_list, device_storage_list)
+            for i, device_storage in enumerate(total_storage_used):
+                print(f"Device {i + 1} - Total Storage Used: {device_storage} GB")
+                print(f"Files Allocated: {', '.join(map(str, allocation[i]))}")
+                print()
+            print("Files Not Allocated:", files_not_allocated)
+            print()
 
-#            total_storage, allocation_strategy = knapsack_just_to_store.multiple_knapsack_with_duplication(file_size_list, device_list)
-#            print("Optimal Total Storage with Duplication:", total_storage)
-#            print("Optimal Allocation Strategy (file index, device index):", allocation_strategy)
-#            total_storage, allocation_strategy = knapsack_just_to_store.multiple_knapsack_with_file_sharing(file_size_list, device_list, parts)
-#            print("Optimal Total Storage with file sharing:", total_storage)
-#            print("Optimal Allocation Strategy (file index, device index):", allocation_strategy)
-
-        # if the user wants to quit
+        # calculate optimal allocation strategy with example devices and files
         if user_input == "6":
+            # extract just the file sizes from the file size list
+            file_size_list = [50, 35, 7, 200, 4, 20, 11, 1, 5, 90, 100, 100, 50]
+            # extract just the total storage from the device list
+            device_storage_list = [250, 200, 250]
+            priority = [3, 2, 1, 4, 5] # priority of the file. Higher the value the higher the priority. 
+            duplication_factor = 2 # how many copies of each file should be allocated
+            sharing_factor = 3 # how many devices should share the allocation of a file
+            print(file_size_list)
+            print(device_storage_list)
+
+            print("Allocate Files:")
+            total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files(file_size_list, device_storage_list)
+            for i, device_storage in enumerate(total_storage_used):
+                print(f"Device {i + 1} - Total Storage Used: {device_storage} GB")
+                print(f"Files Allocated: {', '.join(map(str, allocation[i]))}")
+                print()
+            print("Files Not Allocated:", files_not_allocated)
+            print()
+    
+            print("Allocate Files with priority:")
+            total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files_with_priority(file_size_list, device_storage_list, priority)
+            for i, device_storage in enumerate(total_storage_used):
+                print(f"Device {i + 1} - Total Storage Used: {device_storage} GB")
+                print(f"Files Allocated: {', '.join(map(str, allocation[i]))}")
+                print()
+     
+            print("Files Not Allocated:", files_not_allocated)
+            print()
+            print("Allocate Files with duplication:")
+            total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files_with_duplication(file_size_list, device_storage_list, duplication_factor)
+            for i, device_storage in enumerate(total_storage_used):
+                print(f"Device {i + 1} - Total Storage Used: {device_storage} GB")
+                print(f"Files Allocated: {', '.join(map(str, allocation[i]))}")
+                print()
+            
+
+            print("Files Not Allocated:", files_not_allocated)
+            print()
+            print("Allocate Files with file sharing:")
+            total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files_with_file_sharing(file_size_list, device_storage_list, sharing_factor)
+            for i, device_storage in enumerate(total_storage_used):
+                print(f"Device {i + 1} - Total Storage Used: {device_storage} GB")
+                print(f"Files Allocated: {', '.join(map(str, allocation[i]))}")
+                print()
+     
+
+            print("Files Not Allocated:", files_not_allocated)
+            print("Allocate Files with priority, duplication, and file sharing:")
+            print()
+            total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files_with_priority_duplication_file_sharing(file_size_list, device_storage_list, priority, duplication_factor, sharing_factor)
+            for i, device_storage in enumerate(total_storage_used):
+                print(f"Device {i + 1} - Total Storage Used: {device_storage} GB")
+                print(f"Files Allocated: {', '.join(map(str, allocation[i]))}")
+                print()
+     
+
+            print("Files Not Allocated:", files_not_allocated)
+            print()
+        # exit
+        if user_input == "7":
             break
 
 if __name__ == "__main__":
