@@ -2,9 +2,10 @@ import subprocess
 import hashlib
 import uuid
 import json
-import devices
-
-def register_user(username, password):
+from backend.api import devices
+from flask import Flask, request, render_template, redirect, url_for
+app = Flask(__name__)
+def register_user(username, password, first_name, last_name):
     user_id = generate_user_id()
 
     # Hash the password before storing it
@@ -14,12 +15,18 @@ def register_user(username, password):
     user_data = {
         "user_id": user_id,
         "username": username,
-        "hashed_password": hashed_password
+        "hashed_password": hashed_password,
+        "first_name" : first_name,
+        "last_name" : last_name
     }
     json_str = json.dumps(user_data)
 
     # Connect to IPFS node
-    devices.connect_device_to_ipfs()
+#   devices.connect_device_to_ipfs()
+
+    # initialize IPFS node
+
+    devices.initialize_IPFS()
 
     try:
         # Run the IPFS command-line interface to add the JSON data
@@ -47,7 +54,7 @@ def authenticate_user(username, password):
         # Hash the provided password and compare it with the stored hashed password
         hashed_password = hash_password(password)
         if user_data and user_data["hashed_password"] == hashed_password:
-            return user_data["user_id"]
+            return user_data["user_id"], user_data["username"], user_data["first_name"], user_data["last_name"]
 
     # Authentication failed
     return None
@@ -57,7 +64,7 @@ def lookup_user_data_cid(username):
     # For example, you could use a database or another IPFS object that maps usernames to CIDs.
     # In this example, we assume the data is in a dictionary named 'user_data_mapping'.
     user_data_mapping = {
-        "john_doe": "QmXdhH89w...",
+        "john_doe": "QmWWAwkSLNi2q77T7CWPohByoKV9dsyHRrDLbtTHSwRpHE",
         "jane_smith": "QmAbC98xy...",
         # ...
     }
@@ -68,11 +75,14 @@ def generate_user_id():
     return str(uuid.uuid4())
 
 def add_to_ipfs(data):
-    # Use subprocess to add data to IPFS using the 'ipfs add' command
-    completed_process = subprocess.run(['ipfs', 'add', '-Q'], input=data.encode(), capture_output=True, text=True, check=True)
-    # Get the CID from the output
-    cid = completed_process.stdout.strip()
-    return cid
+    try:
+        completed_process = subprocess.run(['ipfs', 'add', '-Q'], input=data.encode(), capture_output=True, text=True, check=True)
+        cid = completed_process.stdout.strip()
+        return cid
+    except subprocess.CalledProcessError as e:
+        print("Error:", e)
+        print("Command output:", e.output)
+        return None
 
 def get_from_ipfs(cid):
     # Use subprocess to get data from IPFS using the 'ipfs cat' command
@@ -88,7 +98,9 @@ def usage_example():
     # Registration Example
     username = "john_doe"
     password = "secretpassword"
-    user_cid = register_user(username, password)
+    first_name = "Michael" 
+    last_name = "Mills"
+    user_cid = register_user(username, password, first_name, last_name)
     print("User registered with CID:", user_cid)
 
     # Authentication Example
@@ -101,8 +113,35 @@ def usage_example():
     else:
         print("Authentication failed. Invalid username or password.")
 
+
+
+@app.route('/authenticate', methods=['GET', 'POST'])
+def authenticate():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Implement authentication logic
+        user_data = authenticate_user(username, password)
+        if user_data:
+            user_id, first_name, last_name = user_data
+            return redirect(url_for('success', user_id=user_id))
+
+    return render_template('login.html')  # Render the login page for GET requests
+
+@app.route('/success/<int:user_id>')
+def success(user_id):
+    return f'Welcome! You have successfully logged in. User ID: {user_id}'
+
+
+
+
+
 def main():
-    usage_example()
+    
+    pass
+    
 
 if __name__ == "__main__":
-    main()
+    app.run(debug=True)
+    

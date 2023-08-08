@@ -3,6 +3,7 @@ import tkinter as tk
 from backend.utils.choose_file import choose_file
 from backend.api import scan_files
 from backend.api import devices
+from backend.api import user_management
 from algorithms import knapsack_just_to_store
 from decentralized_storage import ipfs
 import pprint
@@ -20,7 +21,11 @@ def main():
         print("4. List scanned files")
         print("5. Calculate optimal allocation strategy")
         print("6. Calculate optimal allocation strategy with example devices/files")
-        print("7. Quit")
+        print("7. Signup with sample user data")
+        print("8. Log in with sample user data")
+        print("9. Sign up")
+        print("10. Log in")
+        print("11. Quit")
 
         # get the input from the user
         user_input = input("Please enter a number: ")
@@ -152,7 +157,50 @@ def main():
             print()
         # exit
         if user_input == "7":
+            username = "john_doe"
+            password = "secretpassword"
+            first_name = "Michael" 
+            last_name = "Mills"
+            user_cid = user_management.register_user(username, password, first_name, last_name)
+            print("User registered with CID:", user_cid)
+
+
+
+        if user_input == "8":
+            username = "john_doe"
+            password = "secretpassword"
+            user_id = user_management.authenticate_user(username, password)
+
+            if user_id:
+                print("User authenticated. User ID:", user_id)
+            else:
+                print("Authentication failed. Invalid username or password.")
+        if user_input == "9":
+            username = input("Enter a username: ")
+            password = getpass.getpass("Enter your password: ")
+            first_name = input("Enter a first name: ")
+            last_name = input("Enter a last name: ")
+            user_cid = user_management.register_user(username, password, first_name, last_name)
+            print("User registered with CID:", user_cid)
+
+
+
+        if user_input == "10":
+            username = input("Enter a username: ")
+            password = getpass.getpass("Enter your password: ")
+            user_id = user_management.authenticate_user(username, password)
+
+            if user_id:
+                print("Welcome " + user_id[2] + " " + user_id[3])
+            else:
+                print("Authentication failed. Invalid username or password.")
+
+
+
+        if user_input == "11":
             break
+
+
 
 if __name__ == "__main__":
     main()

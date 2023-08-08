@@ -57,6 +57,17 @@ def start_ipfs_daemon():
     except subprocess.CalledProcessError as e:
         print("Failed to start IPFS daemon:", e)
         return False
+    
+def initialize_IPFS():
+    try:
+
+        # Start the IPFS daemon
+        subprocess.Popen(['ipfs', 'init'])
+        print("IPFS daemon initialized.")
+        return True
+    except subprocess.CalledProcessError as e:
+        print("Failed to start IPFS daemon:", e)
+        return False
 
 def connect_device_to_ipfs():
     try:
