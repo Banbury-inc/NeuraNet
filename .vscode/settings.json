@@ -54,5 +54,8 @@
             "name": "athena",
             "database": "new_schema"
         }
+    ],
+    "python.analysis.extraPaths": [
+        "./Multiple_Knapsack_Algorithm"
     ]
 }

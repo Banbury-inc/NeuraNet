@@ -2,8 +2,8 @@ import subprocess
 import hashlib
 import uuid
 import json
-from backend.api import devices
-from flask import Flask, request, render_template, redirect, url_for
+
+from flask import Flask, Response, jsonify, request, render_template, redirect, url_for
 app = Flask(__name__)
 def register_user(username, password, first_name, last_name):
     user_id = generate_user_id()
@@ -94,6 +94,7 @@ def get_from_ipfs(cid):
         return json.loads(data)
     return None
 
+
 def usage_example():
     # Registration Example
     username = "john_doe"
@@ -125,13 +126,17 @@ def authenticate():
         user_data = authenticate_user(username, password)
         if user_data:
             user_id, first_name, last_name = user_data
-            return redirect(url_for('success', user_id=user_id))
+            return jsonify({
+                'authenticated': True,
+                'user_id': user_id,
+                'first_name': first_name,
+                'last_name': last_name
+            })
 
-    return render_template('login.html')  # Render the login page for GET requests
+    # Add the Access-Control-Allow-Origin header
+    Response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:3000'
 
-@app.route('/success/<int:user_id>')
-def success(user_id):
-    return f'Welcome! You have successfully logged in. User ID: {user_id}'
+    return jsonify({'authenticated': False})
 
 
 

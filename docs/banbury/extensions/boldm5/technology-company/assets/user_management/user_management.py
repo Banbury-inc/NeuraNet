@@ -1,25 +1,21 @@
-from flask import Flask, request, render_template, redirect, url_for, jsonify
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# ... other code ...
+@app.route('/run-python-script', methods=['GET'])
+def run_python_script():
+    # Get data from the request
+    data = request.json
 
-@app.route('user_management/authenticate', methods=['GET', 'POST'])
-def authenticate():
-    if request.method == 'POST':
-        # Perform authentication logic here
-        # For demonstration purposes, let's assume the authentication is successful
-        authenticated = True
-        user_id = 123  # Replace with the actual user ID
+    # Run the Python script
+    result = run_my_python_script(data['param'])
 
-        if authenticated:
-            return jsonify({'authenticated': True, 'user_id': user_id})
-        else:
-            return jsonify({'authenticated': False})
+    return jsonify({'result': result})
 
-    return render_template('login.html')  # Render the login page for GET requests
+def run_my_python_script(param):
+    # Your Python code here
+    result = f'Hello from Python! Received param: {param}'
+    return result
 
-# ... other code ...
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

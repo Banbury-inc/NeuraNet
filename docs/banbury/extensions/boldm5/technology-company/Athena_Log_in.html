@@ -126,7 +126,7 @@
             <div class="col-12">
                 <div class="title-wrapper">
                     <h1 class="mbr-section-title mbr-fonts-style display-1">Log in</h1>
-                    <form id="login-form" method="post" action="/authenticate">
+                    <form id="login-form" method="POST">
                         <div class="form-group">
                             <label for="username" class="mbr-text mbr-fonts-style display-7">Username:</label>
                             <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username">
@@ -135,20 +135,22 @@
                             <label for="password" class="mbr-text mbr-fonts-style display-7">Password:</label>
                             <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password">
                         </div>
-                        <button type="submit" id="login-button" class="btn btn-secondary display-4">
+                        <button type="button" id="login-button" class="btn btn-secondary display-4">
                             <span class="mobi-mbri mobi-mbri-play mbr-iconfont mbr-iconfont-btn"></span>
                             Log In
                         </button>
+    
                         </div>
                         <!-- Placeholder for displaying authentication status -->
                         <div id="authenticationStatus"></div>
                     </form>
-                    <div id="welcome-box" style="color: azure; display: none;">
-                        Welcome! You have successfully logged in.
-                    </div>
+
+                        <div id="out"></div>
+                    <p id="output"></p>
            </div>
         </div>
     </div>
+    
 </section>
 
 <section data-bs-version="5.1" class="features7 boldm5 cid-ttRnAijqXt" id="features7-6">
@@ -239,9 +241,11 @@
 <script src="assets/theme/js/script.js"></script>
 <script src="assets/formoid.min.js"></script>
 <script src="assets/user_management/user_management.js"></script>
-  
-  
-  
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.10.2/brython.min.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+<script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/helia@latest/dist/helia.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>
 </body>
 
 <!-- Mirrored from mobirise.com/extensions/boldm5/technology-company/ by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 07 Aug 2023 21:37:49 GMT -->

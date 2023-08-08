@@ -123,7 +123,8 @@
         <div class="row">
             <div class="col-12">
                 <div class="title-wrapper">
-                    <h1 class="mbr-section-title mbr-fonts-style display-1">Welcome!</h1>
+                    <h1 class="mbr-section-title mbr-fonts-style display-1" id="welcome-title">Welcome</h1>
+                    
           </div>
         </div>
     </div>
@@ -218,7 +219,30 @@
   <script src="assets/formoid.min.js"></script>
   <script src="assets/user_management/user_management.js"></script>
   
-  
+  <script>
+
+
+    // Fetch user information using user ID
+    async function fetchUserInfo() {
+      try {
+        const username = localStorage.getItem('username')
+        const password = localStorage.getItem('password')
+        const response = await fetch(`http://127.0.0.1:5000/authenticate?username=${username}&password=${password}`);
+        const userData = await response.json();
+
+         // Update the welcome title with user's first name and last name
+        const welcomeTitle = document.getElementById('welcome-title');
+        welcomeTitle.textContent = `Welcome, ${userData.first_name} ${userData.last_name}.`;
+
+
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Fetch user information when the dashboard loads
+    fetchUserInfo();
+  </script>
   
 </body>
 
