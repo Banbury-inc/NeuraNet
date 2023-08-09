@@ -7,6 +7,7 @@
 * Power consumption per unit storage
 * Cost for each unit capacity and power consumption
 * Average Upload and Download speed of device
+* The current Upload and Download speed of the device 
 ### Files
 
 * File index
