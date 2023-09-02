@@ -139,7 +139,19 @@ def main():
     # Example input data
     files = [50, 35, 7, 200, 4]  # Sizes of the files
     devices = [1000, 500, 250]   # Capacities of the devices in GB
+    priority = [3, 2, 1, 2, 3]  # Generate random priorities
 
+    result1 = allocate_files(files, devices)
+    result2 = allocate_files_with_duplication(files, devices, duplication_factor=2)
+    result3 = allocate_files_with_file_sharing(files, devices, sharing_factor=2)
+    result4 = allocate_files_with_priority(files, devices, priority)
+    result5 = allocate_files_with_priority_duplication_file_sharing(files, devices, priority, duplication_factor=2, sharing_factor=2)
+
+    print(result1)
+    print(result2)
+    print(result3)
+    print(result4)
+    print(result5)
 
 
 

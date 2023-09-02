@@ -98,16 +98,18 @@ def main():
         # calculate optimal allocation strategy with example devices and files
         if user_input == "6":
             # extract just the file sizes from the file size list
-            file_size_list = [50, 35, 7, 200, 4, 20, 11, 1, 5, 90, 100, 100, 50]
+#            file_size_list = [50, 35, 7, 200, 4, 20, 11, 1, 5, 90, 100, 100, 50]
+            file_size_list =  [50, 35, 7, 200, 4]  
             # extract just the total storage from the device list
-            device_storage_list = [250, 200, 250]
-            priority = [3, 2, 1, 4, 5] # priority of the file. Higher the value the higher the priority. 
+ #           device_storage_list = [250, 200, 250]
+            device_storage_list = [1000, 500, 250]
+            priority = [3, 2, 1, 2, 3] # priority of the file. Higher the value the higher the priority. 
             duplication_factor = 2 # how many copies of each file should be allocated
             sharing_factor = 3 # how many devices should share the allocation of a file
-            print(file_size_list)
-            print(device_storage_list)
-
+            print()
+            print("-----------------------------------------------------------------")
             print("Allocate Files:")
+            print()
             total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files(file_size_list, device_storage_list)
             for i, device_storage in enumerate(total_storage_used):
                 print(f"Device {i + 1} - Total Storage Used: {device_storage} GB")
@@ -115,8 +117,9 @@ def main():
                 print()
             print("Files Not Allocated:", files_not_allocated)
             print()
-    
+            print("-----------------------------------------------------------------")
             print("Allocate Files with priority:")
+            print()
             total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files_with_priority(file_size_list, device_storage_list, priority)
             for i, device_storage in enumerate(total_storage_used):
                 print(f"Device {i + 1} - Total Storage Used: {device_storage} GB")
@@ -125,7 +128,9 @@ def main():
      
             print("Files Not Allocated:", files_not_allocated)
             print()
+            print("-----------------------------------------------------------------")
             print("Allocate Files with duplication:")
+            print()
             total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files_with_duplication(file_size_list, device_storage_list, duplication_factor)
             for i, device_storage in enumerate(total_storage_used):
                 print(f"Device {i + 1} - Total Storage Used: {device_storage} GB")
@@ -135,7 +140,9 @@ def main():
 
             print("Files Not Allocated:", files_not_allocated)
             print()
+            print("-----------------------------------------------------------------")
             print("Allocate Files with file sharing:")
+            print()
             total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files_with_file_sharing(file_size_list, device_storage_list, sharing_factor)
             for i, device_storage in enumerate(total_storage_used):
                 print(f"Device {i + 1} - Total Storage Used: {device_storage} GB")
@@ -144,6 +151,8 @@ def main():
      
 
             print("Files Not Allocated:", files_not_allocated)
+            print()
+            print("-----------------------------------------------------------------")
             print("Allocate Files with priority, duplication, and file sharing:")
             print()
             total_storage_used, allocation, files_not_allocated = knapsack_just_to_store.allocate_files_with_priority_duplication_file_sharing(file_size_list, device_storage_list, priority, duplication_factor, sharing_factor)

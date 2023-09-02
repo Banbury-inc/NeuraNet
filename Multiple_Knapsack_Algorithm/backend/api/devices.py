@@ -3,14 +3,17 @@ import paramiko
 import ipfshttpclient
 import psutil
 import subprocess
+import json
+import devices
+import user_management
 
-def get_remote_device_info(hostname, username, password):
+def get_remote_device_info(hostname, ssh_username, ssh_password):
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     try:
         # Connect to the remote device
-        ssh_client.connect(hostname, username=username, password=password)
+        ssh_client.connect(hostname, username=ssh_username, password=ssh_password)
 
         # Get the device name using the 'uname' command
         stdin, stdout, stderr = ssh_client.exec_command("uname -n")
@@ -46,7 +49,11 @@ def add_device_info_to_list(device_list, device_name, storage_info):
         device_list.append({"device_name": device_name, "storage_space": storage_info})
         return True
     return False
-
+def attach_device_to_user(hostname, ssh_username, ssh_password, username, password):
+    device_name, storage_info = get_remote_device_info(hostname, ssh_username, ssh_password)
+    # Connect to IPFS
+    user_data= user_management.authenticate_user(username, password)
+    return user_data 
 def start_ipfs_daemon():
     try:
 
@@ -88,8 +95,32 @@ def connect_device_to_ipfs():
         return False
  
 def main():
-    connect_device_to_ipfs()
-    print("Connection to device is complete")
+#    connect_device_to_ipfs()
+#    print("Connection to device is complete")
+    username = "mmills6060"
+    password = "password"
+    ssh_username = "mmill"
+    ssh_password = "dirtballer"
+    hostname = "localhost"
+    ipfs_hash = "QmWZGCi5Bnn89pQWmFYqhEBHRkfimBhCVwmUoAztEmh8B8"
+    device_name, storage_info = get_remote_device_info(hostname, ssh_username, ssh_password)
+    print(f"Device name: {device_name}")
+    print(f"Storage Info: {storage_info}")
+
+    user_data = attach_device_to_user(hostname, ssh_username, ssh_password, username, password)
+    print(user_data)
+    user_data[4].append({"device_name": device_name, "storage_space": storage_info})
+    print(user_data)
+    json_str = json.dumps(user_data)
+    devices.initialize_IPFS()
+    completed_process = subprocess.run(["ipfs", "add", "-Q"], input=json_str, capture_output=True, text=True, check=True)
+    # Get the CID (content identifier) from the command output
+    cid = completed_process.stdout.strip()
+ 
+    print(cid)
+    print("getting from ipfs")
+    user_data = user_management.get_from_ipfs(cid)
+    print(user_data)
 if __name__ == "__main__":
     main()
 

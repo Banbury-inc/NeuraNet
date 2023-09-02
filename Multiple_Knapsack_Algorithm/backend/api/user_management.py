@@ -2,9 +2,15 @@ import subprocess
 import hashlib
 import uuid
 import json
-
 from flask import Flask, Response, jsonify, request, render_template, redirect, url_for
+import devices
+
+
+
+
+
 app = Flask(__name__)
+devices_list = []
 def register_user(username, password, first_name, last_name):
     user_id = generate_user_id()
 
@@ -17,7 +23,8 @@ def register_user(username, password, first_name, last_name):
         "username": username,
         "hashed_password": hashed_password,
         "first_name" : first_name,
-        "last_name" : last_name
+        "last_name" : last_name,
+        "devices" : devices_list
     }
     json_str = json.dumps(user_data)
 
@@ -54,7 +61,7 @@ def authenticate_user(username, password):
         # Hash the provided password and compare it with the stored hashed password
         hashed_password = hash_password(password)
         if user_data and user_data["hashed_password"] == hashed_password:
-            return user_data["user_id"], user_data["username"], user_data["first_name"], user_data["last_name"]
+            return user_data["user_id"], user_data["username"], user_data["first_name"], user_data["last_name"], user_data["devices"]
 
     # Authentication failed
     return None
@@ -65,7 +72,7 @@ def lookup_user_data_cid(username):
     # In this example, we assume the data is in a dictionary named 'user_data_mapping'.
     user_data_mapping = {
         "john_doe": "QmWWAwkSLNi2q77T7CWPohByoKV9dsyHRrDLbtTHSwRpHE",
-        "jane_smith": "QmAbC98xy...",
+        "mmills6060": "QmWZGCi5Bnn89pQWmFYqhEBHRkfimBhCVwmUoAztEmh8B8",
         # ...
     }
     return user_data_mapping.get(username)
@@ -97,8 +104,8 @@ def get_from_ipfs(cid):
 
 def usage_example():
     # Registration Example
-    username = "john_doe"
-    password = "secretpassword"
+    username = "mmills6060"
+    password = "password"
     first_name = "Michael" 
     last_name = "Mills"
     user_cid = register_user(username, password, first_name, last_name)
@@ -116,37 +123,18 @@ def usage_example():
 
 
 
-@app.route('/authenticate', methods=['GET', 'POST'])
-def authenticate():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        # Implement authentication logic
-        user_data = authenticate_user(username, password)
-        if user_data:
-            user_id, first_name, last_name = user_data
-            return jsonify({
-                'authenticated': True,
-                'user_id': user_id,
-                'first_name': first_name,
-                'last_name': last_name
-            })
-
-    # Add the Access-Control-Allow-Origin header
-    Response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:3000'
-
-    return jsonify({'authenticated': False})
-
-
 
 
 
 def main():
     
-    pass
+    # Authentication Example
+    username = "mmills6060"
+    password = "password"
+    user_data = authenticate_user(username, password)
+    print(user_data)
     
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    main()
     
