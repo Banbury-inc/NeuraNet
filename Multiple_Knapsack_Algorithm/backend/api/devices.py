@@ -4,8 +4,7 @@ import ipfshttpclient
 import psutil
 import subprocess
 import json
-import devices
-import user_management
+
 
 def get_remote_device_info(hostname, ssh_username, ssh_password):
     ssh_client = paramiko.SSHClient()

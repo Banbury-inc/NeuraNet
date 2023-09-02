@@ -9,9 +9,12 @@ from decentralized_storage import ipfs
 import pprint
 import getpass
 
+
+
 def main():
     device_list = []
-    file_info_list = []
+
+
     while True:
         # give a selection of options to chose from
         print("Welcome, what would you like to do today?")
@@ -19,13 +22,14 @@ def main():
         print("2. Connect a device")
         print("3. List devices")
         print("4. List scanned files")
-        print("5. Calculate optimal allocation strategy")
-        print("6. Calculate optimal allocation strategy with example devices/files")
-        print("7. Signup with sample user data")
-        print("8. Log in with sample user data")
-        print("9. Sign up")
-        print("10. Log in")
-        print("11. Quit")
+        print("5. Search for file by CID")
+        print("6. Calculate optimal allocation strategy")
+        print("7. Calculate optimal allocation strategy with example devices/files")
+        print("8. Signup with sample user data")
+        print("9. Log in with sample user data")
+        print("10. Sign up")
+        print("11. Log in")
+        print("12. Quit")
 
         # get the input from the user
         user_input = input("Please enter a number: ")
@@ -37,7 +41,7 @@ def main():
 
             if path:
                 # scan the folder
-                file_info_list = scan_files.scan_folder(path)
+                file_info_list = scan_files.scan_folder(path, username, password, first_name, last_name)
                 print("Files found in the folder:")
                 for file_info in file_info_list:
                     print(f"File Name: {file_info['file_name']}")
@@ -48,6 +52,8 @@ def main():
                     print(f"CID: {file_info['CID']}")
             else:
                 print("No folder selected.")
+            print("New user CID")
+            print(user_management.new_user_cid)
         # connect a device
         if user_input == "2":
             # Replace these with the actual credentials and remote device's hostname
@@ -74,10 +80,16 @@ def main():
         # list files
         if user_input == "4":
             # list the files
-            pprint.pprint(file_info_list)
 
-        # calculate optimal allocation strategy
+            info = user_management.authenticate_user(username, password)
+            print(info[5])
+        #  pprint.pprint(file_info_list)
         if user_input == "5":
+            # list the files
+            cid = input("Enter the CID: ")
+            user_management.get_from_ipfs(cid)
+        # calculate optimal allocation strategy
+        if user_input == "6":
             # extract just the file sizes from the file size list
             file_size_list = [file_info["file_size"] for file_info in file_info_list]
             # extract just the total storage from the device list
@@ -96,7 +108,7 @@ def main():
             print()
 
         # calculate optimal allocation strategy with example devices and files
-        if user_input == "6":
+        if user_input == "7":
             # extract just the file sizes from the file size list
 #            file_size_list = [50, 35, 7, 200, 4, 20, 11, 1, 5, 90, 100, 100, 50]
             file_size_list =  [50, 35, 7, 200, 4]  
@@ -165,7 +177,7 @@ def main():
             print("Files Not Allocated:", files_not_allocated)
             print()
         # exit
-        if user_input == "7":
+        if user_input == "8":
             username = "john_doe"
             password = "secretpassword"
             first_name = "Michael" 
@@ -175,7 +187,7 @@ def main():
 
 
 
-        if user_input == "8":
+        if user_input == "9":
             username = "john_doe"
             password = "secretpassword"
             user_id = user_management.authenticate_user(username, password)
@@ -184,7 +196,7 @@ def main():
                 print("User authenticated. User ID:", user_id)
             else:
                 print("Authentication failed. Invalid username or password.")
-        if user_input == "9":
+        if user_input == "10":
             username = input("Enter a username: ")
             password = getpass.getpass("Enter your password: ")
             first_name = input("Enter a first name: ")
@@ -194,10 +206,12 @@ def main():
 
 
 
-        if user_input == "10":
+        if user_input == "11":
             username = input("Enter a username: ")
             password = getpass.getpass("Enter your password: ")
             user_id = user_management.authenticate_user(username, password)
+            first_name = user_id[2]
+            last_name = user_id[3]
 
             if user_id:
                 print("Welcome " + user_id[2] + " " + user_id[3])
@@ -206,7 +220,7 @@ def main():
 
 
 
-        if user_input == "11":
+        if user_input == "12":
             break
 
 
