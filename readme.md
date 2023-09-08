@@ -27,9 +27,7 @@
 
 This is a project that I have been working on that combines the concepts of web 3.0 file services and machine learning. My overal idea is to create a machine learning algorithm that will save and fetch data through a decentralized file sharing network. This could be an incredibly powerful and useful tool, as developing large language models are oftentimes limited to high net worth corporations. By allowing all of our devices to actively participate in the advancement on Artifical Intelligence, we can create tools beyond our imagination.
 
-Decentralized file sharing is also a major aspect of this project. Despite the existence of cloud services, I still believe that there is a lot of room to improve file sharing and file management. I oftentimes find myself wondering how I can transfer a photo from my Apple Iphone to my windows computer and vice versa. I am also constantly finding myself running out of storage on smaller devices like my phone, apple watch, even my laptop. I am passionate about creating a decentralized file sharing network where you can access every single file from every single device, all in one place. Not only would you be able to access every single file, but you have powerful algorithm's that will help make sure that your most important files are the ones that are the easiest to access.
 
-My hope for the future is to gradually continue with the development of this project. I aspire to make this a tool that can profoundly impact the lives of everyone throughout the world. I aspire to eventually produce a prototype that I can share with others. I want to continue past just a prototype and work towards building an MVP. I aspire to someday find investors that will help guide me through this journey. There is a lot of work to do, so any form of help would be greatly appreciated.
 
 ## Features
 
