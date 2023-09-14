@@ -44,6 +44,50 @@
 <meta name="theme-color" content="#712cf9">
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACFuCan1pgwAlRMMo2X49FwpblFIe7al8&libraries=places"></script>
 <style>
+            /* Style for the modal container */
+            .modal {
+            display: none; /* Hide the modal by default */
+            position: fixed; /* Fixed position */
+            z-index: 1; /* Ensure it appears on top of other content */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.7); /* Black background with opacity */
+        }
+
+        /* Style for the modal content */
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto; /* 15% from the top and centered horizontally */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* 80% width */
+        }
+
+        /* Close button style */
+        .close {
+            color: #888;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        /* Close button hover effect */
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .video-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 640px;
+            height: 480px;
+            margin: 0 auto;
+        }
     /* Set the size of the map container */
     #map {
         height: 400px;
@@ -197,13 +241,33 @@
                               <option>Maintenance Mode</option>
                               <option>Sleep Mode</option>
                             </select>
-                          </td>
+                        </td>
+                        
+                        <!-- Manual Control Modal -->
+                        <div class="modal fade" id="manualControlModal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <!-- Modal content goes here -->
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Manual Control Modal</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Add content for your modal here -->
+                                        <p>This is the Manual Control modal.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <td class="mbr-text">80%</td>
                         <td class="mbr-text">4.3 W/h</td>
                         <td class="mbr-text">2</td>
                         <td><button class="btn btn-primary btn-sm">View</button></td>
                         <td><button class="btn btn-primary btn-sm">Edit</button></td>
-                        <td><button class="btn btn-primary btn-sm">Save</button></td>
+                        <td><button id="openModalBtn" class="btn btn-primary btn-sm">Save</button></td>
                         <td><button class="btn btn-danger btn-sm">Delete</button></td>
                     </tr>
                     <tr>
@@ -223,6 +287,90 @@
                         <td class="mbr-text">80%</td>
                         <td class="mbr-text">4.3 W/h</td>
                         <td class="mbr-text">2</td>
+                        <!-- The Modal -->
+                        <div id="myModal" class="modal">
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                                <body>
+                                    <div class="container">
+                                        <h1>Manual Control</h1>
+                                
+                                        <!-- Video Stream Placeholder -->
+                                        <div class="video-container">
+                                            <!-- Video stream element with a specific URL -->
+                                            <video id="robotVideo" controls>
+                                                <!-- Replace 'your_video_url' with the actual URL of the video stream -->
+                                                <source src="http://127.0.0.1:5000/videostream" type="image/jpeg">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </div>
+                                
+                                        <!-- Robot Control Buttons -->
+                                        <div class="control-buttons">
+                                            <button id="btnUp" class="btn btn-secondary btn-sm">Up</button>
+                                            <button id="btnDown" class="btn btn-secondary btn-sm">Down</button>
+                                            <button id="btnLeft" class="btn btn-secondary btn-sm">Left</button>
+                                            <button id="btnRight" class="btn btn-secondary btn-sm">Right</button>
+                                            <button id="btnOk" class="btn btn-secondary btn-sm">Ok</button>
+                                            <button id="btnStop" class="btn btn-secondary btn-sm">Stop</button>
+                                        </div>
+                                
+                                        <div class="grid">
+                                </div>
+                                    </div>
+                                
+                                    <!-- JavaScript (for handling robot control) -->
+                                    <script>
+                                        // Replace this with actual JavaScript code to control your robot
+                                        // Example: Attach event listeners to control buttons and send commands to the robot
+                                        document.getElementById("btnUp").addEventListener("click", function () {
+                                            // Send the "move forward" command to the robot
+                                        });
+                                
+                                        document.getElementById("btnDown").addEventListener("click", function () {
+                                            // Send the "move backward" command to the robot
+                                        });
+                                
+                                        document.getElementById("btnLeft").addEventListener("click", function () {
+                                            // Send the "turn left" command to the robot
+                                        });
+                                
+                                        document.getElementById("btnRight").addEventListener("click", function () {
+                                            // Send the "turn right" command to the robot
+                                        });
+                                
+                                        document.getElementById("btnStop").addEventListener("click", function () {
+                                            // Send the "stop" command to the robot
+                                        });
+                                
+                                        // Add similar event listeners for custom buttons
+                                        document.getElementById("btnCustom1").addEventListener("click", function () {
+                                            // Implement custom functionality
+                                        });
+                                
+                                        document.getElementById("btnCustom2").addEventListener("click", function () {
+                                            // Implement custom functionality
+                                        });
+                                    </script>
+                                </body>
+                            </div>
+                        </div>
+
+                        <script>
+                            // JavaScript to open and close the modal
+                            const openModalBtn = document.getElementById("openModalBtn");
+                            const closeModalBtn = document.getElementById("closeModalBtn");
+                            const modal = document.getElementById("myModal");
+
+                            openModalBtn.addEventListener("click", () => {
+                                modal.style.display = "block";
+                            });
+
+                            closeModalBtn.addEventListener("click", () => {
+                                modal.style.display = "none";
+                            });
+                        </script>
+                        
                         <td><button class="btn btn-primary btn-sm">View</button></td>
                         <td><button class="btn btn-primary btn-sm">Edit</button></td>
                         <td><button class="btn btn-primary btn-sm">Save</button></td>
@@ -605,6 +753,7 @@
 
 
 
+
 <section data-bs-version="5.1" class="slider1 mbr-embla boldm5 cid-ttRnQfonqE" id="slider1-b">
 
     
@@ -727,7 +876,7 @@
 
     $(document).ready(init);
 
-    
+
   </script>
 
 
