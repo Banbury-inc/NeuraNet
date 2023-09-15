@@ -59,19 +59,22 @@
 
         /* Style for the modal content */
         .modal-content {
-            background-color: #fff;
+            background-color: #ffffff;
             margin: 15% auto; /* 15% from the top and centered horizontally */
-            padding: 20px;
+            padding: 1px;
             border: 1px solid #888;
             width: 80%; /* 80% width */
         }
 
         /* Close button style */
-        .close {
-            color: #888;
-            float: right;
+        .btn-close {
+            color: #acacac;
+            float: left;
             font-size: 28px;
             font-weight: bold;
+            position: absolute;
+            top: 10px; /* Adjust the top distance as needed */
+            right: 10px; /* Adjust the right distance as needed */
         }
         
         /* Close button hover effect */
@@ -98,6 +101,65 @@
     width: 100%;
     height: 400px;
 }
+
+        /* Center the container vertically and horizontally */
+        .remotecontainer {
+            display: flex;
+            flex-direction: row;
+            justify-content: normal; /* Center vertically */
+            align-items: center; /* Center horizontally */
+            height: 10vh; /* Full viewport height */
+        }
+
+        /* TV Remote Control Grid */
+        .remotecontrol-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            
+            grid-gap: 10px; /* Gap between buttons */
+        }
+
+        /* Style for buttons */
+        .remotebtn {
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+        /* Center the container vertically and horizontally */
+        .tvcontainer {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: 50vh; /* Full viewport height */
+        }
+
+        /* Create a two-column layout */
+        .tvcolumn {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center content vertically */
+            margin: 50%; /* Add spacing between columns */
+            width: 100%; /* Full width */    
+        }
+        /* Create a two-column layout */
+        .tvrow {
+            display: flex;
+            flex-direction: row;
+            align-items: center; /* Center content vertically */
+            margin: 30px; /* Add spacing between rows */
+            height: 100px;
+        }
+        /* TV Remote Control Grid */
+        .remotecontrol-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            grid-gap: 10px; /* Gap between buttons */
+        }
+
+        /* Style for buttons */
+        .remotebtn {
+            padding: 10px 15px;
+            font-size: 16px;
+        }
 </style>
 </head>
 <body>
@@ -243,25 +305,7 @@
                             </select>
                         </td>
                         
-                        <!-- Manual Control Modal -->
-                        <div class="modal fade" id="manualControlModal">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <!-- Modal content goes here -->
-                                    <div class="modal-header">
-                                        <h4 class="modal-title">Manual Control Modal</h4>
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!-- Add content for your modal here -->
-                                        <p>This is the Manual Control modal.</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                         <td class="mbr-text">80%</td>
                         <td class="mbr-text">4.3 W/h</td>
                         <td class="mbr-text">2</td>
@@ -287,75 +331,84 @@
                         <td class="mbr-text">80%</td>
                         <td class="mbr-text">4.3 W/h</td>
                         <td class="mbr-text">2</td>
-                        <!-- The Modal -->
-                        <div id="myModal" class="modal">
-                            <!-- Modal content -->
-                            <div class="modal-content">
-                                <body>
-                                    <div class="container">
-                                        <h1>Manual Control</h1>
-                                
-                                        <!-- Video Stream Placeholder -->
-                                        <div class="video-container">
-                                            <!-- Video stream element with a specific URL -->
-                                            <video id="robotVideo" controls>
-                                                <!-- Replace 'your_video_url' with the actual URL of the video stream -->
-                                                <source src="http://127.0.0.1:5000/videostream" type="image/jpeg">
-                                                Your browser does not support the video tag.
-                                            </video>
-                                        </div>
-                                
-                                        <!-- Robot Control Buttons -->
-                                        <div class="control-buttons">
-                                            <button id="btnUp" class="btn btn-secondary btn-sm">Up</button>
-                                            <button id="btnDown" class="btn btn-secondary btn-sm">Down</button>
-                                            <button id="btnLeft" class="btn btn-secondary btn-sm">Left</button>
-                                            <button id="btnRight" class="btn btn-secondary btn-sm">Right</button>
-                                            <button id="btnOk" class="btn btn-secondary btn-sm">Ok</button>
-                                            <button id="btnStop" class="btn btn-secondary btn-sm">Stop</button>
-                                        </div>
-                                
-                                        <div class="grid">
-                                </div>
-                                    </div>
-                                
-                                    <!-- JavaScript (for handling robot control) -->
-                                    <script>
-                                        // Replace this with actual JavaScript code to control your robot
-                                        // Example: Attach event listeners to control buttons and send commands to the robot
-                                        document.getElementById("btnUp").addEventListener("click", function () {
-                                            // Send the "move forward" command to the robot
-                                        });
-                                
-                                        document.getElementById("btnDown").addEventListener("click", function () {
-                                            // Send the "move backward" command to the robot
-                                        });
-                                
-                                        document.getElementById("btnLeft").addEventListener("click", function () {
-                                            // Send the "turn left" command to the robot
-                                        });
-                                
-                                        document.getElementById("btnRight").addEventListener("click", function () {
-                                            // Send the "turn right" command to the robot
-                                        });
-                                
-                                        document.getElementById("btnStop").addEventListener("click", function () {
-                                            // Send the "stop" command to the robot
-                                        });
-                                
-                                        // Add similar event listeners for custom buttons
-                                        document.getElementById("btnCustom1").addEventListener("click", function () {
-                                            // Implement custom functionality
-                                        });
-                                
-                                        document.getElementById("btnCustom2").addEventListener("click", function () {
-                                            // Implement custom functionality
-                                        });
-                                    </script>
-                                </body>
-                            </div>
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <body>
+            <button id="closeModalBtn" class="btn-close"></button>
+            <h1>Manual Control</h1>
+            <div class="container">
+                
+                <div class="container">
+                <!-- Video Stream Placeholder -->
+                        <div class="video-container">
+                            <img id="videoStream" src="http://127.0.0.1:5000/videostream" alt="Video Stream">
                         </div>
 
+                        <!-- Button options -->
+                        <div class="button-options" id="videobutton">
+                            <button onclick="changeVideo('http://127.0.0.1:5000/videostream')">Normal</button>
+                            <button onclick="changeVideo('http://127.0.0.1:5000/od-videostream')">Object Detection</button>
+                            <button onclick="changeVideo('URL_FOR_DEPTH_PERCEPTION_STREAM')">Depth Perception</button>
+                        </div>
+                        
+                    </div>
+
+                    <!-- JavaScript for changing the video URL -->
+                    <script>
+                        function changeVideo(url) {
+                        
+                            document.getElementById("videoStream").src = url;
+                        }
+                    </script>
+                            
+                    <!-- Container for two remote containers -->
+                    <div class="container">
+                        <div class="tvrow">
+                        <!-- First Remote Container -->
+                        <div class="tvcolumn">
+                            <h4>Movement</h4>
+                            <div class="tvrow">             
+                                <!-- TV Remote Control Grid -->
+                                <div class="remotecontrol-buttons">
+                                    <!-- Row 1 -->
+                                    <button id="btnUp1" class="remotebtn btn-secondary">Up/Left</button>
+                                    <button id="btnOk1" class="remotebtn btn-secondary">Up</button>
+                                    <button id="btnDown1" class="remotebtn btn-secondary">Up/Right</button>
+                                    <button id="btnDown1" class="remotebtn btn-secondary">Left</button>
+                                    
+                                    <!-- Row 2 -->
+                                    <button id="btnLeft1" class="remotebtn btn-secondary">Ok</button>
+                                    <button id="btnStop1" class="remotebtn btn-secondary">Right</button>
+                                    <button id="btnRight1" class="remotebtn btn-secondary">Down/Left</button>
+                                    <button id="btnDown1" class="remotebtn btn-secondary">Down</button>
+                                    <button id="btnDown1" class="remotebtn btn-secondary">Down/Right</button>
+                                </div>
+                        <div class="tvcolumn">
+                                <h4>Movement</h4>
+                                <div class="remotecontrol-buttons">
+                                    <!-- Row 1 -->
+                                    <button id="btnUp1" class="remotebtn btn-secondary">Up/Left</button>
+                                    <button id="btnOk1" class="remotebtn btn-secondary">Up</button>
+                                    <button id="btnDown1" class="remotebtn btn-secondary">Up/Right</button>
+                                    <button id="btnDown1" class="remotebtn btn-secondary">Left</button>
+                                    
+                                    <!-- Row 2 -->
+                                    <button id="btnLeft1" class="remotebtn btn-secondary">Ok</button>
+                                    <button id="btnStop1" class="remotebtn btn-secondary">Right</button>
+                                    <button id="btnRight1" class="remotebtn btn-secondary">Down/Left</button>
+                                    <button id="btnDown1" class="remotebtn btn-secondary">Down</button>
+                                    <button id="btnDown1" class="remotebtn btn-secondary">Down/Right</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+                        </div>
+                    </div>
+
+                    
+                </div>
                         <script>
                             // JavaScript to open and close the modal
                             const openModalBtn = document.getElementById("openModalBtn");
