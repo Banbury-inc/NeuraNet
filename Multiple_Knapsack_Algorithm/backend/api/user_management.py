@@ -2,7 +2,7 @@ import subprocess
 import hashlib
 import uuid
 import json
-from backend.api.scan_files import file_info_list
+from scan_files import file_info_list
 from flask import Flask, Response, jsonify, request, render_template, redirect, url_for
 
 
@@ -30,6 +30,63 @@ user_data_mapping = {
     # ...
 
 }
+
+
+def print_user_data_map():
+    
+    existing_user_data_map = "QmVVN534uiN2ZrHdA2ridTkmcUoQH898YmSbtki8FjynLh"
+    completed_process = subprocess.run(["ipfs", "cat", existing_user_data_map], capture_output=True, text=True, check=True)
+    existing_data = json.loads(completed_process.stdout)
+    print(existing_data)
+
+def get_user_data_map():
+        
+        existing_user_data_map = "QmVVN534uiN2ZrHdA2ridTkmcUoQH898YmSbtki8FjynLh"
+        completed_process = subprocess.run(["ipfs", "cat", existing_user_data_map], capture_output=True, text=True, check=True)
+        existing_data = json.loads(completed_process.stdout)
+        return existing_data
+
+
+def update_user_data_map(username, password, updated_info):
+    # Fetch the existing user data map from IPFS based on user_id
+    existing_data_cid = authenticate_user(username, password)
+    
+
+    # Fetch the existing user data map from IPFS based on user_id
+    existing_user_data_map = "QmVVN534uiN2ZrHdA2ridTkmcUoQH898YmSbtki8FjynLh"
+    if existing_data_cid is None:
+        print("User not found.")
+        return None
+
+    try:
+        # Fetch the existing JSON data from IPFS
+        completed_process = subprocess.run(["ipfs", "cat", existing_user_data_map], capture_output=True, text=True, check=True)
+
+        # Parse the existing JSON data
+        existing_data = json.loads(completed_process.stdout)
+
+        # Update user information with the provided updated_info
+        existing_data.update(updated_info)
+
+        # Convert the updated user data back to JSON
+        updated_json_str = json.dumps(existing_data)
+        cid = get_user_cid_from_username(username)
+
+        # Run IPFS to remove the data associated with the CID
+        subprocess.run(["ipfs", "pin", "rm", cid], check=True)
+
+
+        # Run IPFS to add the updated JSON data
+        completed_process = subprocess.run(["ipfs", "add", "-Q"], input=updated_json_str, capture_output=True, text=True, check=True)
+
+        # Get the new CID after the update
+        updated_cid = completed_process.stdout.strip()
+        print(updated_cid)
+        return updated_cid
+    except subprocess.CalledProcessError as e:
+        print("Failed to update user info in IPFS:", e)
+        return None
+    
 
 def register_user(username, password, first_name, last_name):
     user_id = generate_user_id()
@@ -208,11 +265,12 @@ def username_exists(username):
 def main():
     
     # Authentication Example
-    username = "mmills6060"
-    password = "password"
-    user_data = authenticate_user(username, password)
-    print(user_data)
-    
+#    username = "mmills6060"
+#    password = "password"
+#    user_data = authenticate_user(username, password)
+#    print(user_data)
+
+    print_user_data_map()   
 
 if __name__ == "__main__":
     main()
