@@ -2,10 +2,39 @@ from flask import Flask, request, jsonify
 from api import user_management
 from flask_cors import CORS
 from api import files
+from flask_sqlalchemy import SQLAlchemy
+from api import user_management_mysql
 
 
 app = Flask(__name__)
 CORS(app)
+
+
+# Configure SQLAlchemy for MySQL
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://mmills6060:Dirtballer!6060@localhost:3306/banburye_users'
+db = SQLAlchemy()
+db.init_app(app)
+
+``
+
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+
+    def __repr__(self):
+        return '<User %r>' % self.username
+
+@app.route("/test_database")
+def test_database():
+    """Tests the connection to the database and returns a message indicating whether the connection was successful or not."""
+
+    message = user_management_mysql.test_database_connection()
+    return jsonify(message)
+
+
 # Return values:
 '''
 Authenticate user log in

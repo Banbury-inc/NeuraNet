@@ -5,12 +5,18 @@ import json
 import requests
 # from scan_files import file_info_list
 from flask import Flask, Response, jsonify, request, render_template, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+
 
 
 
 
 
 app = Flask(__name__)
+
+# Configure SQLAlchemy for MySQL
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://mmills6060:Dirtballer!6060@localhost:3306/banburye_users'
+db = SQLAlchemy(app)
 
 devices_list = []
 files_cid_list = []
@@ -31,6 +37,23 @@ user_data_mapping = {
     # ...
 
 }
+
+def test_database_connection():
+    """Tests the connection to the database.
+
+    Returns:
+        A string message indicating whether the connection was successful or not.
+    """
+
+    try:
+        # Try to create a connection to the database
+        db.session.connection()
+
+        # If the connection is successful, return a success message
+        return "Database connection successful!"
+    except Exception as e:
+        # If the connection fails, return an error message
+        return f"Database connection failed: {str(e)}"
 
 
 def print_user_data_map():
@@ -423,34 +446,10 @@ def username_exists(username):
 
 def main():
     
-    # Authentication Example
-#    username = "mmills6060"
-#    password = "password"
-#    user_data = authenticate_user(username, password)
-#    print(user_data)
+    message = test_database_connection()
+    print(message)
 
-    username = "pdins6060"
-    password = "pdinspassword"
-    first_name = "Parker"
-    last_name = "Dinsmore"
-
-    # Sample data (in a real application, this data might come from a database)
-    devices_list = [
-        {"id": 1, "name": 'Macbook Pro', "size": 500},
-        {"id": 2, "name": 'Desktop', "size": 3000},
-    # Add more files here
-    ]
-
-    # Sample data (in a real application, this data might come from a database)
-    file_info_list = [
-        {"id": 1, "name": 'File 1', "size": 50, "priority": 3},
-        {"id": 2, "name": 'File 2', "size": 30, "priority": 2},
-    # Add more files here
-    ]
-
-    register_user_add_to_user_data_map(username, password, first_name, last_name, devices_list, file_info_list)
-
-    print_user_data_map()
+ 
 
 if __name__ == "__main__":
     main()
