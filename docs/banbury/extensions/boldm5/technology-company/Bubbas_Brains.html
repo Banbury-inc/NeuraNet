@@ -352,7 +352,12 @@
                             <button onclick="changeVideo('http://127.0.0.1:5000/od-videostream')">Object Detection</button>
                             <button onclick="changeVideo('URL_FOR_DEPTH_PERCEPTION_STREAM')">Depth Perception</button>
                         </div>
+                                            <!-- Webcam Capture Button -->
+                        <div class="button-options">
+                            <button id="captureButton">Capture</button>
+                        </div>
                         
+                    
                     </div>
 
                     <!-- JavaScript for changing the video URL -->
@@ -362,10 +367,10 @@
                             document.getElementById("videoStream").src = url;
                         }
                     </script>
-                            
+    
                     <!-- Container for two remote containers -->
                     <div class="container">
-                        <div class="tvrow">
+                       <div class="tvrow">
                         <!-- First Remote Container -->
                         <div class="tvcolumn">
                             <h4>Movement</h4>

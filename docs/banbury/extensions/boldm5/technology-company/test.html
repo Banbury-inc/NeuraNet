@@ -3,150 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robot Control Dashboard</title>
-    <!-- Include any necessary external libraries or scripts for robot control and video streaming -->
-    <!-- For example, you might need libraries like jQuery, ROS (Robot Operating System), and a video streaming library -->
-    <!-- Include CSS for styling (customize as needed) -->
+    <link rel="stylesheet" href="styles.css">
+    <title>Online Webcam</title>
     <style>
-        /* Add your custom styles here */
         body {
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .video-container {
-            border: 1px solid #ccc;
-            padding: 10px;
-            width: 640px;
-            height: 480px;
-            margin: 0 auto;
-        }
-
-        .control-buttons {
-            margin-top: 20px;
-        }
-
-        .btn {
-            margin: 5px;
-            padding: 10px 20px;
-            font-size: 18px;
-        }
-        .grid {
-  display: flex;
-  flex-flow: row wrap;
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
 }
 
-.grid {
-  display: inline-flex;           /* 1 */
-  flex-flow: row wrap;
+.camera {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
 }
 
-.up, .down {
-  flex: 0 0 100%;                 /* 2 */
-  text-align: center;             /* 2 */
-  font-size: 18px;
-  
+video {
+    max-width: 100%;
+    border: 1px solid #ccc;
 }
 
-.left, .right {
-  flex: 1 0 1%;                   /* 3 */
-  display: flex;
-  
+.images {
+    margin-top: 20px;
 }
 
-.left  { justify-content: flex-end; }
-.right { justify-content: flex-start; }
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
 
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+.thumbnail {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.button-container button {
+    margin: 5px;
+}
 
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Robot Control Dashboard</h1>
-
-        <!-- Video Stream Placeholder -->
-        <div class="video-container">
-            <!-- You'll need to integrate a video streaming component here -->
-            <!-- This could be an HTML5 video element or a library-specific component -->
-            <!-- Example: <video id="robotVideo" src="your_video_url" controls></video> -->
-        </div>
-
-        <!-- Robot Control Buttons -->
-        <div class="control-buttons">
-            <button id="btnUp" class="btn">Up</button>
-            <button id="btnDown" class="btn">Down</button>
-            <button id="btnLeft" class="btn">Left</button>
-            <button id="btnRight" class="btn">Right</button>
-            <button id="btnStop" class="btn">Stop</button>
-        </div>
-
-        <!-- Other Buttons and Features -->
-        <!-- You can add more buttons and features as needed -->
-        <div class="control-buttons">
-            <button id="btnCustom1" class="btn">Custom Button 1</button>
-            <button id="btnCustom2" class="btn">Custom Button 2</button>
-        </div>
-        <div class="grid">
-  <form action="/keyboard/" class="up">
-    <input type="hidden" name="q" value="126" />
-    <button type submit class="button-large">Up </button>
-  </form>
-  <form action="/keyboard/" class="left">
-    <input type="hidden" name="q" value="123" />
-    <button type submit class="button-large">Left</button>
-  </form>
-  <form action="/keyboard/" class="ok">
-    <input type="hidden" name="q" value="36" />
-    <button type submit class="button-large">OK</button>
-  </form>
-  <form action="/keyboard/" class="right">
-    <input type="hidden" name="q" value="124" />
-    <button type submit class="button-large">Right</button>
-  </form>
-  <form action="/keyboard/" class="down">
-    <input type="hidden" name="q" value="125" />
-    <button type submit class="button-large">Down;</button>
-  </form>
-</div>
+    <div class="camera">
+        <video id="video" autoplay></video>
+        <button id="captureButton">Capture</button>
     </div>
-
-    <!-- JavaScript (for handling robot control) -->
-    <script>
-        // Replace this with actual JavaScript code to control your robot
-        // Example: Attach event listeners to control buttons and send commands to the robot
-        document.getElementById("btnUp").addEventListener("click", function () {
-            // Send the "move forward" command to the robot
-        });
-
-        document.getElementById("btnDown").addEventListener("click", function () {
-            // Send the "move backward" command to the robot
-        });
-
-        document.getElementById("btnLeft").addEventListener("click", function () {
-            // Send the "turn left" command to the robot
-        });
-
-        document.getElementById("btnRight").addEventListener("click", function () {
-            // Send the "turn right" command to the robot
-        });
-
-        document.getElementById("btnStop").addEventListener("click", function () {
-            // Send the "stop" command to the robot
-        });
-
-        // Add similar event listeners for custom buttons
-        document.getElementById("btnCustom1").addEventListener("click", function () {
-            // Implement custom functionality
-        });
-
-        document.getElementById("btnCustom2").addEventListener("click", function () {
-            // Implement custom functionality
-        });
-    </script>
+    <div class="images">
+        <table>
+            <thead>
+                <tr>
+                    <th>Thumbnail</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="imageTable"></tbody>
+        </table>
+        <button id="downloadAllButton">Download All</button>
+    </div>
+    <script src="script.js"></script>
 </body>
+<script>
+    const video = document.getElementById('video');
+const captureButton = document.getElementById('captureButton');
+const imageTable = document.getElementById('imageTable');
+const downloadAllButton = document.getElementById('downloadAllButton');
+
+let imageIndex = 0;
+
+// Initialize webcam
+navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .then(function (stream) {
+        video.srcObject = stream;
+    })
+    .catch(function (error) {
+        console.error('Error accessing the webcam: ', error);
+    });
+
+// Capture an image
+captureButton.addEventListener('click', function () {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const thumbnail = document.createElement('img');
+    thumbnail.src = canvas.toDataURL('image/jpeg');
+    thumbnail.className = 'thumbnail';
+
+    const downloadButton = document.createElement('button');
+    downloadButton.innerText = 'Download';
+    downloadButton.addEventListener('click', function () {
+        downloadButton.href = thumbnail.src;
+        downloadButton.download = `image_${imageIndex}.jpeg`;
+    });
+
+    const row = imageTable.insertRow();
+    const thumbnailCell = row.insertCell(0);
+    const actionsCell = row.insertCell(1);
+
+    thumbnailCell.appendChild(thumbnail);
+    actionsCell.appendChild(downloadButton);
+
+    imageIndex++;
+});
+
+// Download all images
+downloadAllButton.addEventListener('click', function () {
+    const zip = new JSZip();
+
+    const thumbnailElements = document.querySelectorAll('.thumbnail');
+    thumbnailElements.forEach(function (thumbnail, index) {
+        const dataURL = thumbnail.src;
+        const fileName = `image_${index}.jpeg`;
+        zip.file(fileName, dataURL.split(',')[1], { base64: true });
+    });
+
+    zip.generateAsync({ type: 'blob' })
+        .then(function (blob) {
+            saveAs(blob, 'images.zip');
+        });
+});
+
+</script>
 </html>
