@@ -9,3 +9,4 @@ after running through billions of possibilities.
 - Continue with my vision to connect constantly model training to a decentralized file sharing system, primarily used
 to share resources and allocate machine power optimally. 
 - AI supercharged linux operating system. A conversation type mode and a mode for actually using the computer. Absolutely seamless. 
+- AI agent that literally builds and improves itself by submitting merge requests. 
