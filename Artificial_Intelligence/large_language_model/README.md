@@ -11,3 +11,4 @@ to share resources and allocate machine power optimally.
 - AI supercharged linux operating system. A conversation type mode and a mode for actually using the computer. Absolutely seamless. 
 - AI agent that literally builds and improves itself by submitting merge requests. 
 - Give an ai agent their own personal virtual desktop with their own github profile "Athena"
+- You can write comments on the merge requests and Athena will add that to the queue to take a look at amd modify the way that you want. 
