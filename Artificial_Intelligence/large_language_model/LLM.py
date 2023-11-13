@@ -1,6 +1,27 @@
 from langchain.llms import Ollama
 import re
+'''
+AI Agents to Implement:
 
+Task Management Agent:
+- Queue system. Parse the list and make them individual objects that are placed in some type 
+of list. 
+
+Vision Agent:
+- Detects objects in the environment and sends them as messages to other agents (e.g., a robot)
+- captures image of the environment and generates description in words of what the environment
+is like
+- 
+Health Agent:
+- Monitors CPU, GPU, Memory and determines if the computer is in a good state. Sends messages to
+task management agent if something needs to be turned off.
+
+Motor Control Agent:
+- Makes movements of motors, returns motor positions.
+
+Navigation Agent:
+- Able to take in cordinates, return coordinates
+'''
 class MasterAgent:
     def initialize():
         print("")
