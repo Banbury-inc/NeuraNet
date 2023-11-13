@@ -8,3 +8,4 @@ after running through billions of possibilities.
 - AI agents that create merge requests on github on a 24/7 basis. read issues and fix them. Coukd be closely linked with banbury CLI. 
 - Continue with my vision to connect constantly model training to a decentralized file sharing system, primarily used
 to share resources and allocate machine power optimally. 
+- AI supercharged linux operating system. A conversation type mode and a mode for actually using the computer. Absolutely seamless. 
