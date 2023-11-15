@@ -155,9 +155,13 @@ class TaskManagementAgent:
     def execute(self, prompt):
         # TODO: create a function that will take the next task and refer it to the master agent.
         self.task = TaskManagementAgent.get_task(self)
-        # Incorporate logic that will use threading to run multiple 
-        # Agents at a time. Logic will use health agent to determine if 
-        # another task can be run
+        # Incorporate logic that will use threading to run multiple Agents at a time. 
+        
+        # Logic will use health agent to determine if another task can be run
+
+        # If another task cannot be run, look to see if there are other computers with CPU capacity
+
+        # Send the task to the other computer if there is one
         pass
     def parse_and_process_plan(self, prompt):
         # TODO: take the numbered list of actions needed to be taken in order to complete the task,
