@@ -30,18 +30,18 @@ class MasterAgent:
         self.role = colored("Master Agent: ", "green", attrs=["bold"])
         self.responsibility = '''
         You are the master agent. Your role is to receive the request from the client,
-        acknoledge that you have received the clients request and that you will begin working on it,
-        determine which types of agents are needed in order to complete the task, and
-        send back the response.
-
+        acknowledge that you have received the clients request and that you will begin working on it.
+        You are not to immediately answer the question, just aknowledge that you have received it. 
         '''
     def initialize():
         print("")
         prompt = input("--> ") 
-        MasterAgent.communicate(prompt) 
-    def communicate(prompt):
+        master_agent = MasterAgent() 
+        master_agent.communicate(prompt) 
+    def communicate(self, prompt):
         master_agent = MasterAgent()
-        response = master_agent.llm.predict(prompt)
+        interpretation = self.responsibility + prompt
+        response = master_agent.llm.predict(interpretation)
         print("")
         print(master_agent.role + response)
         task_agent = TaskManagementAgent()
@@ -99,6 +99,7 @@ class TaskManagementAgent:
         but a numbered list.
 
         '''
+
         self.tasks: list[str] = []
         self.revisions = 0 
         self.task = "This is the current task"
@@ -117,7 +118,7 @@ class TaskManagementAgent:
             self.revise(prompt, (evaluation, rating))
         else:
             if rating >= 8:
-                MasterAgent.initialize()
+                RecruitmentAgent.recruit(self, prompt)
     def revise(self, oldResponse, evaluation):
         evaluation_reasoning, rating = evaluation
         interpretation = self.responsibility + " The last response was " + oldResponse + "." + "The feedback about that response is the following: " + evaluation_reasoning + "Fix it." 
@@ -212,11 +213,10 @@ class CriticAgent:
         evaluation = response
         rating = str(Utils.get_first_int(evaluation))
         print("")
-        print(self.role + "I am giving that a rating of " + rating + "." + response)
         return evaluation, rating
 class RecruitmentAgent:
     def __init__(self):
-        self.llm = Ollama(model="llama2")
+        self.llm = Ollama(model="llama2:70b")
         self.role = colored("Recruitment Agent: ", "green", attrs=["bold"])
         self.responsibility = '''
         You are a recruitment agent. Your primary role is to take the following task and determine
@@ -235,7 +235,7 @@ class RecruitmentAgent:
             self.revise(prompt, (evaluation, rating))
         else:
             if rating >= 8:
-                MasterAgent.initialize()
+                RecruitmentAgent.recruit(prompt)
     def revise(self, oldResponse, evaluation):
         evaluation_reasoning, rating = evaluation
         interpretation = self.responsibility + " The last response was " + oldResponse + "." + "The feedback about that response is the following: " + evaluation_reasoning + "Fix it." 
@@ -251,40 +251,8 @@ class RecruitmentAgent:
         else:
             if rating >= 8:
                 MasterAgent.initialize()
-    def recruit(self): 
-        # take in a string of what is the next task
-        task = TaskManagementAgent.self.task
-        # provide a dictionary all of the agents and what they do and what they are good for. Preferably have all of this in variables.
-        agents = {GeneralAgent:"A general agent that can answer questions."}
-
-        # convert agents variable to a string
-        agents = str(agents)
-        # determine which agent should be used, and why  
-        interpretation = self.responsibility + task + agents
-        response = self.llm.predict(interpretation)
-        print("")
-        print(self.role + response)
-        critic_agent = CriticAgent()
-        evaluation, rating = critic_agent.evaluate(response)
-        rating = int(rating)
-        if rating < 8:
-            self.revise(response, (evaluation, rating))
-        else:
-            if rating >= 8:
-
-                # logic to somehow connect classnames to the parsed out string name. Might need to be classification model
-                agent = classificationmodel(parsed out string)
-                # Print the agent it chose to recruit and the reasoning
-                reasoning = evaluation 
-
-
-        interpretation = self.responsibility + " The last response was " + oldResponse + "." + "The feedback about that response is the following: " + evaluation_reasoning + "Fix it." 
-                # create an instance of GeneralAgent
-                general_agent = GeneralAgent()
-                general_agent.communicate(task)
-
-
-        # return agent name, reasoning. Might need to be attribute as this line might not ever be executed 
+    def recruit(self, prompt): 
+        GeneralAgent.communicate(prompt)
 class Utils:
     def get_first_int(string):
         # Take a string and return the first integer that is found in the string
