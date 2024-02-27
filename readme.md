@@ -31,12 +31,21 @@ This is a project that I have been working on that combines the concepts of web 
 
 Banbury Cloud is a subset of Athena which serves as the decentralized file sharing network. This tool transforms personal and corporate networks into a decentralized cloud storage system, eliminating reliance on traditional cloud providers and offering unparalleled control over data security, compliance, and sovereignty. Our revolutionary concept aims to transform every household into a personal data center, leveraging the unused potential of existing devices for cloud storage needs. This addresses the common issue of limited storage capacity on individual devices and traditional cloud services. We have just released a beta version of the CLI tool. This serves as a prototype to the file sharing network. From here, you can connect devices, upload files, and download files without the use of a cloud service like Google Drive. Click here for more information on how to get started: https://website2-v3xlkt54dq-uc.a.run.app/
 
-## Features
+## Banbury Cloud Features
+
+* Predict device downtime
+* predict future wifi speed
+* GPU, CPU, RAM predictions
+* User behavior analysis
+* Predicting the popularity and demand for specific content based on historical usage patterns, user preferences, and content characteristics.
+* Anticipating user requests and pre-fetching or caching content to reduce latency and improve content delivery speed.
+* predicit optimal allocation of files based on the values above
+## Athena Features
 
 * 100% biometric log-in system
-* Decentralized file sharing powered by IPFS for a fully asynchronous and autonomous file management experience
+* Decentralized file sharing powered by cutting edge AI relay server for a fully asynchronous and autonomous file management experience
 * Powerful algorithms to enable unrivaled performance and reliability
-* Fully Autonomous AI Assistant powered by our decentralized IPFS network.
+* Fully Autonomous AI Assistant powered by our AI relay server.
 * Implementation of a remote access tunnel allows for seamless connection via NAT (Network Address Translation) devices such as Iphones connected via cellular data.
 
 ## To-do
