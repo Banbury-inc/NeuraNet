@@ -25,7 +25,7 @@
 
 # Overview
 
-This is a project that I have been working on that combines the concepts of web 3.0 file services and machine learning. My overal idea is to create a machine learning algorithm that will save and fetch data through a decentralized file sharing network. This could be an incredibly powerful and useful tool, as developing large language models are oftentimes limited to high net worth corporations. By allowing all of our devices to actively participate in the advancement on Artifical Intelligence, we can create tools beyond our imagination.
+This is a project that I have been working on that combines the concepts of web 3.0 file services and machine learning. My overal idea is to create a machine learning algorithm that will save and fetch data through a decentralized file sharing network. This could be an incredibly powerful and useful tool, as developing large language models are oftentimes limited to high net worth corporations. In other words, why pay a lot of money to rent out a server to train a machine learning model when you can achieve the same result by combining all of the resources of each deviec in your own home? By allowing all of our devices to actively participate in the advancement on Artifical Intelligence, we can create tools beyond our imagination.
 
 ## Banbury Cloud
 
