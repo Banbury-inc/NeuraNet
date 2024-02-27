@@ -90,15 +90,15 @@ Banbury Cloud is a subset of Athena which serves as the decentralized file shari
 ## Basic Architecture
 
 File Management GUI
-Frontend - HTML, CSS, Javascript
-Backend - Go
-Database - IPFS
+Frontend - HTML, CSS, Typescript
+Backend - Python
+Database - MongoDB
 
 Artificial Intelligence Scripts
 
 * Frontend - N/A
 * Backend - Python
-* Database - IPFS
+* Database - MongoDB
 
 User Management GUI
 
