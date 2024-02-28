@@ -1,0 +1,2 @@
+[console_scripts]
+bcloud = bcloud.cli3:main
