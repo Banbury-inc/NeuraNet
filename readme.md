@@ -44,7 +44,7 @@ Banbury Cloud is a subset of Athena which serves as the decentralized file shari
 # Table of Contents
 * AI
 * Banbury Cloud
-  * <a href="https://github.com/Banbury-inc/Athena/blob/main/Artificial_Intelligence/readme.md" Introduction>
+  * <a href="https://github.com/Banbury-inc/Athena/blob/main/Artificial_Intelligence/readme.md"> Introduction </a>
 
 ## Athena Features
 
