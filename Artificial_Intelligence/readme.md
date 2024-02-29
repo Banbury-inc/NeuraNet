@@ -31,3 +31,6 @@ At the end of the day, I think the architecture and how the models are trained c
 be boiled down into whether that data that is being trained is knowledge or a skill. 
 If it's knowledge, it can be probably added on to a large model. If it's a skill, it can 
 probably be kept separate and placed into their own individual models. 
+
+
+https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.VotingClassifier.html
