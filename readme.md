@@ -40,6 +40,12 @@ Banbury Cloud is a subset of Athena which serves as the decentralized file shari
 * Predicting the popularity and demand for specific content based on historical usage patterns, user preferences, and content characteristics.
 * Anticipating user requests and pre-fetching or caching content to reduce latency and improve content delivery speed.
 * predicit optimal allocation of files based on the values above
+
+# Table of Contents
+* AI
+* Banbury Cloud
+  * <a href="https://github.com/Banbury-inc/Athena/blob/main/Artificial_Intelligence/readme.md">
+
 ## Athena Features
 
 * 100% biometric log-in system
