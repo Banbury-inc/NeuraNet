@@ -384,12 +384,14 @@ class ClientHandler(threading.Thread):
                     average_network_speed = data["average_network_speed"]
                     upload_network_speed = data["upload_network_speed"]
                     download_network_speed = data["download_network_speed"]
+                    gpu_usage = data["gpu_usage"]
+                    cpu_usage = data["cpu_usage"]
+                    ram_usage = data["ram_usage"]
                     network_reliability = data["network_reliability"]
                     average_time_online = data["average_time_online"]
                     device_priority = data["device_priority"]
                     sync_status = data["sync_status"]
                     optimization_status = data["optimization_status"]
-
 
 
                     load_dotenv()
@@ -412,23 +414,48 @@ class ClientHandler(threading.Thread):
                     devices = user.get('devices', [])
                     total_upload_speed = 0
                     total_download_speed = 0
+                    total_gpu_usage = 0
+                    total_cpu_usage = 0
+                    total_ram_usage = 0
                     upload_speed_count = 0
                     download_speed_count = 0
+                    gpu_usage_count = 0
+                    cpu_usage_count = 0
+                    ram_usage_count = 0
                     for index, device in enumerate(devices):
                         if device.get('device_name') == device_name:
                             upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
                             download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
+                            gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                            cpu_usages = [float(usage) for usage in device.get('cpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                            ram_usages = [float(usage) for usage in device.get('ram_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
                             total_upload_speed = sum(upload_speeds) + float(upload_network_speed)
                             total_download_speed = sum(download_speeds) + float(download_network_speed)
+                            print("in device name loop")
+                            total_gpu_usage = sum(gpu_usages) + float(gpu_usages)
+                            total_cpu_usage = sum(cpu_usages) + float(cpu_usages)
+                            total_ram_usage = sum(ram_usages) + float(ram_usages)
                             upload_speed_count = len(upload_speeds) + 1
                             download_speed_count = len(download_speeds) + 1
+                            gpu_usage_count = len(gpu_usages) + 1
+                            cpu_usage_count = len(cpu_usages) + 1
+                            ram_usage_count = len(ram_usages) + 1
                             average_upload_speed = total_upload_speed / upload_speed_count if upload_speed_count else 0
                             average_download_speed = total_download_speed / download_speed_count if download_speed_count else 0
+                            average_gpu_usage = total_gpu_usage / gpu_usage_count if gpu_usage_count else 0
+                            average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
+                            average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
+
+
 
                             # Update existing device in the list
                             devices[index]['upload_network_speed'].append(float(upload_network_speed))
                             devices[index]['download_network_speed'].append(float(download_network_speed))
                             devices[index]['date_added'].append(date_added)
+                            print("passed udating existing device")
+                            devices[index]['gpu_usage'].append(float(gpu_usage))
+                            devices[index]['cpu_usage'].append(float(cpu_usage))
+                            devices[index]['ram_usage'].append(float(ram_usage))
 
                             # Instead of directly appending or extending, check if the file exists
                             for new_file in files:  # Iterate through the new files to be added
@@ -439,6 +466,9 @@ class ClientHandler(threading.Thread):
 
                             devices[index]['average_upload_speed'] = average_upload_speed
                             devices[index]['average_download_speed'] = average_download_speed
+                            devices[index]['average_gpu_usage'] = average_gpu_usage
+                            devices[index]['average_cpu_usage'] = average_cpu_usage
+                            devices[index]['average_ram_usage'] = average_ram_usage
                             print('updated existing device')
                             device_exists = True
                             break  # Exit loop after updating
@@ -446,12 +476,25 @@ class ClientHandler(threading.Thread):
                     else:
                         upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
                         download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
+                        gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                        cpu_usages = [float(usage) for usage in device.get('cpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                        ram_usages = [float(usage) for usage in device.get('ram_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
                         total_upload_speed = sum(upload_speeds) + float(upload_network_speed)
                         total_download_speed = sum(download_speeds) + float(download_network_speed)
+                        total_gpu_usage = sum(gpu_usages) + float(gpu_usages)
+                        total_cpu_usage = sum(cpu_usages) + float(cpu_usages)
+                        total_ram_usage = sum(ram_usages) + float(ram_usages)
                         upload_speed_count = len(upload_speeds) + 1
                         download_speed_count = len(download_speeds) + 1
+                        gpu_usage_count = len(gpu_usages) + 1
+                        cpu_usage_count = len(cpu_usages) + 1
+                        ram_usage_count = len(ram_usages) + 1
                         average_upload_speed = total_upload_speed / upload_speed_count if upload_speed_count else 0
                         average_download_speed = total_download_speed / download_speed_count if download_speed_count else 0
+                        average_gpu_usage = total_gpu_usage / gpu_usage_count if gpu_usage_count else 0
+                        average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
+                        average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
+
 
                         # Create a new device object
                         new_device = {
@@ -463,8 +506,14 @@ class ClientHandler(threading.Thread):
                             'ip_address': ip_address,
                             'average_upload_speed': average_upload_speed,
                             'average_download_speed': average_download_speed,
+                            'average_gpu_usage': average_gpu_usage,
+                            'average_cpu_usage': average_cpu_usage,
+                            'average_ram_usage': average_ram_usage,
                             'upload_network_speed': [float(upload_network_speed)],
                             'download_network_speed': [float(download_network_speed)],
+                            'gpu_usage': [float(gpu_usage)],
+                            'cpu_usage': [float(cpu_usage)],
+                            'ram_usage': [float(ram_usage)],
                             'network_reliability': network_reliability,
                             'average_time_online': average_time_online,
                             'device_priority': device_priority,
@@ -485,6 +534,9 @@ class ClientHandler(threading.Thread):
                     # Initialize sums for calculating averages
                     total_average_download_speed_sum = 0
                     total_average_upload_speed_sum = 0
+                    total_average_gpu_usage_sum = 0
+                    total_average_cpu_usage_sum = 0
+                    total_average_ram_usage_sum = 0
 
                     # Iterate through devices to aggregate values
                     for device in devices:
@@ -492,10 +544,16 @@ class ClientHandler(threading.Thread):
                         total_device_storage += float(device.get('storage_capacity_GB', 0))
                         total_average_download_speed_sum += float(device.get('average_download_speed', 0))
                         total_average_upload_speed_sum += float(device.get('average_upload_speed', 0))
+                        total_average_cpu_usage_sum += float(device.get('average_cpu_usage', 0))
+                        total_average_gpu_usage_sum += float(device.get('average_gpu_usage', 0))
+                        total_average_ram_usage_sum += float(device.get('average_ram_usage', 0))
 
                     # Calculate averages, avoid division by zero
                     total_average_download_speed = total_average_download_speed_sum / number_of_devices if number_of_devices > 0 else 0
                     total_average_upload_speed = total_average_upload_speed_sum / number_of_devices if number_of_devices > 0 else 0
+                    total_average_cpu_usage = total_average_cpu_usage_sum / number_of_devices if number_of_devices > 0 else 0
+                    total_average_gpu_usage = total_average_gpu_usage_sum / number_of_devices if number_of_devices > 0 else 0
+                    total_average_ram_usage = total_average_ram_usage_sum / number_of_devices if number_of_devices > 0 else 0
 
                     user_collection.update_one({'_id': user['_id']}, {'$push': {
                         'number_of_devices': number_of_devices,
@@ -503,10 +561,11 @@ class ClientHandler(threading.Thread):
                         'total_device_storage': total_device_storage,
                         'total_average_download_speed': total_average_download_speed,
                         'total_average_upload_speed': total_average_upload_speed,
+                        'total_average_cpu_usage': total_average_cpu_usage,
+                        'total_average_gpu_usage': total_average_gpu_usage,
+                        'total_average_ram_usage': total_average_ram_usage,
                         'overall_date_added': date_added,
                         }})
-
-
 
 
                     print("data uploaded to Banbury Cloud") 

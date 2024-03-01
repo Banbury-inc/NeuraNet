@@ -10,7 +10,8 @@ import requests
 import configparser
 import pymongo
 import time
-
+import psutil
+import GPUtil
 
 
 
@@ -200,7 +201,12 @@ def get_device_info():
         download_network_speed = 1
     ip_address = get_ip_address()
     files = get_directory_info()
-
+    gpu_usage = get_gpu_usage()
+    cpu_usage = get_cpu_usage() 
+    ram_usage = get_ram_usage()
+    print(gpu_usage)
+    print(cpu_usage)
+    print(ram_usage)
     credentials = load_credentials()
     username = next(iter(credentials))
  
@@ -217,6 +223,9 @@ def get_device_info():
         'average_network_speed': 0,  # Initial value
         'upload_network_speed': upload_network_speed,  # Initial value
         'download_network_speed': download_network_speed,  # Initial value
+        "gpu_usage": gpu_usage,
+        "cpu_usage": cpu_usage,
+        "ram_usage": ram_usage,
         'network_reliability': 0,  # Initial value
         'average_time_online': 0,  # Initial value
         'device_priority': 1,  # Initial value
@@ -315,6 +324,7 @@ def get_directory_info():
     # Convert the list of dictionaries to JSON format
     return files_info
 
+
 def get_device_name():
     '''
     Gets the device name
@@ -368,12 +378,42 @@ def get_storage_capacity():
     storage_capacity = total_capacity / 1e9  # Convert to gigabytes (GB)
     return storage_capacity
     
+
 def get_gpu_usage():
-    pass
+    """
+    Returns the GPU usage.
+    """
+    try:
+        gpus = GPUtil.getGPUs()
+        list_gpus = []
+        for gpu in gpus:
+            gpu_id = gpu.id
+            gpu_name = gpu.name
+            gpu_load = f"{gpu.load*100}%"
+            gpu_free_memory = f"{gpu.memoryFree}MB"
+            gpu_used_memory = f"{gpu.memoryUsed}MB"
+            gpu_total_memory = f"{gpu.memoryTotal}MB"
+            gpu_temperature = f"{gpu.temperature} °C"
+            list_gpus.append(f"ID: {gpu_id}, Name: {gpu_name}, Load: {gpu_load}, Free Memory: {gpu_free_memory}, Used Memory: {gpu_used_memory}, Total Memory: {gpu_total_memory}, Temperature: {gpu_temperature}")
+        return gpu_load
+    except Exception as e:
+        gpu_load = 0
+        return gpu_load
+
 def get_cpu_usage():
-    pass
+    """
+    Returns the CPU usage.
+    """
+    
+    return f"CPU Usage: {psutil.cpu_percent()}%"
+
 def get_ram_usage():
-    pass
+    """
+    Returns the RAM usage.
+    """
+    ram = psutil.virtual_memory()
+    return f"RAM Usage: {ram.percent}%"
+
 
 
 
