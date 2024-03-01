@@ -11,6 +11,9 @@ import configparser
 import pymongo
 import time
 
+
+
+
 def run(receiver_socket):
     end_of_header = b"END_OF_HEADER"
     buffer = b""
@@ -365,6 +368,13 @@ def get_storage_capacity():
     storage_capacity = total_capacity / 1e9  # Convert to gigabytes (GB)
     return storage_capacity
     
+def get_gpu_usage():
+    pass
+def get_cpu_usage():
+    pass
+def get_ram_usage():
+    pass
+
 
 
 def get_current_date_and_time():
