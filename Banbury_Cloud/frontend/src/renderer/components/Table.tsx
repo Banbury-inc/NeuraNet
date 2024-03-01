@@ -27,6 +27,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { Container } from "@mui/material";
+
+
+
 // Simplified data interface to match your file structure
 interface FileData {
   id: number;
@@ -308,6 +311,34 @@ const handleApiCall = async () => {
     } 
   };
 
+  const handleDeleteClick = async () => {
+    try{
+
+      const scriptPath = 'src/main/delete.py'; // Update this to the path of your Python script
+       
+      exec(`python "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`Python Script Error: ${stderr}`);
+          return
+        }
+        if (stdout) {
+          console.log(`Python Script Message: ${stdout}`);
+          return
+        }
+        console.log(`Python Script Message: ${stdout}`);
+
+      });
+    } catch (error) {
+      console.error('There was an error!', error);
+ 
+    } 
+  };
+
+
 
 
 
@@ -390,6 +421,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
               <Grid item>
                 <Button 
                 variant="outlined"
+                onClick={handleDeleteClick}
                 size="small"
               >Delete</Button>
               </Grid>
