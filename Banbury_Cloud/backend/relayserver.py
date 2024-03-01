@@ -37,6 +37,7 @@ class ClientHandler(threading.Thread):
                 file_type = split_header[0]
                 file_name = split_header[1]
                 file_size = split_header[2]
+                username = split_header[3]
                 buffer = content 
             if file_type == "MSG":
                 # It's a regular message; process and broadcast it
@@ -212,7 +213,151 @@ class ClientHandler(threading.Thread):
                         except Exception as e:
                             print(f"Error sending to device: {e}")
 
+            elif file_type == "FILE_DELETE_REQUEST":
+                # It's a file; process the file header to get file info
+                print("Received FILE_DELETE_REQUEST")
+                print(f"Received the request from {self.client_address}: {self.client_socket}")
+                directory_name = "BCloud"
+                directory_path = os.path.expanduser(f"~/{directory_name}")
+                file_save_path = os.path.join(directory_path, file_name)
 
+
+                # Check if the directory exists, create if it does not and create a welcome text file
+                if not os.path.exists(directory_path):
+                    os.makedirs(directory_path, exist_ok=True)
+                    welcome_file_path = os.path.join(directory_path, "welcome.txt")
+                    with open(welcome_file_path, 'w') as welcome_file:
+                        welcome_file.write("Welcome to Banbury Cloud! This is the directory that will contain all of the files "
+                                           "that you would like to have in the cloud and streamed throughout all of your devices. "
+                                           "You may place as many files in here as you would like, and they will appear on all of "
+                                           "your other devices.")
+
+                # Load Database
+                load_dotenv()
+                uri = os.getenv("MONGODB_URL")
+
+                client = MongoClient(uri)
+                db = client['myDatabase']
+                user_collection = db['users']
+                user = user_collection.find_one({'username': username})
+
+                   
+                for socket in ClientHandler.client_sockets:
+                    if socket != self.client_socket:
+                        try:
+                            # Search each device object in database for a file object that is equal to file_save_path
+                            devices = user.get('devices', [])
+                            for device in devices:
+                                for file in device.get('files', []):
+                                    if file.get('File Name') == file_name:
+                                        # send a request to that device to delete the file
+
+                                        file_header = f"FILE_DELETE_REQUEST:{file_name}:{file_size}:{username}:END_OF_HEADER"
+                                        socket.send(file_header.encode())
+                                        print(f"{file_name} has been requested to be deleted")
+
+
+            
+                        except BrokenPipeError:
+                            print(f"Broken pipe moving on to the next socket.")
+                            continue  # This skips the rest of the current iteration and moves to the next socket
+                        except Exception as e:
+                            print(f"Error sending to device: {e}")
+
+            
+                    else:
+                        # TODO: Once all devices confirm that the file doesn't exist, remove it from the database.
+                        # Otherwise, the file will be deleted from the database but will still exist on a device.
+                        print("No devices to send delete request to. Removing file from database.")
+                        # Load Database
+                        load_dotenv()
+                        uri = os.getenv("MONGODB_URL")
+
+                        client = MongoClient(uri)
+                        db = client['myDatabase']
+                        user_collection = db['users']
+                        user = user_collection.find_one({'username': username})
+                           
+                        try:
+                            # Search each device object in database for a file object that is equal to file_save_path
+                            devices = user.get('devices', [])
+                            file_removed = False
+                            for index, device in enumerate(devices):
+                                files_to_remove = [file for file in device.get('files', []) if file.get('File Name') == file_name]
+                                for some_file in files_to_remove:
+                                    print(f"File detected in database, deleting...")
+                                    if any(file['File Name'] == some_file['File Name'] for file in devices[index]['files']):
+                                        devices[index]['files'].remove(some_file)  # Add the file if it doesn't exist
+                                        user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
+                                        file_removed = True
+
+                            if file_removed:
+                                print(f"{file_name} has been successfully removed from database")
+                            else:
+                                print(f"{file_name} not found in the database")
+                        except BrokenPipeError:
+                            print(f"Broken pipe moving on to the next socket.")
+                            continue  # This skips the rest of the current iteration and moves to the next socket
+                        except Exception as e:
+                            print(f"Error removing file from database: {e}")
+
+
+
+
+            elif file_type == "FILE_DELETE_REQUEST_RESPONSE":
+
+                print("Received FILE_DELETE_REQUEST_RESPONSE")
+                print(f"Received the request from {self.client_address}: {self.client_socket}")
+                directory_name = "BCloud"
+                directory_path = os.path.expanduser(f"~/{directory_name}")
+                file_save_path = os.path.join(directory_path, file_name)
+
+
+                # Check if the directory exists, create if it does not and create a welcome text file
+                if not os.path.exists(directory_path):
+                    os.makedirs(directory_path, exist_ok=True)
+                    welcome_file_path = os.path.join(directory_path, "welcome.txt")
+                    with open(welcome_file_path, 'w') as welcome_file:
+                        welcome_file.write("Welcome to Banbury Cloud! This is the directory that will contain all of the files "
+                                           "that you would like to have in the cloud and streamed throughout all of your devices. "
+                                           "You may place as many files in here as you would like, and they will appear on all of "
+                                           "your other devices.")
+
+                # Load Database
+                load_dotenv()
+                uri = os.getenv("MONGODB_URL")
+
+                client = MongoClient(uri)
+                db = client['myDatabase']
+                user_collection = db['users']
+                user = user_collection.find_one({'username': username})
+
+                   
+                for socket in ClientHandler.client_sockets:
+                    if socket != self.client_socket:
+
+                        try:
+                            # Search each device object in database for a file object that is equal to file_save_path
+                            devices = user.get('devices', [])
+                            file_removed = False
+                            for index, device in enumerate(devices):
+                                files_to_remove = [file for file in device.get('files', []) if file.get('File Name') == file_name]
+                                for some_file in files_to_remove:
+                                    print(f"File detected in database, deleting...")
+                                    if any(file['File Name'] == some_file['File Name'] for file in devices[index]['files']):
+                                        devices[index]['files'].remove(some_file)  # Add the file if it doesn't exist
+                                        user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
+                                        file_removed = True
+                        except BrokenPipeError:
+                            print(f"Broken pipe moving on to the next socket.")
+                            continue  # This skips the rest of the current iteration and moves to the next socket
+                        except Exception as e:
+                            print(f"Error sending to device: {e}")
+
+
+
+
+ 
             elif file_type == "PING_REQUEST_RESPONSE":
 
                 print("Received ping request response")
@@ -244,6 +389,9 @@ class ClientHandler(threading.Thread):
                     device_priority = data["device_priority"]
                     sync_status = data["sync_status"]
                     optimization_status = data["optimization_status"]
+
+
+
                     load_dotenv()
                     uri = os.getenv("MONGODB_URL")
  
@@ -381,7 +529,7 @@ def send_ping():
                     print(f"Sending ping request to {socket}")
                     try:
                         null_string = ""
-                        file_header = f"PING_REQUEST:{null_string}:END_OF_HEADER"
+                        file_header = f"PING_REQUEST:{null_string}:{null_string}:END_OF_HEADER"
                         socket.send(file_header.encode())
                         #socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
        
