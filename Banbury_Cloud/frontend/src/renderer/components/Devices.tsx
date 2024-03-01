@@ -15,7 +15,7 @@ export default function Greetings(): JSX.Element {
       <Grid container justifyContent="left">
       </Grid>
  
-      <Typography variant="h1" textAlign="left">
+      <Typography variant="h2" textAlign="left">
         Devices
       </Typography>
       <Stack spacing={4}>

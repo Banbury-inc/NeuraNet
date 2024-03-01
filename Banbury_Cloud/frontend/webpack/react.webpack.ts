@@ -38,7 +38,7 @@ const config: Configuration = {
       directory: path.resolve(rootPath, "dist/renderer"),
       publicPath: "/",
     },
-    port: 8080,
+    port: 8081,
     historyApiFallback: true,
     compress: true,
   },

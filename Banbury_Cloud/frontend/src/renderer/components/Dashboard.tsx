@@ -13,7 +13,7 @@ export default function Dashboard(): JSX.Element {
   return (
     <Container>
     <Stack spacing={1}>
-      <Typography variant="h1" textAlign="left">
+      <Typography variant="h2" textAlign="left">
         Dashboard
       </Typography>
 

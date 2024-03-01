@@ -27,6 +27,9 @@ import EnhancedTable from "./Table"
 import Dashboard from './Dashboard';
 import Devices from "./Devices" 
 import DifferentLength from "./LineChart" 
+
+
+
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -101,7 +104,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function MiniDrawer() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState('Dashboard');
+  const [activeTab, setActiveTab] = React.useState('Files');
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -132,7 +135,10 @@ export default function MiniDrawer() {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open}>
+      <Drawer 
+      variant="permanent"
+      open={open}
+      >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}

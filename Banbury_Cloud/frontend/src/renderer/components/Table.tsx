@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import Stack from '@mui/material/Stack';
 import { exec } from "child_process";
 import axios from 'axios';
 import { alpha } from '@mui/material/styles';
@@ -37,7 +37,7 @@ interface FileData {
 
 // Define head cells according to FileData
 const headCells = [
-  { id: 'fileName', numeric: false, label: 'File Name' },
+  { id: 'fileName', numeric: false, label: 'Name' },
   { id: 'dateUploaded', numeric: false, label: 'Date Uploaded' },
   { id: 'fileSize', numeric: true, label: 'File Size (bytes)' },
 ];
@@ -173,7 +173,7 @@ export default function EnhancedTable() {
   const [selectedFileNames, setSelectedFileNames] = useState<string[]>([]);
   const [page, setPage] = useState(0);
   const [dense, setDense] = useState(false);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [fileRows, setFileRows] = useState<FileData[]>([]); // State for storing fetched file data
   const getSelectedFileNames = () => {
     return selected.map(id => {
@@ -306,32 +306,6 @@ const handleApiCall = async () => {
       console.error('There was an error!', error);
  
     } 
-
-    try {
-      const response = await fetch('http://localhost:5000/request_file', {
-        method: 'POST', // or 'POST'
-        headers: {
-          'Content-Type': 'application/json',
-          // Add any other headers your API needs
-        },
-        // If your API requires a body, uncomment the line below
-        body: JSON.stringify({ files: selectedFileNames }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setButtonText(data.message)
-      console.log(data);
-
-      // Handle the response data
-      // For example, if it's a file to download:
-      // window.location.href = data.fileUrl;
-    } catch (error) {
-      console.error('There was an error!', error);
-    }
   };
 
 
@@ -393,34 +367,41 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
 
 
   return (
-
-    <Box sx={{ width: '100%' }}>
+    <Container>
+    <Box 
+      gap={4}
+      sx={{ width: '100%' }}>
       <Container>
-      <Typography variant="h1" textAlign="left">
+      <Stack spacing={2}>
+      <Typography variant="h2" textAlign="left">
         Files
       </Typography>
-
-            <Grid container spacing={2}>
+          <Grid container spacing={1}>
               <Grid item>
-          <InputFileUpload />
-          </Grid>
-
+                <InputFileUpload />
+              </Grid>
               <Grid item>
-          <Button variant="contained" onClick={handleDownloadClick}>{buttonText}</Button>
-          </Grid>
+                <Button 
+                variant="outlined"
+                onClick={handleDownloadClick}
+                size="small"
+              >{buttonText}</Button>
+              </Grid>
               <Grid item>
-          </Grid>
-              <Grid item>
-          <Button variant="contained">Delete</Button>
-
-          </Grid>
+                <Button 
+                variant="outlined"
+                size="small"
+              >Delete</Button>
+              </Grid>
         </Grid>
+
+      </Stack>
     </Container>
- 
 
-
-
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Box 
+          my={2}
+          sx={{ width: '100%'}}>
+        <Container>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
@@ -482,7 +463,12 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-      </Paper>
+
+      </Container>
+      </Box>
     </Box>
+
+    </Container>
   );
+
 }

@@ -10,6 +10,7 @@ import requests
 import configparser
 import pymongo
 import time
+
 def run(receiver_socket):
     end_of_header = b"END_OF_HEADER"
     buffer = b""
@@ -187,6 +188,7 @@ def get_device_info():
         'optimization_status': True
     }
     device_info_json = json.dumps(device_info, indent=4)
+
     return device_info_json
 
 # Get the home directory of the user

@@ -20,7 +20,7 @@ function createWindow(): void {
   });
 
   const startURL = process.env.NODE_ENV === "development"
-    ? "http://localhost:8080"
+    ? "http://localhost:8081"
     : url.format({
         pathname: path.join(__dirname, "renderer/index.html"),
         protocol: "file:",
