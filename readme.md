@@ -1,12 +1,5 @@
-<!-- First row: -->
-<p align="center">
-  <img src="https://github.com/mmills6060/Athena/blob/5c5af257a4f03597422a419f5a06e56f1940e7db/3yk0j06n.png" alt="Badge 1">
-  <img src="https://img.shields.io/github/downloads/mmills6060/Athena/total" alt="Badge 2">
-  <img src="https://img.shields.io/github/repo-size/mmills6060/Athena" alt="Badge 3">
-  <img src="https://img.shields.io/github/last-commit/mmills6060/Athena" alt="Badge 4">
-</p>
 
-<!-- Second row: -->
+<!-- First row: -->
 <p align="center">
   <a href="https://gitpod.io/#https://github.com/mmills6060/Athena">
     <img src="https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod&style=flat-square" height="20" alt="Gitpod Ready-to-Code">
@@ -24,6 +17,16 @@
     <img src="https://img.shields.io/static/v1?label=code%20style&message=black&color=black&style=flat-square" height="20" alt="code style: black">
   </a>
 </p>
+
+<!-- Second row: -->
+<p align="center">
+  <img src="https://github.com/mmills6060/Athena/blob/5c5af257a4f03597422a419f5a06e56f1940e7db/3yk0j06n.png" alt="Badge 1">
+  <img src="https://img.shields.io/github/downloads/mmills6060/Athena/total" alt="Badge 2">
+  <img src="https://img.shields.io/github/repo-size/mmills6060/Athena" alt="Badge 3">
+  <img src="https://img.shields.io/github/last-commit/mmills6060/Athena" alt="Badge 4">
+</p>
+
+
 
 # Overview
 
