@@ -14,7 +14,6 @@ import psutil
 import GPUtil
 
 
-
 def run(receiver_socket):
     end_of_header = b"END_OF_HEADER"
     buffer = b""

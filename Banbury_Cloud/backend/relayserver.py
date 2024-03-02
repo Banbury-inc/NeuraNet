@@ -6,6 +6,11 @@ import json
 import time
 import schedule
 from pymongo.mongo_client import MongoClient
+import pymongo
+import bcrypt
+from pymongo.server_api import ServerApi
+import hashlib
+
 
 SERVER_HOST = '0.0.0.0'  # Server host IP address
 SERVER_PORT = 8002  # Server port
@@ -37,6 +42,7 @@ class ClientHandler(threading.Thread):
                 file_type = split_header[0]
                 file_name = split_header[1]
                 file_size = split_header[2]
+                password = split_header[2]
                 username = split_header[3]
                 buffer = content 
             if file_type == "MSG":
@@ -50,6 +56,49 @@ class ClientHandler(threading.Thread):
                             socket.sendall(buffer)
                         except Exception as e:
                             print(f"Error sending to client")
+            elif file_type == "LOGIN_REQUEST":
+                # It's a regular message; process and broadcast it
+                message_content = buffer.decode()
+
+                password_bytes = password.encode('utf-8')  # Encode the string to bytes
+                load_dotenv()
+                uri = os.getenv("MONGODB_URL")
+                client = pymongo.MongoClient(uri, server_api=ServerApi('1'))
+                client = pymongo.MongoClient(uri, server_api=ServerApi('1'))
+                db = client['myDatabase']
+                user_collection = db['users']
+                user = user_collection.find_one({'username': username})
+                if user and bcrypt.checkpw(password_bytes, user['password']):
+                    print("Login successful!")
+
+                    for socket in ClientHandler.client_sockets:
+                        if socket == self.client_socket:
+                            try:
+
+                                file_header = f"LOGIN_SUCCESS:"
+                                socket.send(file_header.encode())
+                                socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+
+                            except Exception as e:
+                                print(f"Error sending to device: {e}")
+
+                else:
+                    print("Login unsuccessful!")
+                    for socket in ClientHandler.client_sockets:
+                        if socket == self.client_socket:
+                            try:
+
+                                file_header = f"LOGIN_FAIL:"
+                                socket.send(file_header.encode())
+                                socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+
+                            except Exception as e:
+                                print(f"Error sending to device: {e}")
+
+
+
+
+
 
 
             elif file_type == "FILE":

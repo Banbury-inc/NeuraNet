@@ -42,6 +42,7 @@ const theme = createTheme({
       fontSize: "1.7rem",
     },
   },
+
 });
 
 export default theme;
