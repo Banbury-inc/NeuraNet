@@ -1,13 +1,13 @@
 <img src="https://github.com/mmills6060/Athena/blob/5c5af257a4f03597422a419f5a06e56f1940e7db/3yk0j06n.png">
-
-<img src="https://img.shields.io/github/downloads/mmills6060/Athena/total">` `<img src="https://img.shields.io/github/repo-size/mmills6060/Athena">` `<img src="https://img.shields.io/github/last-commit/mmills6060/Athena">
-
-  <a href="https://gitpod.io/#https://github.com/mmills6060/Athena">
-    <img src="https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod&style=flat-square" height="20" alt="Gitpod Ready-to-Code">
-  </a>
-  <a href="https://github.com/TheAlgorithms/Python/blob/master/CONTRIBUTING.md">
-    <img src="https://img.shields.io/static/v1.svg?label=Contributions&message=Welcome&color=0059b3&style=flat-square" height="20" alt="Contributions Welcome">
-  </a>
+<img src="https://img.shields.io/github/downloads/mmills6060/Athena/total">
+<img src="https://img.shields.io/github/repo-size/mmills6060/Athena">
+<img src="https://img.shields.io/github/last-commit/mmills6060/Athena">
+<a href="https://gitpod.io/#https://github.com/mmills6060/Athena">
+<img src="https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod&style=flat-square" height="20" alt="Gitpod Ready-to-Code">
+</a>
+<a href="https://github.com/TheAlgorithms/Python/blob/master/CONTRIBUTING.md">
+<img src="https://img.shields.io/static/v1.svg?label=Contributions&message=Welcome&color=0059b3&style=flat-square" height="20" alt="Contributions Welcome">
+</a>
 
 
 
