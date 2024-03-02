@@ -2,7 +2,7 @@
   <img src="https://github.com/mmills6060/Athena/blob/5c5af257a4f03597422a419f5a06e56f1940e7db/3yk0j06n.png" height="300" alt="Athena Logo"/>
 </p>
 <p align="center">  
-  <em>🤖 Assemble, configure, and deploy autonomous AI Agent(s) in your browser. 🤖  </em>
+  <em>🤖 Empowering Decentralized AI Advancement through Personal Device Networks 🤖  </em>
 </p>
 <p align="center">
   <img src="https://img.shields.io/github/downloads/mmills6060/Athena/total" alt="Badge 2">
