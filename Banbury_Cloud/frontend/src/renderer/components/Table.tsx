@@ -41,8 +41,8 @@ interface FileData {
 // Define head cells according to FileData
 const headCells = [
   { id: 'fileName', numeric: false, label: 'Name' },
-  { id: 'dateUploaded', numeric: false, label: 'Date Uploaded' },
-  { id: 'fileSize', numeric: true, label: 'File Size (bytes)' },
+  { id: 'fileSize', numeric: false, label: 'File Size (bytes)' },
+  { id: 'dateUploaded', numeric: true, label: 'Date Uploaded' },
 ];
 
 type Order = 'asc' | 'desc';
@@ -222,8 +222,8 @@ const handleApiCall = async () => {
           device.files.map((file: any, fileIndex: number): FileData => ({
             id: index * 1000 + fileIndex, // Generating unique IDs
             fileName: file["File Name"],
-            dateUploaded: file["Date Uploaded"],
             fileSize: file["File Size"],
+            dateUploaded: file["Date Uploaded"],
           }))
         );
         console.log(files);
@@ -477,8 +477,8 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
           <TableCell component="th" id={labelId} scope="row" padding="none">
             {row.fileName}
           </TableCell>
+          <TableCell align="left">{row.fileSize}</TableCell>
           <TableCell align="right">{row.dateUploaded}</TableCell>
-          <TableCell align="right">{row.fileSize}</TableCell>
         </TableRow>
       );
     })}
