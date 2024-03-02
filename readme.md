@@ -23,10 +23,10 @@ Banbury Cloud is a subset of Athena which serves as the decentralized file shari
 
 ## Banbury Cloud Features
 
+* Seamless connectivity of devices, regardless of what network they are on
 * Predict device downtime
 * predict future wifi speed
 * GPU, CPU, RAM predictions
-* User behavior analysis
 * Predicting the popularity and demand for specific content based on historical usage patterns, user preferences, and content characteristics.
 * Anticipating user requests and pre-fetching or caching content to reduce latency and improve content delivery speed.
 * predicit optimal allocation of files based on the values above
