@@ -10,17 +10,12 @@
   <img src="https://img.shields.io/github/last-commit/mmills6060/Athena" alt="Badge 4">
   <img src="https://img.shields.io/github/actions/workflow/status/TheAlgorithms/Python/build.yml?branch=master&label=CI&logo=github&style=flat-square" alt="GitHub Workflow Status">
    <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=flat-square" alt="pre-commit">
- 
+</p>
 </p>
 
+Athena combines the concepts of web 3.0 file services and machine learning. The overall goal is to create a service that enables users to train/use/maintain artificial inteligence through a decentralized file sharing network. This could be an incredibly powerful and useful tool, as developing large language models are oftentimes limited to high net worth corporations. Our goal is to eliminate the necessity of cloud computing by empowering individuals with the tools necessary to seamlessly connect all of their devices. By allowing all of our devices to actively participate in the advancement on Artifical Intelligence, we can create tools beyond our imagination.
 
-
-</p>
-
-
-# Overview
-
-This is a project that I have been working on that combines the concepts of web 3.0 file services and machine learning. My overal idea is to create a machine learning algorithm that will save and fetch data through a decentralized file sharing network. This could be an incredibly powerful and useful tool, as developing large language models are oftentimes limited to high net worth corporations. In other words, why pay a lot of money to rent out a server to train a machine learning model when you can achieve the same result by combining all of the resources of each deviec in your own home? By allowing all of our devices to actively participate in the advancement on Artifical Intelligence, we can create tools beyond our imagination.
+---
 
 ## Banbury Cloud
 
