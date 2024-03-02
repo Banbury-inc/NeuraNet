@@ -8,12 +8,9 @@
   <img src="https://img.shields.io/github/downloads/mmills6060/Athena/total" alt="Badge 2">
   <img src="https://img.shields.io/github/repo-size/mmills6060/Athena" alt="Badge 3">
   <img src="https://img.shields.io/github/last-commit/mmills6060/Athena" alt="Badge 4">
-    <a href="https://github.com/mmills6060">
-    <img src="https://img.shields.io/github/actions/workflow/status/TheAlgorithms/Python/build.yml?branch=master&label=CI&logo=github&style=flat-square" height="20" alt="GitHub Workflow Status">
-  </a>
-  <a href="https://github.com/pre-commit/pre-commit">
-    <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=flat-square" height="20" alt="pre-commit">
-  </a>
+  <img src="https://img.shields.io/github/actions/workflow/status/TheAlgorithms/Python/build.yml?branch=master&label=CI&logo=github&style=flat-square" alt="GitHub Workflow Status">
+   <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=flat-square" alt="pre-commit">
+ 
 </p>
 
 
