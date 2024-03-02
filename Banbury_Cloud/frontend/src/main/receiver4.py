@@ -382,6 +382,10 @@ def get_storage_capacity():
 def get_gpu_usage():
     """
     Returns the GPU usage.
+
+    Note: This is a very vulnerable function that is likely to have a lot of bugs. I have yet to find a universal solution for all devices. 
+    It seems like the GPU driver is primarily responsible for returning this value, which means that we will need to implement a bunch of different
+    alternatives for all of the different types of GPU's that are out there. 
     """
     try:
         gpus = GPUtil.getGPUs()
