@@ -1,18 +1,19 @@
-<img src="https://github.com/mmills6060/Athena/blob/5c5af257a4f03597422a419f5a06e56f1940e7db/3yk0j06n.png">
-<img src="https://img.shields.io/github/downloads/mmills6060/Athena/total">
-<img src="https://img.shields.io/github/repo-size/mmills6060/Athena">
-<img src="https://img.shields.io/github/last-commit/mmills6060/Athena">
-<a href="https://gitpod.io/#https://github.com/mmills6060/Athena">
-<img src="https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod&style=flat-square" height="20" alt="Gitpod Ready-to-Code">
-</a>
-<a href="https://github.com/TheAlgorithms/Python/blob/master/CONTRIBUTING.md">
-<img src="https://img.shields.io/static/v1.svg?label=Contributions&message=Welcome&color=0059b3&style=flat-square" height="20" alt="Contributions Welcome">
-</a>
+<!-- First row: -->
+<p align="center">
+  <img src="https://github.com/mmills6060/Athena/blob/5c5af257a4f03597422a419f5a06e56f1940e7db/3yk0j06n.png" alt="Badge 1">
+  <img src="https://img.shields.io/github/downloads/mmills6060/Athena/total" alt="Badge 2">
+  <img src="https://img.shields.io/github/repo-size/mmills6060/Athena" alt="Badge 3">
+  <img src="https://img.shields.io/github/last-commit/mmills6060/Athena" alt="Badge 4">
+</p>
 
-
-
-  <!-- Second row: -->
-  <br>
+<!-- Second row: -->
+<p align="center">
+  <a href="https://gitpod.io/#https://github.com/mmills6060/Athena">
+    <img src="https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod&style=flat-square" height="20" alt="Gitpod Ready-to-Code">
+  </a>
+  <a href="https://github.com/TheAlgorithms/Python/blob/master/CONTRIBUTING.md">
+    <img src="https://img.shields.io/static/v1.svg?label=Contributions&message=Welcome&color=0059b3&style=flat-square" height="20" alt="Contributions Welcome">
+  </a>
   <a href="https://github.com/mmills6060">
     <img src="https://img.shields.io/github/actions/workflow/status/TheAlgorithms/Python/build.yml?branch=master&label=CI&logo=github&style=flat-square" height="20" alt="GitHub Workflow Status">
   </a>
@@ -22,6 +23,7 @@
   <a href="https://github.com/psf/black">
     <img src="https://img.shields.io/static/v1?label=code%20style&message=black&color=black&style=flat-square" height="20" alt="code style: black">
   </a>
+</p>
 
 # Overview
 
