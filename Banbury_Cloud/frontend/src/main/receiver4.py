@@ -26,19 +26,19 @@ def run(receiver_socket):
         data = receiver_socket.recv(4096)
         if not data:
             break
-        print(data)
         buffer += data
         if end_of_header in buffer and header is None:
             header_part, content = buffer.split(end_of_header, 1)
             header = header_part.decode() 
-            print(f"header: {header}")
             split_header = header.split(":")
             file_type = split_header[0]
             file_name = split_header[1]
             file_size = split_header[2]
             username = split_header[3]
             buffer = content 
-        print(file_type)
+
+
+
         if file_type == "MSG":
             # It's a regular message; process and broadcast it
             message_content = buffer.decode()
@@ -404,15 +404,15 @@ def get_cpu_usage():
     """
     Returns the CPU usage.
     """
-    
-    return f"CPU Usage: {psutil.cpu_percent()}%"
+    cpu_usage = psutil.cpu_percent() 
+    return cpu_usage
 
 def get_ram_usage():
     """
     Returns the RAM usage.
     """
     ram = psutil.virtual_memory()
-    return f"RAM Usage: {ram.percent}%"
+    return ram.percent
 
 
 

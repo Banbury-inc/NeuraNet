@@ -431,10 +431,9 @@ class ClientHandler(threading.Thread):
                             ram_usages = [float(usage) for usage in device.get('ram_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
                             total_upload_speed = sum(upload_speeds) + float(upload_network_speed)
                             total_download_speed = sum(download_speeds) + float(download_network_speed)
-                            print("in device name loop")
-                            total_gpu_usage = sum(gpu_usages) + float(gpu_usages)
-                            total_cpu_usage = sum(cpu_usages) + float(cpu_usages)
-                            total_ram_usage = sum(ram_usages) + float(ram_usages)
+                            total_gpu_usage = sum(gpu_usages) + float(gpu_usage)
+                            total_cpu_usage = sum(cpu_usages) + float(cpu_usage)
+                            total_ram_usage = sum(ram_usages) + float(ram_usage)
                             upload_speed_count = len(upload_speeds) + 1
                             download_speed_count = len(download_speeds) + 1
                             gpu_usage_count = len(gpu_usages) + 1
@@ -481,9 +480,9 @@ class ClientHandler(threading.Thread):
                         ram_usages = [float(usage) for usage in device.get('ram_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
                         total_upload_speed = sum(upload_speeds) + float(upload_network_speed)
                         total_download_speed = sum(download_speeds) + float(download_network_speed)
-                        total_gpu_usage = sum(gpu_usages) + float(gpu_usages)
-                        total_cpu_usage = sum(cpu_usages) + float(cpu_usages)
-                        total_ram_usage = sum(ram_usages) + float(ram_usages)
+                        total_gpu_usage = sum(gpu_usages) + float(gpu_usage)
+                        total_cpu_usage = sum(cpu_usages) + float(cpu_usage)
+                        total_ram_usage = sum(ram_usages) + float(ram_usage)
                         upload_speed_count = len(upload_speeds) + 1
                         download_speed_count = len(download_speeds) + 1
                         gpu_usage_count = len(gpu_usages) + 1
