@@ -8,7 +8,7 @@
   <a href="https://github.com/TheAlgorithms/Python/blob/master/CONTRIBUTING.md">
     <img src="https://img.shields.io/static/v1.svg?label=Contributions&message=Welcome&color=0059b3&style=flat-square" height="20" alt="Contributions Welcome">
   </a>
-  <img src="https://img.shields.io/github/repo-size/Athena/Python.svg?label=Repo%20size&style=flat-square" height="20">
+
 
 
   <!-- Second row: -->
