@@ -36,7 +36,7 @@ Banbury Cloud is a subset of Athena which serves as the decentralized file shari
 Athena is developed by Banbury and by users like you. We welcome bothh pull requests and issues on Github. Want to get paid to work on openpilot? Banbury is hiring and offers lots of bounties for external contributors. 
 
   * Information about running athena lives at
-  * Read the bounties page to see how you can get paid!
+  * Read the [bounties](https://github.com/Banbury-inc/Athena/blob/main/docs/bounties.md) page to see how you can get paid!
   * Check out the project page to see our workflow and timeline
 
 
