@@ -45,6 +45,9 @@ Athena is developed by Banbury and by users like you. We welcome bothh pull requ
 * <a href="https://github.com/Banbury-inc/Athena/tree/main/Banbury_Cloud"> Banbury Cloud </a>
   * <a href="https://github.com/Banbury-inc/Athena/tree/main/Banbury_Cloud/frontend"> Frontend </a>
   * <a href="https://github.com/Banbury-inc/Athena/blob/main/Banbury_Cloud/backend/readme.md"> Backend </a>
+* Getting Started
+  * [Installation](https://github.com/Banbury-inc/Athena/blob/main/docs/getstarted.md)
+  * [Bounties](https://github.com/Banbury-inc/Athena/blob/main/docs/bounties.md) 
 
   
 
