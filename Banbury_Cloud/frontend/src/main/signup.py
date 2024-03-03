@@ -1,9 +1,9 @@
 import sys
 import os
+import json
+import requests
 from dotenv import load_dotenv
-import pymongo
 import bcrypt
-from pymongo.server_api import ServerApi
 
 def signup(username, password_str, email="", firstname="", lastname="", phone_number=""):
     # Check if username and password are provided
@@ -15,30 +15,34 @@ def signup(username, password_str, email="", firstname="", lastname="", phone_nu
     password_bytes = password_str.encode('utf-8')  # Encode the string to bytes
     hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
 
-    # Connect to MongoDB
-    load_dotenv()
-    uri = os.getenv("MONGODB_URL")
-    client = pymongo.MongoClient(uri, server_api=ServerApi('1'))
-    db = client['myDatabase']
-    user_collection = db['users']
-
-    # Check if the username already exists
-    existing_user = user_collection.find_one({'username': username})
-    if existing_user:
-        print("Username already exists. Please choose another one.")
-        return
-
-    # Insert the new user into the database
-    user_data = {
+    # Prepare the data for the API call
+    data = {
         'username': username,
-        'password': hashed_password,
+        'password': hashed_password.decode(),  # Convert bytes to string for JSON serialization
         'email': email,
         'firstname': firstname,
         'lastname': lastname,
         'phone_number': phone_number
     }
-    user_collection.insert_one(user_data)
-    print("Signup successful!")
+
+    # Make the API call to register the user
+    response = requests.post('https://website2-v3xlkt54dq-uc.a.run.app/register', json=data)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        print("User registration successful!")
+
+        # Add credentials to credentials.json in banbury
+        credentials = {
+            'username': username,
+            'password': password_str  # Storing plaintext password for demonstration, use with caution
+        }
+        with open('banbury/credentials.json', 'w') as f:
+            json.dump(credentials, f)
+        print("Credentials added to credentials.json in banbury.")
+    else:
+        print("User registration failed:", response.text)
+
 
 def main():
     if len(sys.argv) > 1:
