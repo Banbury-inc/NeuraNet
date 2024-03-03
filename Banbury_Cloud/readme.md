@@ -22,3 +22,8 @@ For example, if I turn off a specific device every night at 5pm, Deep Learning w
 The biggest problem with this project is that I had to figure out a way to be able to access devices regardless of what wifi network they are on. There are a lot of complications with this, especially when there are a bunch of issues with port forwarding. I flirted with many different ideas such as using IPFS, but came across similar issues. I decided that the best option would be to create a relay server, and essentially have a web socket open. This completely eliminates the problem with port forwarding and creates a seamless solution for users to connect devices on separate networks. 
 
 The reason why I chose electron is because I need software that is capable of performing tasks on the actual operating system. For example, downloading, uploading, and deleting files. This is difficult to do with a standard web app. By using a desktop app, we have a lot more control over what we can do with a users computer. 
+
+
+
+
+i
