@@ -20,6 +20,9 @@ import theme from "../theme";
 import App from './App';
 import { createRoot } from "react-dom/client";
 
+import MiniDrawer from "./VariantDrawer";
+import { BrowserRouter, Route, Routes, Outlet, Navigate } from "react-router-dom";
+
 export default function SignIn() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -53,7 +56,10 @@ export default function SignIn() {
   };
 
   if (isAuthenticated) {
-    return <App />;
+
+    return <MiniDrawer />;
+
+
   }
 
   return (
@@ -126,12 +132,12 @@ export default function SignIn() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link href="/register" variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
@@ -142,3 +148,6 @@ export default function SignIn() {
     </ThemeProvider>
   );
 }
+
+
+

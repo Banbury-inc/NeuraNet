@@ -3,6 +3,13 @@ import React from "react";
 import theme from "../theme";
 import PermanentDrawerLeft from "./Drawer";
 import MiniDrawer from "./VariantDrawer";
+import { BrowserRouter, Route, Routes, Outlet, Navigate } from "react-router-dom";
+import Signup from "./signup";
+import Signin from "./Login";
+
+
+
+
 
 export default function App(): JSX.Element {
   return (
@@ -10,16 +17,34 @@ export default function App(): JSX.Element {
     // https://mui.com/customization/theming/
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box
-        sx={{
-          backgroundColor: (theme) => theme.palette.background.default,
-        }}
-      >
-        <main>
-          {/* This is where your app content should go */}
-          <MiniDrawer />
-        </main>
-      </Box>
+      <BrowserRouter> {/* Wrap your content with BrowserRouter */}
+        <Box
+          sx={{
+            backgroundColor: (theme) => theme.palette.background.default,
+          }}
+        >
+          {/* <main> */}
+            {/* This is where your app content should go */}
+            {/* <MiniDrawer /> */}
+          {/* </main> */}
+
+
+
+
+
+          <Routes>
+          
+            <Route path="/" element={<Signin />} />
+            <Route path="/main" element={<MiniDrawer />} />
+            <Route path="/register" element={<Signup />} />
+            <Route path="/login" element={<Signin />} />
+          </Routes>  
+
+
+
+        </Box>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
+
