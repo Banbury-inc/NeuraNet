@@ -221,7 +221,7 @@ const handleApiCall = async () => {
         const response = await axios.get<{ devices: any[] }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
 
         const files = response.data.devices.flatMap((device, index) =>
-          device.files.map((file: any, fileIndex: number): FileData => ({
+          device.files.map((file: any, fileIndex: number): any => ({
             id: index * 1000 + fileIndex, // Generating unique IDs
             fileName: file["File Name"],
             fileSize: file["File Size"],
