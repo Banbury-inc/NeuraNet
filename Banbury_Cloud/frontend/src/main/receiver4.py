@@ -392,7 +392,7 @@ def get_gpu_usage():
         for gpu in gpus:
             gpu_id = gpu.id
             gpu_name = gpu.name
-            gpu_load = f"{gpu.load*100}%"
+            gpu_load = f"{gpu.load*100}"
             gpu_free_memory = f"{gpu.memoryFree}MB"
             gpu_used_memory = f"{gpu.memoryUsed}MB"
             gpu_total_memory = f"{gpu.memoryTotal}MB"

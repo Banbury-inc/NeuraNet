@@ -5,10 +5,11 @@ from dotenv import load_dotenv
 import json
 import time
 import schedule
-from pymongo.mongo_client import MongoClient
+# from pymongo.mongo_client import MongoClient
+from pymongo import MongoClient
 import pymongo
 import bcrypt
-from pymongo.server_api import ServerApi
+# from pymongo.server_api import ServerApi
 import hashlib
 
 
@@ -63,8 +64,8 @@ class ClientHandler(threading.Thread):
                 password_bytes = password.encode('utf-8')  # Encode the string to bytes
                 load_dotenv()
                 uri = os.getenv("MONGODB_URL")
-                client = pymongo.MongoClient(uri, server_api=ServerApi('1'))
-                client = pymongo.MongoClient(uri, server_api=ServerApi('1'))
+
+                client = MongoClient(uri)
                 db = client['myDatabase']
                 user_collection = db['users']
                 user = user_collection.find_one({'username': username})
