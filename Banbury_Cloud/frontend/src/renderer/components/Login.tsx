@@ -1,4 +1,7 @@
+
+
 import * as React from 'react';
+import { useState } from 'react';
 import { exec } from "child_process";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -14,24 +17,13 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from "../theme";
-function Copyright(props: any) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://www.banburyenterprises.com">
-        Banbury
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
-// TODO remove, this demo shouldn't need to reset the theme.
-const defaultTheme = createTheme();
+import App from './App';
+import { createRoot } from "react-dom/client";
 
 export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
@@ -39,10 +31,8 @@ export default function SignIn() {
       password: data.get('password'),
     });
 
-    try{
-
+    try {
       const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
-       
       exec(`python "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
@@ -50,20 +40,21 @@ export default function SignIn() {
         }
         if (stderr) {
           console.error(`Python Script Error: ${stderr}`);
-          return
+          return;
         }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-          return
+        if (stdout && stdout.trim() === 'Result: success') {
+          console.log('Login successful');
+          setIsAuthenticated(true);
         }
-        console.log(`Python Script Message: ${stdout}`);
-
       });
     } catch (error) {
       console.error('There was an error!', error);
- 
-    } 
+    }
   };
+
+  if (isAuthenticated) {
+    return <App />;
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -147,7 +138,6 @@ export default function SignIn() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );

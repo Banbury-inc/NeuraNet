@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./components/App";
 import Login from "./components/Login";
-
 import axios from 'axios';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import App from './components/App';
+
+
 
 const rootElement = document.getElementById("root");
 if (rootElement) {
@@ -11,14 +14,12 @@ if (rootElement) {
 
   interface LoginResponse {
       response: 'success' | 'fail';
-      reason?: string; // Include other fields from the response as needed
+      reason?: string; // Making response field optional
   }
 
-  // Renamed to `authenticate` to match the usage in the Main component
   async function authenticate(username: string, password: string): Promise<boolean> {
       try {
           const response = await axios.post<LoginResponse>('https://website2-v3xlkt54dq-uc.a.run.app/login_api/', {
-          // const response = await axios.post<LoginResponse>('http://0.0.0.0:8080/login_api/', {
               username,
               password,
           }, {
@@ -27,9 +28,9 @@ if (rootElement) {
               },
           });
    
-          // Check if login was successful
           if (response.data.response === 'success') {
               console.log('Login successful');
+
               return true;
           } else {
               console.error('Login failed', response.data.reason);
@@ -40,36 +41,69 @@ if (rootElement) {
           return false;
       }
   }
- 
-  function Main() {
-      const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-
-      useEffect(() => {
-          (async () => {
-              // Assuming fetchCredentials is a dummy/placeholder function
-              const credentials = await fetchCredentials(); // You should define or import this function
-              const success = await authenticate(credentials.username, credentials.password);
-              setIsAuthenticated(success);
-          })();
-      }, []);
-
-      if (isAuthenticated === null) {
-          return <div>Loading...</div>; // or any other loading indicator
-      }
-  
-      return isAuthenticated ? <App /> : <Login />;
-  }
    
-  // Render the Main component
+  function Main() {
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        (async () => {
+            const credentials = await fetchCredentials();
+
+            if (credentials === null) {
+                // If credentials are not found, directly render the Login component
+                root.render(<Login />);
+            } else {
+                const success = await authenticate(credentials.username, credentials.password);
+                setIsAuthenticated(success);
+            }
+        })();
+    }, []);
+  
+    if (isAuthenticated === null) {
+        return <div>Loading...</div>;
+    }
+    return isAuthenticated ? <App /> : <Login />;
+}
+   
   root.render(<Main />);
 } else {
   console.error("Failed to find the root element");
 }
 
-// Utility function (needs to be defined or imported)
-async function fetchCredentials() {
-  // Here, you would fetch or read your credentials
-  // For demonstration, returning a mock object
-  return { username: "mmills6060", password: "Dirtballer6060" };
+interface Credentials {
+  username: string;
+  password: string;
 }
 
+async function fetchCredentials(): Promise<Credentials | null> {
+  try {
+    const credentialsPath = path.join(__dirname, '.banbury', 'credentials.json');
+
+    // Check if the file exists
+    try {
+      await fs.access(credentialsPath);
+    } catch (accessError) {
+      // If the file doesn't exist, create it with default credentials
+      await fs.mkdir(path.dirname(credentialsPath), { recursive: true });
+      await fs.writeFile(credentialsPath, JSON.stringify({ username: 'default', password: 'default' }));
+    }
+
+    // Read the file
+    const data = await fs.readFile(credentialsPath, 'utf8');
+    if (!data.trim()) {
+      console.error('Credentials file is empty');
+      return null;
+    }
+    const credentialsObj = JSON.parse(data);
+
+    const [username, password] = Object.entries(credentialsObj)[0];
+
+    const credentials: Credentials = { username, password: password as string };
+
+    console.log(credentials);
+    return credentials;
+  } catch (error: any) {
+    console.error('Failed to read credentials:', error);
+    return null;
+  }
+}
