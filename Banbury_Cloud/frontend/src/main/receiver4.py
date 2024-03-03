@@ -123,7 +123,7 @@ def run(receiver_socket):
             device_info = get_device_info()
             print("Sending a ping response")
             null_string = ""
-            file_header = f"PING_REQUEST_RESPONSE:{null_string}:{null_string}:END_OF_HEADER"
+            file_header = f"PING_REQUEST_RESPONSE:{null_string}:{null_string}:{null_string}:END_OF_HEADER"
             receiver_socket.send(file_header.encode())
             device_info_with_stop_signal = f"{device_info}END_OF_JSON"
             #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
@@ -392,7 +392,7 @@ def get_gpu_usage():
         for gpu in gpus:
             gpu_id = gpu.id
             gpu_name = gpu.name
-            gpu_load = f"{gpu.load*100}"
+            gpu_load = gpu.load*100
             gpu_free_memory = f"{gpu.memoryFree}MB"
             gpu_used_memory = f"{gpu.memoryUsed}MB"
             gpu_total_memory = f"{gpu.memoryTotal}MB"
