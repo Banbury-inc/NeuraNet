@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banbury</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="preload" as="font">
+<link href="{% static 'cloud-run-32-color.png' %}" rel="icon" type="image/png" />
+</head>
+
+<body>
+    <h1>Welcome to Banbury</h1>
+    <div class="menu">
+        <a href="/login/">Log In</a>
+        <a href="/register/">Register</a>
+    <h3>February 3, 2024 - Banbury Cloud Beta CLI 1.0.1 Released</h3>
+    <p>Recently, we have made a slight change in what we have been doing in terms of the file sharing. Initially, 
+      we had an idea that IPFS would really be the backbone of the decentralized file sharing. We came across 
+      a lot of complications, especially when it came to port forwarding. In other words, it was really easy 
+      to upload files from IPFS and download them again, but only within your own network. Ultimately, we decided
+      to drop the idea of IPFS, for now. Instead, we have decided to implement something called a relay server.
+      In other words, this provides a way for us to access files on another device, even if that device is on another
+      network. This is a really exciting new direction for us. </p>
+    <p>In recent developments, we have been working on a desktop application that would be running all of the logic
+      necessary in order to bring the device online. This can't really happen with a web app, and we apps are not able
+      to access things like the files on your computer, especially in the way that we want. Our next announcement
+      will hopefully be the release of the desktop app. We are also working hard to make the desktop app open source.</p>
+    <h3>February 3, 2024 - Banbury Cloud Beta CLI Tool Released</h3>
+    <p>There are some exciting new advancements in the realm of Banbury! We have recently released 
+    the very first Beta version of bcloud. bcloud is a CLI tool for Banbury Cloud. This acts as a 
+    prototype for what will eventually be Banbury Cloud.</p>
+
+    <a href="{% url 'download-deb' %}">Download Debian Package</a>
+
+    </div>
+</body>
+</html>

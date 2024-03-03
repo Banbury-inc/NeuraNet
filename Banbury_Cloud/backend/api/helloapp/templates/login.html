@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if error %}
+            <div>{{ error }}</div>
+        {% endif %}
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
