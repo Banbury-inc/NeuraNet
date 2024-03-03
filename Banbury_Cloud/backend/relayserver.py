@@ -413,67 +413,127 @@ class ClientHandler(threading.Thread):
                 print("Received ping request response")
 
                 message_content = buffer.decode()
+                print(f"message_content: {message_content}")
                 end_of_JSON = "END_OF_JSON"
                 limited_message_content = message_content.split(end_of_JSON)[0]
                 print(limited_message_content)
-                try:
-                    data = json.loads(limited_message_content)
-                    
-                except json.JSONDecodeError as e:
-                    print(f"JSON decode error {e}")
-                    data = None
-                try:
-                    username = data["user"]
-                    device_number = data["device_number"]
-                    device_name = data["device_name"]
-                    files = data["files"]
-                    number_of_files = str(len(files))
-                    storage_capacity_GB = data["storage_capacity_GB"]
-                    date_added = data["date_added"]
-                    ip_address = data["ip_address"]
-                    average_network_speed = data["average_network_speed"]
-                    upload_network_speed = data["upload_network_speed"]
-                    download_network_speed = data["download_network_speed"]
-                    gpu_usage = data["gpu_usage"]
-                    cpu_usage = data["cpu_usage"]
-                    ram_usage = data["ram_usage"]
-                    network_reliability = data["network_reliability"]
-                    average_time_online = data["average_time_online"]
-                    device_priority = data["device_priority"]
-                    sync_status = data["sync_status"]
-                    optimization_status = data["optimization_status"]
+                # if end_ofJSON is not in message content,  then the message is incomplete
+                total_json = ""
+                if end_of_JSON not in message_content:
+                    print("Incomplete message")
+                    # add meesage_content to a variable called total_json
+                    total_json += message_content
+                elif end_of_JSON in message_content:
+                    print("Complete message")
+                    # add message_content to a variable called total_json
+                    total_json += limited_message_content
+                    # parse the JSON
+                    try:
+                        data = json.loads(total_json)
+                        
+                    except json.JSONDecodeError as e:
+                        print(f"JSON decode error {e}")
+                        data = None
+                    try:
+                        username = data["user"]
+                        device_number = data["device_number"]
+                        device_name = data["device_name"]
+                        files = data["files"]
+                        number_of_files = str(len(files))
+                        storage_capacity_GB = data["storage_capacity_GB"]
+                        date_added = data["date_added"]
+                        ip_address = data["ip_address"]
+                        average_network_speed = data["average_network_speed"]
+                        upload_network_speed = data["upload_network_speed"]
+                        download_network_speed = data["download_network_speed"]
+                        gpu_usage = data["gpu_usage"]
+                        cpu_usage = data["cpu_usage"]
+                        ram_usage = data["ram_usage"]
+                        network_reliability = data["network_reliability"]
+                        average_time_online = data["average_time_online"]
+                        device_priority = data["device_priority"]
+                        sync_status = data["sync_status"]
+                        optimization_status = data["optimization_status"]
 
 
-                    load_dotenv()
-                    uri = os.getenv("MONGODB_URL")
- 
-                    client = MongoClient(uri)
-                    db = client['myDatabase']
-                    user_collection = db['users']
-                    user = user_collection.find_one({'username': username})
+                        load_dotenv()
+                        uri = os.getenv("MONGODB_URL")
+     
+                        client = MongoClient(uri)
+                        db = client['myDatabase']
+                        user_collection = db['users']
+                        user = user_collection.find_one({'username': username})
 
-                    # If the device was not able to gather the ip_address, just keep it the way it 
-                    # was before
-                    if ip_address == "Unknown":
-                        '''
-                        Todo: create logic that will have the database search for what the device IP was previously,
-                        and set the variable to whatever it was during the last ping.
-                        '''
-                        ip_address = "0.0.0.0"
+                        # If the device was not able to gather the ip_address, just keep it the way it 
+                        # was before
+                        if ip_address == "Unknown":
+                            '''
+                            Todo: create logic that will have the database search for what the device IP was previously,
+                            and set the variable to whatever it was during the last ping.
+                            '''
+                            ip_address = "0.0.0.0"
 
-                    devices = user.get('devices', [])
-                    total_upload_speed = 0
-                    total_download_speed = 0
-                    total_gpu_usage = 0
-                    total_cpu_usage = 0
-                    total_ram_usage = 0
-                    upload_speed_count = 0
-                    download_speed_count = 0
-                    gpu_usage_count = 0
-                    cpu_usage_count = 0
-                    ram_usage_count = 0
-                    for index, device in enumerate(devices):
-                        if device.get('device_name') == device_name:
+                        devices = user.get('devices', [])
+                        total_upload_speed = 0
+                        total_download_speed = 0
+                        total_gpu_usage = 0
+                        total_cpu_usage = 0
+                        total_ram_usage = 0
+                        upload_speed_count = 0
+                        download_speed_count = 0
+                        gpu_usage_count = 0
+                        cpu_usage_count = 0
+                        ram_usage_count = 0
+                        for index, device in enumerate(devices):
+                            if device.get('device_name') == device_name:
+                                upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
+                                download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
+                                gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                                cpu_usages = [float(usage) for usage in device.get('cpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                                ram_usages = [float(usage) for usage in device.get('ram_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                                total_upload_speed = sum(upload_speeds) + float(upload_network_speed)
+                                total_download_speed = sum(download_speeds) + float(download_network_speed)
+                                total_gpu_usage = sum(gpu_usages) + float(gpu_usage)
+                                total_cpu_usage = sum(cpu_usages) + float(cpu_usage)
+                                total_ram_usage = sum(ram_usages) + float(ram_usage)
+                                upload_speed_count = len(upload_speeds) + 1
+                                download_speed_count = len(download_speeds) + 1
+                                gpu_usage_count = len(gpu_usages) + 1
+                                cpu_usage_count = len(cpu_usages) + 1
+                                ram_usage_count = len(ram_usages) + 1
+                                average_upload_speed = total_upload_speed / upload_speed_count if upload_speed_count else 0
+                                average_download_speed = total_download_speed / download_speed_count if download_speed_count else 0
+                                average_gpu_usage = total_gpu_usage / gpu_usage_count if gpu_usage_count else 0
+                                average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
+                                average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
+
+
+
+                                # Update existing device in the list
+                                devices[index]['upload_network_speed'].append(float(upload_network_speed))
+                                devices[index]['download_network_speed'].append(float(download_network_speed))
+                                devices[index]['date_added'].append(date_added)
+                                devices[index]['gpu_usage'].append(float(gpu_usage))
+                                devices[index]['cpu_usage'].append(float(cpu_usage))
+                                devices[index]['ram_usage'].append(float(ram_usage))
+
+                                # Instead of directly appending or extending, check if the file exists
+                                for new_file in files:  # Iterate through the new files to be added
+                                    print(f"new file: {new_file}")
+                                    # Check if the file already exists in the 'files' array of the device
+                                    if not any(file['File Name'] == new_file['File Name'] for file in devices[index]['files']):
+                                        devices[index]['files'].append(new_file)  # Add the file if it doesn't exist
+
+                                devices[index]['average_upload_speed'] = average_upload_speed
+                                devices[index]['average_download_speed'] = average_download_speed
+                                devices[index]['average_gpu_usage'] = average_gpu_usage
+                                devices[index]['average_cpu_usage'] = average_cpu_usage
+                                devices[index]['average_ram_usage'] = average_ram_usage
+                                print('updated existing device')
+                                device_exists = True
+                                break  # Exit loop after updating
+
+                        else:
                             upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
                             download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
                             gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
@@ -496,137 +556,91 @@ class ClientHandler(threading.Thread):
                             average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
 
 
-
-                            # Update existing device in the list
-                            devices[index]['upload_network_speed'].append(float(upload_network_speed))
-                            devices[index]['download_network_speed'].append(float(download_network_speed))
-                            devices[index]['date_added'].append(date_added)
-                            devices[index]['gpu_usage'].append(float(gpu_usage))
-                            devices[index]['cpu_usage'].append(float(cpu_usage))
-                            devices[index]['ram_usage'].append(float(ram_usage))
-
-                            # Instead of directly appending or extending, check if the file exists
-                            for new_file in files:  # Iterate through the new files to be added
-                                print(f"new file: {new_file}")
-                                # Check if the file already exists in the 'files' array of the device
-                                if not any(file['File Name'] == new_file['File Name'] for file in devices[index]['files']):
-                                    devices[index]['files'].append(new_file)  # Add the file if it doesn't exist
-
-                            devices[index]['average_upload_speed'] = average_upload_speed
-                            devices[index]['average_download_speed'] = average_download_speed
-                            devices[index]['average_gpu_usage'] = average_gpu_usage
-                            devices[index]['average_cpu_usage'] = average_cpu_usage
-                            devices[index]['average_ram_usage'] = average_ram_usage
-                            print('updated existing device')
+                            # Create a new device object
+                            new_device = {
+                                'device_number': device_number,
+                                'device_name': device_name,
+                                'files': files,  # Assuming files is already a list
+                                'storage_capacity_GB': storage_capacity_GB,
+                                'date_added': [date_added], 
+                                'ip_address': ip_address,
+                                'average_upload_speed': average_upload_speed,
+                                'average_download_speed': average_download_speed,
+                                'average_gpu_usage': average_gpu_usage,
+                                'average_cpu_usage': average_cpu_usage,
+                                'average_ram_usage': average_ram_usage,
+                                'upload_network_speed': [float(upload_network_speed)],
+                                'download_network_speed': [float(download_network_speed)],
+                                'gpu_usage': [float(gpu_usage)],
+                                'cpu_usage': [float(cpu_usage)],
+                                'ram_usage': [float(ram_usage)],
+                                'network_reliability': network_reliability,
+                                'average_time_online': average_time_online,
+                                'device_priority': device_priority,
+                                'sync_status': sync_status,
+                                'optimization_status': optimization_status,
+                            }
+                            print('added new device')
                             device_exists = True
-                            break  # Exit loop after updating
+                            devices.append(new_device)
 
-                    else:
-                        upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
-                        download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
-                        gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
-                        cpu_usages = [float(usage) for usage in device.get('cpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
-                        ram_usages = [float(usage) for usage in device.get('ram_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
-                        total_upload_speed = sum(upload_speeds) + float(upload_network_speed)
-                        total_download_speed = sum(download_speeds) + float(download_network_speed)
-                        total_gpu_usage = sum(gpu_usages) + float(gpu_usage)
-                        total_cpu_usage = sum(cpu_usages) + float(cpu_usage)
-                        total_ram_usage = sum(ram_usages) + float(ram_usage)
-                        upload_speed_count = len(upload_speeds) + 1
-                        download_speed_count = len(download_speeds) + 1
-                        gpu_usage_count = len(gpu_usages) + 1
-                        cpu_usage_count = len(cpu_usages) + 1
-                        ram_usage_count = len(ram_usages) + 1
-                        average_upload_speed = total_upload_speed / upload_speed_count if upload_speed_count else 0
-                        average_download_speed = total_download_speed / download_speed_count if download_speed_count else 0
-                        average_gpu_usage = total_gpu_usage / gpu_usage_count if gpu_usage_count else 0
-                        average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
-                        average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
+                        # Update the user document with the modified 'devices' array
+                        user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
 
+                        # Initialize variables
+                        number_of_devices = len(devices)
+                        number_of_files = 0
+                        total_device_storage = 0
+                        # Initialize sums for calculating averages
+                        total_average_download_speed_sum = 0
+                        total_average_upload_speed_sum = 0
+                        total_average_gpu_usage_sum = 0
+                        total_average_cpu_usage_sum = 0
+                        total_average_ram_usage_sum = 0
 
-                        # Create a new device object
-                        new_device = {
-                            'device_number': device_number,
-                            'device_name': device_name,
-                            'files': files,  # Assuming files is already a list
-                            'storage_capacity_GB': storage_capacity_GB,
-                            'date_added': [date_added], 
-                            'ip_address': ip_address,
-                            'average_upload_speed': average_upload_speed,
-                            'average_download_speed': average_download_speed,
-                            'average_gpu_usage': average_gpu_usage,
-                            'average_cpu_usage': average_cpu_usage,
-                            'average_ram_usage': average_ram_usage,
-                            'upload_network_speed': [float(upload_network_speed)],
-                            'download_network_speed': [float(download_network_speed)],
-                            'gpu_usage': [float(gpu_usage)],
-                            'cpu_usage': [float(cpu_usage)],
-                            'ram_usage': [float(ram_usage)],
-                            'network_reliability': network_reliability,
-                            'average_time_online': average_time_online,
-                            'device_priority': device_priority,
-                            'sync_status': sync_status,
-                            'optimization_status': optimization_status,
-                        }
-                        print('added new device')
-                        device_exists = True
-                        devices.append(new_device)
+                        # Iterate through devices to aggregate values
+                        for device in devices:
+                            number_of_files += len(device.get('files', []))
+                            total_device_storage += float(device.get('storage_capacity_GB', 0))
+                            total_average_download_speed_sum += float(device.get('average_download_speed', 0))
+                            total_average_upload_speed_sum += float(device.get('average_upload_speed', 0))
+                            total_average_cpu_usage_sum += float(device.get('average_cpu_usage', 0))
+                            total_average_gpu_usage_sum += float(device.get('average_gpu_usage', 0))
+                            total_average_ram_usage_sum += float(device.get('average_ram_usage', 0))
 
-                    # Update the user document with the modified 'devices' array
-                    user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
+                        # Calculate averages, avoid division by zero
+                        total_average_download_speed = total_average_download_speed_sum / number_of_devices if number_of_devices > 0 else 0
+                        total_average_upload_speed = total_average_upload_speed_sum / number_of_devices if number_of_devices > 0 else 0
+                        total_average_cpu_usage = total_average_cpu_usage_sum / number_of_devices if number_of_devices > 0 else 0
+                        total_average_gpu_usage = total_average_gpu_usage_sum / number_of_devices if number_of_devices > 0 else 0
+                        total_average_ram_usage = total_average_ram_usage_sum / number_of_devices if number_of_devices > 0 else 0
 
-                    # Initialize variables
-                    number_of_devices = len(devices)
-                    number_of_files = 0
-                    total_device_storage = 0
-                    # Initialize sums for calculating averages
-                    total_average_download_speed_sum = 0
-                    total_average_upload_speed_sum = 0
-                    total_average_gpu_usage_sum = 0
-                    total_average_cpu_usage_sum = 0
-                    total_average_ram_usage_sum = 0
-
-                    # Iterate through devices to aggregate values
-                    for device in devices:
-                        number_of_files += len(device.get('files', []))
-                        total_device_storage += float(device.get('storage_capacity_GB', 0))
-                        total_average_download_speed_sum += float(device.get('average_download_speed', 0))
-                        total_average_upload_speed_sum += float(device.get('average_upload_speed', 0))
-                        total_average_cpu_usage_sum += float(device.get('average_cpu_usage', 0))
-                        total_average_gpu_usage_sum += float(device.get('average_gpu_usage', 0))
-                        total_average_ram_usage_sum += float(device.get('average_ram_usage', 0))
-
-                    # Calculate averages, avoid division by zero
-                    total_average_download_speed = total_average_download_speed_sum / number_of_devices if number_of_devices > 0 else 0
-                    total_average_upload_speed = total_average_upload_speed_sum / number_of_devices if number_of_devices > 0 else 0
-                    total_average_cpu_usage = total_average_cpu_usage_sum / number_of_devices if number_of_devices > 0 else 0
-                    total_average_gpu_usage = total_average_gpu_usage_sum / number_of_devices if number_of_devices > 0 else 0
-                    total_average_ram_usage = total_average_ram_usage_sum / number_of_devices if number_of_devices > 0 else 0
-
-                    user_collection.update_one({'_id': user['_id']}, {'$push': {
-                        'number_of_devices': number_of_devices,
-                        'number_of_files': number_of_files,
-                        'total_device_storage': total_device_storage,
-                        'total_average_download_speed': total_average_download_speed,
-                        'total_average_upload_speed': total_average_upload_speed,
-                        'total_average_cpu_usage': total_average_cpu_usage,
-                        'total_average_gpu_usage': total_average_gpu_usage,
-                        'total_average_ram_usage': total_average_ram_usage,
-                        'overall_date_added': date_added,
-                        }})
+                        user_collection.update_one({'_id': user['_id']}, {'$push': {
+                            'number_of_devices': number_of_devices,
+                            'number_of_files': number_of_files,
+                            'total_device_storage': total_device_storage,
+                            'total_average_download_speed': total_average_download_speed,
+                            'total_average_upload_speed': total_average_upload_speed,
+                            'total_average_cpu_usage': total_average_cpu_usage,
+                            'total_average_gpu_usage': total_average_gpu_usage,
+                            'total_average_ram_usage': total_average_ram_usage,
+                            'overall_date_added': date_added,
+                            }})
 
 
-                    print("data uploaded to Banbury Cloud") 
-                    header = None
-                    buffer = b""
+                        print("data uploaded to Banbury Cloud") 
+                        header = None
+                        buffer = b""
+                        data = None
+                        total_json = ""
 
-                except Exception as e:
-                    print(f"Ping request failed {e}")
-                    header = None
-                    buffer = b""
+                    except Exception as e:
+                        print(f"Ping request failed {e}")
+                        header = None
+                        buffer = b""
 
-            else:
-                print(f"Unknown data type received from {self.client_address}")
+                else:
+                    print(f"Unknown data type received from {self.client_address}")
 
 def send_ping():
         time.sleep(10)
