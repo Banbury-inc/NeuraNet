@@ -120,7 +120,4 @@ The knapsack, or more specifically the multiple knapsack problem is oftentime su
 * Memory optimixstion - For large instances, optimze the memory usage of the dynamic programming table to reduce memory requirements
 * Handling conflicts - If two files cannot be placed on teh same devices due to some constraints, develop a strategy to resolve such conflicts and make the best allocation decisions.
 
-## User Management
-Since this app is completely decentralized, that means that the user databse is decentralized as well. 
 
-username + password(hashed) --> cid containing file of usernames + passwords --> cid of devices, all information needed for file directory of that particular user --> locate desired file and make query to download with cid of that file
