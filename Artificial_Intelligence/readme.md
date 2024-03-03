@@ -32,6 +32,15 @@ be boiled down into whether that data that is being trained is knowledge or a sk
 If it's knowledge, it can be probably added on to a large model. If it's a skill, it can 
 probably be kept separate and placed into their own individual models. 
 
+## Athena Features
+
+* 100% biometric log-in system
+* Decentralized file sharing powered by cutting edge AI relay server for a fully asynchronous and autonomous file management experience
+* Powerful algorithms to enable unrivaled performance and reliability
+* Fully Autonomous AI Assistant powered by our AI relay server.
+* Implementation of a remote access tunnel allows for seamless connection via NAT (Network Address Translation) devices such as Iphones connected via cellular data.
+
+
 ## To-do
 
 * based on the prompt, create an itinerary of tasks that will be completed until the end goal is complete.
