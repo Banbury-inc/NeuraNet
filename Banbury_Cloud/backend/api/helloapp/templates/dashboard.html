@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Banbury Cloud</title>
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <p>Welcome, {{ first_name }}.</p>
+    <a href="{% url 'home' %}">Home Page</a>
+    <a href="{% url 'update_profile' username %}">Update Profile</a>
+    <!-- Files Table -->
+    <p>Thank you for using Banbury Cloud. At this point in time, uploading and downloading files will only be able to be
+    done on the desktop app.</p>
+
+ 
+    <h3>Files</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Size</th>
+                <th>Upload Date</th>
+                <th>CID</th>
+                <!-- Add more columns as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+                <tr>
+                    <td>{{ file.file_name }}</td>
+                    <td>{{ file.size }}</td>
+                    <td>{{ file.upload_date }}</td>
+                    <td>{{ file.cid }}</td>
+                    <!-- Output more file properties as needed -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Devices</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Device Name</th>
+                <th>Storage Capacity (GB)</th>
+                <th>Date added</th>
+                <th>IP Address</th>
+                <th>Average Network Speed</th>
+                <!-- Add more columns as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for device in devices %}
+                <tr>
+                    <td>{{ device.device_name }}</td>
+                    <td>{{ device.storage_capacity_GB }}</td>
+                    <td>{{ device.date_added }}</td>
+                    <td>{{ device.ip_address }}</td>
+                    <td>{{ device.average_network_speed }}</td>
+                    <!-- Output more file properties as needed -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+</body>
+</html>

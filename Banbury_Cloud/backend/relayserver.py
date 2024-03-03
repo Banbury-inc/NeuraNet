@@ -501,7 +501,6 @@ class ClientHandler(threading.Thread):
                             devices[index]['upload_network_speed'].append(float(upload_network_speed))
                             devices[index]['download_network_speed'].append(float(download_network_speed))
                             devices[index]['date_added'].append(date_added)
-                            print("passed udating existing device")
                             devices[index]['gpu_usage'].append(float(gpu_usage))
                             devices[index]['cpu_usage'].append(float(cpu_usage))
                             devices[index]['ram_usage'].append(float(ram_usage))
