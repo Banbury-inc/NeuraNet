@@ -52,24 +52,7 @@ Athena is developed by Banbury and by users like you. We welcome both pull reque
   
 
 
-## Basic Architecture
 
-File Management GUI
-Frontend - HTML, CSS, Typescript
-Backend - Python
-Database - MongoDB
-
-Artificial Intelligence Scripts
-
-* Frontend - N/A
-* Backend - Python
-* Database - MongoDB
-
-User Management GUI
-
-* Frontend - HTML, CSS, Javascript
-* Backend - Java
-* Database - MySQL
 
 
 
