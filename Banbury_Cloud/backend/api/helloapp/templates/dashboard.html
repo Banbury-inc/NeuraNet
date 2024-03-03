@@ -3,67 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <title>Banbury Cloud</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Dashboard</h1>
-    <p>Welcome, {{ first_name }}.</p>
-    <a href="{% url 'home' %}">Home Page</a>
-    <a href="{% url 'update_profile' username %}">Update Profile</a>
-    <!-- Files Table -->
-    <p>Thank you for using Banbury Cloud. At this point in time, uploading and downloading files will only be able to be
-    done on the desktop app.</p>
+<body class="font-sans bg-gray-100">
 
- 
-    <h3>Files</h3>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>File Name</th>
-                <th>Size</th>
-                <th>Upload Date</th>
-                <th>CID</th>
-                <!-- Add more columns as needed -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for file in files %}
-                <tr>
-                    <td>{{ file.file_name }}</td>
-                    <td>{{ file.size }}</td>
-                    <td>{{ file.upload_date }}</td>
-                    <td>{{ file.cid }}</td>
-                    <!-- Output more file properties as needed -->
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Header -->
+    <nav class="bg-blue-500 p-4 text-white flex justify-between items-center">
+        <p class="text-lg">Welcome, {{ first_name }}</p>
+        <div class="flex space-x-4">
+            <a href="{% url 'home' %}" style="color: white;" cclass="text-white ml-4">Home Page</a>
+            <a href="{% url 'update_profile' username %}" class="text-white ml-4 ">Update Profile</a>
+        </div>
+    </nav>
+    
+    <h1 class="text-4xl font-bold mt-2 text-center">Dashboard</h1>
 
-    <h3>Devices</h3>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Device Name</th>
-                <th>Storage Capacity (GB)</th>
-                <th>Date added</th>
-                <th>IP Address</th>
-                <th>Average Network Speed</th>
-                <!-- Add more columns as needed -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for device in devices %}
-                <tr>
-                    <td>{{ device.device_name }}</td>
-                    <td>{{ device.storage_capacity_GB }}</td>
-                    <td>{{ device.date_added }}</td>
-                    <td>{{ device.ip_address }}</td>
-                    <td>{{ device.average_network_speed }}</td>
-                    <!-- Output more file properties as needed -->
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Main Content -->
+    <main class="container mx-auto mt-8"> 
 
+        <!-- Files Table -->
+        <section>
+            <h2 class="text-2xl mb-4">Files</h2>
+            <table class="w-full border">
+                <thead>
+                    <tr>
+                        <th class="border px-4 py-2">File Name</th>
+                        <th class="border px-4 py-2">Size</th>
+                        <th class="border px-4 py-2">Upload Date</th>
+                        <th class="border px-4 py-2">CID</th>
+                        <!-- Add more columns as needed -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                        <tr>
+                            <td class="border px-4 py-2">{{ file.file_name }}</td>
+                            <td class="border px-4 py-2">{{ file.size }}</td>
+                            <td class="border px-4 py-2">{{ file.upload_date }}</td>
+                            <td class="border px-4 py-2">{{ file.cid }}</td>
+                            <!-- Output more file properties as needed -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
 
+        <!-- Devices Table -->
+        <section class="mt-8">
+            <h2 class="text-2xl mb-4">Devices</h2>
+            <table class="w-full border">
+                <thead>
+                    <tr>
+                        <th class="border px-4 py-2">Device Name</th>
+                        <th class="border px-4 py-2">Storage Capacity (GB)</th>
+                        <th class="border px-4 py-2">Date added</th>
+                        <th class="border px-4 py-2">IP Address</th>
+                        <th class="border px-4 py-2">Average Network Speed</th>
+                        <!-- Add more columns as needed -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for device in devices %}
+                        <tr>
+                            <td class="border px-4 py-2">{{ device.device_name }}</td>
+                            <td class="border px-4 py-2">{{ device.storage_capacity_GB }}</td>
+                            <td class="border px-4 py-2">{{ device.date_added }}</td>
+                            <td class="border px-4 py-2">{{ device.ip_address }}</td>
+                            <td class="border px-4 py-2">{{ device.average_network_speed }}</td>
+                            <!-- Output more file properties as needed -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+    </main>
 </body>
 </html>
