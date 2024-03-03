@@ -19,9 +19,25 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from "../theme";
 import App from './App';
 import { createRoot } from "react-dom/client";
-
 import MiniDrawer from "./VariantDrawer";
 import { BrowserRouter, Route, Routes, Outlet, Navigate } from "react-router-dom";
+
+
+
+function Copyright(props: any) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © '}
+      <Link color="inherit" href="https://website2-v3xlkt54dq-uc.a.run.app/">
+        Banbury
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
+
+
 
 export default function SignIn() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -86,7 +102,7 @@ export default function SignIn() {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="Username"
               name="email"
               autoComplete="email"
               size='small'
@@ -144,6 +160,7 @@ export default function SignIn() {
             </Grid>
           </Box>
         </Box>
+        <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
   );

@@ -13,12 +13,15 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from "../theme";
+
+
+
 function Copyright(props: any) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
+      <Link color="inherit" href="https://website2-v3xlkt54dq-uc.a.run.app/">
+        Banbury
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -67,7 +70,15 @@ export default function SignUp() {
                   fullWidth
                   id="firstName"
                   label="First Name"
+                  size='small'
                   autoFocus
+              InputProps={{
+                style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+              }}
+              InputLabelProps={{
+                style: { fontSize: '1.3rem' }, // Adjusts the label font size
+              }}
+ 
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -77,7 +88,15 @@ export default function SignUp() {
                   id="lastName"
                   label="Last Name"
                   name="lastName"
+                  size='small'
                   autoComplete="family-name"
+              InputProps={{
+                style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+              }}
+              InputLabelProps={{
+                style: { fontSize: '1.3rem' }, // Adjusts the label font size
+              }}
+ 
                 />
               </Grid>
               <Grid item xs={12}>
@@ -87,7 +106,15 @@ export default function SignUp() {
                   id="email"
                   label="Email Address"
                   name="email"
+                  size='small'
                   autoComplete="email"
+              InputProps={{
+                style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+              }}
+              InputLabelProps={{
+                style: { fontSize: '1.3rem' }, // Adjusts the label font size
+              }}
+ 
                 />
               </Grid>
               <Grid item xs={12}>
@@ -97,16 +124,19 @@ export default function SignUp() {
                   name="password"
                   label="Password"
                   type="password"
+                  size='small'
                   id="password"
                   autoComplete="new-password"
+              InputProps={{
+                style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+              }}
+              InputLabelProps={{
+                style: { fontSize: '1.3rem' }, // Adjusts the label font size
+              }}
+ 
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
+
             </Grid>
             <Button
               type="submit"
