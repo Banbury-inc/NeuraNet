@@ -31,7 +31,16 @@ Banbury Cloud is a subset of Athena which serves as the decentralized file shari
 * Anticipating user requests and pre-fetching or caching content to reduce latency and improve content delivery speed.
 * predicit optimal allocation of files based on the values above
 
-# Table of Contents
+## To start developing athena
+
+Athena is developed by Banbury and by users like you. We welcome bothh pull requests and issues on Github. Want to get paid to work on openpilot? Banbury is hiring and offers lots of bounties for external contributors. 
+
+  * Information about running athena lives at
+  * Read the bounties page to see how you can get paid!
+  * Check out the project page to see our workflow and timeline
+
+
+## Table of Contents
 * <a href="https://github.com/Banbury-inc/Athena/blob/main/Artificial_Intelligence/readme.md"> Artificial Intelligence </a>
 * <a href="https://github.com/Banbury-inc/Athena/tree/main/Banbury_Cloud"> Banbury Cloud </a>
   * <a href="https://github.com/Banbury-inc/Athena/tree/main/Banbury_Cloud/frontend"> Frontend </a>
