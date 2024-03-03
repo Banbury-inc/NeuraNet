@@ -36,13 +36,8 @@ Banbury Cloud is a subset of Athena which serves as the decentralized file shari
 * <a href="https://github.com/Banbury-inc/Athena/tree/main/Banbury_Cloud"> Banbury Cloud </a>
   * <a href="https://github.com/Banbury-inc/Athena/tree/main/Banbury_Cloud/frontend"> Frontend </a>
   * <a href="https://github.com/Banbury-inc/Athena/blob/main/Banbury_Cloud/backend/readme.md"> Backend </a>
-## Athena Features
 
-* 100% biometric log-in system
-* Decentralized file sharing powered by cutting edge AI relay server for a fully asynchronous and autonomous file management experience
-* Powerful algorithms to enable unrivaled performance and reliability
-* Fully Autonomous AI Assistant powered by our AI relay server.
-* Implementation of a remote access tunnel allows for seamless connection via NAT (Network Address Translation) devices such as Iphones connected via cellular data.
+  
 
 
 ## Basic Architecture
