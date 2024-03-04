@@ -9,6 +9,9 @@ let mainWindow: BrowserWindow | null;
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1100,
+    // frame: false,
+    titleBarStyle: "hidden",
+    titleBarOverlay: true,
     height: 700,
     backgroundColor: "#23272a",
     webPreferences: {
@@ -18,7 +21,7 @@ function createWindow(): void {
       preload: path.join(__dirname, 'preload.ts')
     },
   });
-
+ 
   const startURL = process.env.NODE_ENV === "development"
     ? "http://localhost:8081"
     : url.format({
