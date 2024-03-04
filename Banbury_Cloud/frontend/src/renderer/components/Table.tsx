@@ -42,7 +42,7 @@ interface FileData {
 // Define head cells according to FileData
 const headCells = [
   { id: 'fileName', numeric: false, label: 'Name' },
-  { id: 'fileSize', numeric: false, label: 'File Size (bytes)' },
+  { id: 'fileSize', numeric: false, label: 'Size' },
   { id: 'dateUploaded', numeric: true, label: 'Date Uploaded' },
 ];
 
