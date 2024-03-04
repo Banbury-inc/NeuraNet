@@ -175,6 +175,7 @@ export default function EnhancedTable() {
   const [orderBy, setOrderBy] = useState<keyof FileData>('fileName');
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [selectedFileNames, setSelectedFileNames] = useState<string[]>([]);
+  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [dense, setDense] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -478,13 +479,22 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
                         tabIndex={-1}
                         key={row.id}
                         selected={isItemSelected}
+                      onMouseEnter={() => setHoveredRowId(row.id)} // Track hover state
+                      onMouseLeave={() => setHoveredRowId(null)} // Clear hover state                onMouseEnter={() => setHoveredRowId(row.id)} // Track hover state
+                        sx={{
+                          '&:hover .checkbox': {
+                            opacity: 1, // Show the checkbox on hover
+                          }
+                        }}
                       >
                         <TableCell padding="checkbox">
+                          {hoveredRowId === row.id ? ( // Only render Checkbox if row is hovered
                           <Checkbox
                             color="primary"
                             checked={isItemSelected}
                             inputProps={{ 'aria-labelledby': labelId }}
                           />
+                          ) : null}
                         </TableCell>
                         <TableCell component="th" id={labelId} scope="row" padding="none">
                           {row.fileName}
