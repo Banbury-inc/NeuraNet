@@ -21,7 +21,8 @@ import App from './App';
 import { createRoot } from "react-dom/client";
 import MiniDrawer from "./VariantDrawer";
 import { BrowserRouter, Route, Routes, Outlet, Navigate } from "react-router-dom";
-
+import Signup from "./signup";
+import Main from "./main";
 
 
 function Copyright(props: any) {
@@ -73,7 +74,7 @@ export default function SignIn() {
 
   if (isAuthenticated) {
 
-    return <MiniDrawer />;
+    return <Main />;
 
 
   }
