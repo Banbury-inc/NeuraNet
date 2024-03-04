@@ -5,6 +5,7 @@ import axios from 'axios';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import App from './components/App';
+import MiniDrawer from "./components/VariantDrawer";
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement!);

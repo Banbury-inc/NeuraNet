@@ -6,7 +6,7 @@ import MiniDrawer from "./VariantDrawer";
 import { BrowserRouter, Route, Routes, Outlet, Navigate } from "react-router-dom";
 import Signup from "./signup";
 import Signin from "./Login";
-
+import Main from "./main";
 
 
 
@@ -34,7 +34,8 @@ export default function App(): JSX.Element {
 
           <Routes>
           
-            <Route path="/" element={<Signin />} />
+            {/* <Route path="/" element={<Signin />} /> */}
+            <Route path="/" element={<Main />} />
             <Route path="/main" element={<MiniDrawer />} />
             <Route path="/register" element={<Signup />} />
             <Route path="/login" element={<Signin />} />
