@@ -36,7 +36,7 @@ interface FileData {
   id: number;
   fileName: string;
   dateUploaded: string;
-  fileSize: number;
+  fileSize: string;
 }
 
 // Define head cells according to FileData
@@ -215,6 +215,18 @@ const handleApiCall = async () => {
 };
 
 
+function formatBytes(bytes: number, decimals: number = 2): string {
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
   const [Firstname, setFirstname] = useState<string>('');
   const [Lastname, setLastname] = useState<string>('');
   useEffect(() => {
@@ -235,7 +247,8 @@ const handleApiCall = async () => {
           device.files.map((file: any, fileIndex: number): FileData => ({
             id: index * 1000 + fileIndex, // Generating unique IDs
             fileName: file["File Name"],
-            fileSize: file["File Size"],
+            // fileSize: file["File Size"],
+            fileSize: formatBytes(file["File Size"]),
             dateUploaded: file["Date Uploaded"],
           }))
         );
