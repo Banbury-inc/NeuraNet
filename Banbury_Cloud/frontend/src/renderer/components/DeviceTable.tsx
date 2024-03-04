@@ -146,21 +146,28 @@ export default function DevicesTable() {
 
   return (
     <Container>
+
+      <Box sx={{ width: '100%', mt: 0 }}>
+
+        <Stack spacing={2}>
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+
+            <Grid item>
+          <Typography variant="h2" textAlign="left">
+            Devices
+          </Typography>
+
+            </Grid>
+            <Grid item>
+
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-
-<Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-<Chip avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} label={`${Firstname} ${Lastname}`} />
-</Box>
-
+        <Chip avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} label={`${Firstname} ${Lastname}`} />
       </Box>
-      <Box gap={4} sx={{ width: '100%' }}>
-        <Container>
 
-      <Stack spacing={2}>
-          <Typography variant="h2" textAlign="left">Devices</Typography>
+            </Grid>
+            </Grid>
 
           <Grid container spacing={1}>
-
             <Grid item>
               <Button variant="outlined" size="small">Add Device</Button>
             </Grid>
@@ -168,9 +175,8 @@ export default function DevicesTable() {
               <Button variant="outlined" size="small">Remove Device</Button>
             </Grid>
           </Grid>
-
       </Stack>
-        </Container>
+
         <Box my={2} sx={{ width: '100%' }}>
           <Container>
             <TableContainer>
