@@ -412,110 +412,101 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
 
   return (
     <Container>
-<Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-<Chip avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} label={`${Firstname} ${Lastname}`} />
-</Box>
-    <Box 
-      gap={0}
-      sx={{ width: '100%' }}>
-      <Container>
-      <Stack spacing={2}>
-      <Typography variant="h2" textAlign="left">
-        Files
-      </Typography>
-          <Grid container spacing={1}>
-              <Grid item>
-                <InputFileUpload />
-              </Grid>
-              <Grid item>
-                <Button 
-                variant="outlined"
-                onClick={handleDownloadClick}
-                size="small"
-              >{buttonText}</Button>
-              </Grid>
-              <Grid item>
-                <Button 
-                variant="outlined"
-                onClick={handleDeleteClick}
-                size="small"
-              >Delete</Button>
-              </Grid>
-        </Grid>
+      <Box sx={{ width: '100%', mt: 2 }}>
+        <Stack spacing={2}>
 
-      </Stack>
-    </Container>
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
 
-      <Box 
-          my={2}
-          sx={{ width: '100%'}}>
-        <Container>
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            size="small"
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={fileRows.length}
-            />
-<TableBody>
+            <Grid item>
+          <Typography variant="h2" textAlign="left">
+            Files
+          </Typography>
 
-  {stableSort(fileRows, getComparator(order, orderBy))
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    .map((row, index) => {
-      const isItemSelected = isSelected(row.id);
-      const labelId = `enhanced-table-checkbox-${index}`;
+            </Grid>
 
-      return (
-        <TableRow
-          hover
-          onClick={(event) => handleClick(event, row.id)}
-          role="checkbox"
-          aria-checked={isItemSelected}
-          tabIndex={-1}
-          key={row.id}
-          selected={isItemSelected}
-        >
-          <TableCell padding="checkbox">
-            <Checkbox
-              color="primary"
-              checked={isItemSelected}
-              inputProps={{ 'aria-labelledby': labelId }}
-            />
-          </TableCell>
-          <TableCell component="th" id={labelId} scope="row" padding="none">
-            {row.fileName}
-          </TableCell>
-          <TableCell align="left">{row.fileSize}</TableCell>
-          <TableCell align="right">{row.dateUploaded}</TableCell>
-        </TableRow>
-      );
-    })}
-  {/* Handle empty rows if necessary */}
-</TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={fileRows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-
-      </Container>
+            <Grid item>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+        <Chip avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} label={`${Firstname} ${Lastname}`} />
       </Box>
-    </Box>
+
+            </Grid>
+            </Grid>
+          <Grid container spacing={2}>
+            <Grid item>
+              <InputFileUpload />
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" onClick={handleDownloadClick} size="small">
+                {buttonText}
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" onClick={handleDeleteClick} size="small">
+                Delete
+              </Button>
+            </Grid>
+          </Grid>
+        </Stack>
+
+        <Box my={2}>
+          <EnhancedTableToolbar numSelected={selected.length} />
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={fileRows.length}
+              />
+              <TableBody>
+                {stableSort(fileRows, getComparator(order, orderBy))
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    const isItemSelected = isSelected(row.id);
+                    const labelId = `enhanced-table-checkbox-${index}`;
+
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.id)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={isItemSelected}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={isItemSelected}
+                            inputProps={{ 'aria-labelledby': labelId }}
+                          />
+                        </TableCell>
+                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                          {row.fileName}
+                        </TableCell>
+                        <TableCell align="left">{row.fileSize}</TableCell>
+                        <TableCell align="right">{row.dateUploaded}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                {/* Handle empty rows if necessary */}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={fileRows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Box>
+      </Box>
     </Container>
   );
-
 }
