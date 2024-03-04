@@ -97,11 +97,11 @@ export default function PermanentDrawerLeft() {
                 {(() => {
                   switch (index % 3) {
                     case 0:
-                      return <DashboardIcon />;
+                      return <DashboardIcon fontSize='inherit' />;
                     case 1:
-                      return <FolderIcon />;
+                      return <FolderIcon fontSize='inherit'/>;
                     case 2:
-                      return <DevicesIcon />;
+                      return <DevicesIcon fontSize='inherit'/>;
                     default:
                       return null; // Just in case
                   }
@@ -120,8 +120,16 @@ export default function PermanentDrawerLeft() {
           {['Settings'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: 3,
+                  justifyContent: 'center',
+                }}
+ 
+                >
+
+                  {index % 2 === 0 ? <SettingsIcon fontSize='inherit'/> : <SettingsIcon fontSize='inherit'/>}
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
