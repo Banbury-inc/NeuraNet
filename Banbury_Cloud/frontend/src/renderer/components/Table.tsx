@@ -431,6 +431,8 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
 
             </Grid>
             </Grid>
+
+
           <Grid container spacing={2}>
             <Grid item>
               <InputFileUpload />
@@ -449,7 +451,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
         </Stack>
 
         <Box my={2}>
-          <EnhancedTableToolbar numSelected={selected.length} />
+          {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
           <TableContainer>
             <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
               <EnhancedTableHead
