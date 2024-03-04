@@ -18,6 +18,11 @@ import { Container, Typography, Grid, Button } from "@mui/material";
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import { Stack } from '@mui/material';
+import LineChart from './LineChart';
+
+
+
+
 interface Device {
   device_number: number;
   device_name: string;
@@ -268,6 +273,7 @@ export default function DevicesTable() {
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </Container>
+          <LineChart />
         </Box>
       </Box>
     </Container>
