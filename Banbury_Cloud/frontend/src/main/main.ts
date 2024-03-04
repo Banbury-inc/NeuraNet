@@ -10,8 +10,8 @@ function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1100,
     // frame: false,
-    titleBarStyle: "hidden",
-    titleBarOverlay: true,
+    // titleBarStyle: "hidden",
+    titleBarOverlay: false,
     height: 700,
     backgroundColor: "#23272a",
     webPreferences: {
@@ -25,12 +25,13 @@ function createWindow(): void {
   const startURL = process.env.NODE_ENV === "development"
     ? "http://localhost:8081"
     : url.format({
-        pathname: path.join(__dirname, "renderer/index.html"),
+        pathname: path.join(__dirname, "index.html"),
         protocol: "file:",
         slashes: true,
       });
 
   mainWindow.loadURL(startURL);
+    // and load the index.html of the app.
 
 //Listen for the 'ready-to-show' event to run the Python script
 //  mainWindow.on("ready-to-show", () => {
