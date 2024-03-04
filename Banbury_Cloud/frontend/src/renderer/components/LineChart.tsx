@@ -87,7 +87,7 @@ const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
 
   return (
     <Container>
-      <Box my={4}>
+      <Box my={0}>
         <Typography variant="h5" gutterBottom>Upload Speeds</Typography>
         <LineChart
           width={500}

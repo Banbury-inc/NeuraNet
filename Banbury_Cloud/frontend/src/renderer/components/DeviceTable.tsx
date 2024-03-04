@@ -177,8 +177,7 @@ export default function DevicesTable() {
           </Grid>
       </Stack>
 
-        <Box my={2} sx={{ width: '100%' }}>
-          <Container>
+        <Box my={2}>
             <TableContainer>
               <Table sx={{ minWidth: 750 }} size="small">
                 <TableHead>
@@ -278,7 +277,6 @@ export default function DevicesTable() {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
-          </Container>
           <LineChart />
         </Box>
       </Box>
