@@ -65,15 +65,19 @@ export default function PermanentDrawerLeft() {
     flexDirection: 'column', // Stack children vertically
     justifyContent: 'center', // Center children vertically in the container
     alignItems: 'center', // Center children horizontally in the container
-    height: 'vh', // Take full height of the viewport
+    height: '7vh', // Take full height of the viewport
   }}
 >
         <Toolbar />
-        <Stack direction="row" spacing={5} justifyContent="center">
+
+        <Stack direction="row" spacing={1} justifyContent="center" pb={7}>
           <Typography 
-          variant="h3">
+          variant="h3"
+            >
             Banbury Cloud
           </Typography>
+
+
         </Stack>
 </Box>
         <Divider />
