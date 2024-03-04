@@ -26,14 +26,14 @@ import { Stack } from '@mui/material';
 const drawerWidth = 240;
 import { Chip } from '@mui/material';
 import Grid from '@mui/material/Grid';
-
+import DevicesTable from './DeviceTable';
 
 
 
 export default function PermanentDrawerLeft() {
 
 
-  const [activeTab, setActiveTab] = React.useState('Files');
+  const [activeTab, setActiveTab] = React.useState('Devices');
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -138,7 +138,7 @@ export default function PermanentDrawerLeft() {
       case 'Files':
         return <Files />;
       case 'Devices':
-        return <Devices />;
+        return <DevicesTable />;
       case 'Settings':
         // Replace <Typography> with your settings component
         return <Typography paragraph>Settings Component Here</Typography>;
