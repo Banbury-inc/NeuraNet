@@ -82,7 +82,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
-            color="primary"
+            color="secondary"
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
@@ -416,7 +416,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
 <Chip avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} label={`${Firstname} ${Lastname}`} />
 </Box>
     <Box 
-      gap={4}
+      gap={0}
       sx={{ width: '100%' }}>
       <Container>
       <Stack spacing={2}>
@@ -515,7 +515,6 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
       </Container>
       </Box>
     </Box>
-
     </Container>
   );
 

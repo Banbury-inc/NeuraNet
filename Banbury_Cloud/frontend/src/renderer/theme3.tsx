@@ -4,23 +4,14 @@ import { createTheme } from "@mui/material/styles";
 // https://mui.com/customization/theming/
 const theme = createTheme({
   palette: {
-    mode: 'dark', // Spotify uses a dark theme
-    background: {
-      default: '#121212', // Very dark gray, almost black, as the main background
-      paper: '#181818', // Slightly lighter for elements considered "paper"
-    },
+    mode: 'dark',
     primary: {
-      main: '#1DB954', // Spotify's brand green for primary actions and highlights
+      //main: "#7289da",
+      main: "#FF6F00",
     },
     secondary: {
-      main: '#535353', // A medium gray for secondary elements, might need adjustment
-    },
-    error: {
-      main: '#E22134', // Just an example, adjust based on your preference
-    },
-    text: {
-      primary: '#FFFFFF',
-      secondary: '#B3B3B3', // Light gray for less important text, adjust as needed
+      //main: "#7289da",
+      main: "#425066",
     },
   },
   typography: {

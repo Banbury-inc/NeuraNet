@@ -33,7 +33,7 @@ import DevicesTable from './DeviceTable';
 export default function PermanentDrawerLeft() {
 
 
-  const [activeTab, setActiveTab] = React.useState('Devices');
+  const [activeTab, setActiveTab] = React.useState('Files');
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -128,7 +128,7 @@ export default function PermanentDrawerLeft() {
       </Drawer>
       <Box
         component="main"
-        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
+        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 0 }}
       >
         <Toolbar />
   {(() => {
