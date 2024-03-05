@@ -34,7 +34,7 @@ interface Device {
   average_time_online: number;
   average_upload_speed: number;
   cpu_usage: number[];
-  date_added: string[];
+  date_added: Date[];
   device_priority: number;
   download_network_speed: number[];
   gpu_usage: number[];
@@ -70,7 +70,8 @@ export default function DevicesTable() {
           average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
           average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
           average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
-          average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2))
+          average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
+          date_added: device.date_added.map(dateStr => new Date(dateStr)),
         }));
         setDevices(roundedDevices);      } catch (error) {
         console.error('Error fetching data:', error);
@@ -117,7 +118,6 @@ export default function DevicesTable() {
   };
 
   const isSelected = (device_number: number) => selected.indexOf(device_number) !== -1;
-
 
 
   const [Firstname, setFirstname] = useState<string>('');

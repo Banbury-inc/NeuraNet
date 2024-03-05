@@ -17,7 +17,7 @@ interface Device {
   average_time_online: number;
   average_upload_speed: number;
   cpu_usage: number[];
-  date_added: string[];
+  date_added: Date[];
   device_priority: number;
   download_network_speed: number[];
   gpu_usage: number[];
@@ -36,12 +36,15 @@ interface UserResponse {
   devices: Device[];
   first_name: string;
   last_name: string;
+  overall_date_added: Date[];
   // Include other fields from your API response as needed
 }
 
 
 export default function DifferentLength() {
   const [devices, setDevices] = useState<Device[]>([]);
+  const [UserResponse, setUserResponse] = useState<UserResponse[]>([]);
+  const [overallDateAdded, setOverallDateAdded] = useState<Date[]>([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,8 +55,16 @@ export default function DifferentLength() {
           average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
           average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
           average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
-          average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2))
+          average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
+          date_added: device.date_added.map(dateStr => new Date(dateStr)),
         }));
+
+
+        // Convert overall_date_added strings to Date objects
+        const convertedOverallDates = response.data.overall_date_added.map(dateStr => new Date(dateStr));
+        setOverallDateAdded(convertedOverallDates);
+
+
         setDevices(roundedDevices);      } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -65,13 +76,51 @@ export default function DifferentLength() {
 
 
   const uploadData = devices.map(device => device.upload_network_speed);
+  const date_added = devices.map(device => device.date_added);
   const downloadData = devices.map(device => device.download_network_speed);
   const deviceNames = devices.map(device => device.device_name);
   // Concatenate upload network speeds for all devices into a single array
   const uploadSpeeds: number[] = devices.flatMap(device => device.upload_network_speed);
+  const downloadSpeeds: number[] = devices.flatMap(device => device.download_network_speed);
   const cpu_usage: number[] = devices.flatMap(device => device.cpu_usage);
 
+  const deviceData = devices.map(device => ({
+    name: device.device_name,
+    uploadSpeeds: device.upload_network_speed,
+    cpuUsage: device.cpu_usage,
+    // Include any other device-specific metrics you wish to analyze/plot
+  }));
+
+
   const xLabels: string[] = Array.from(Array(uploadSpeeds.length).keys()).map(String);
+  const totalDates = overallDateAdded.map(date =>
+    `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+  );
+
+  // Prepare series data for each device for Upload Speeds
+  const uploadSeries = devices.map(device => ({
+    data: device.upload_network_speed,
+    label: device.device_name // Use the device name as the label for each series
+  }));
+
+  // Prepare series data for each device for Upload Speeds
+  const downloadSeries = devices.map(device => ({
+    data: device.download_network_speed,
+    label: device.device_name // Use the device name as the label for each series
+  }));
+
+
+  // Prepare series data for each device for CPU Usage
+  const cpuSeries = devices.map(device => ({
+    data: device.cpu_usage,
+    label: device.device_name 
+
+  }));
+
+
+
+
+
 const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
 const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
 // const xLabels = [
@@ -92,21 +141,36 @@ const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
         <LineChart
           width={500}
           height={300}
-          series={[{ data: uploadSpeeds, label: 'Upload Speed' }]}
-          xAxis={[{ scaleType: 'point', data: xLabels }]}
+          series={uploadSeries}
+          xAxis={[{ scaleType: 'point', data: totalDates }]}
         />
       </Box>
+
+      <Box my={4}>
+        <Typography variant="h5" gutterBottom>Download Usage</Typography>
+        <LineChart
+          width={500}
+          height={300}
+          series={downloadSeries}
+          xAxis={[{ scaleType: 'point', data: totalDates }]}
+        />
+      </Box>
+ 
       <Box my={4}>
         <Typography variant="h5" gutterBottom>CPU Usage</Typography>
         <LineChart
           width={500}
           height={300}
-          series={[{ data: cpu_usage, label: 'CPU Usage ' }]}
-          xAxis={[{ scaleType: 'point', data: xLabels }]}
+          series={cpuSeries}
+          xAxis={[{ scaleType: 'point', data: totalDates }]}
         />
       </Box>
  
+
+
     </Container>
   );
 }
+
+
 

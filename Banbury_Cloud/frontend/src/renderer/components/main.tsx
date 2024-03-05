@@ -33,7 +33,7 @@ import DevicesTable from './DeviceTable';
 export default function PermanentDrawerLeft() {
 
 
-  const [activeTab, setActiveTab] = React.useState('Files');
+  const [activeTab, setActiveTab] = React.useState('Devices');
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
