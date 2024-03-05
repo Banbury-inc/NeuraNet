@@ -68,16 +68,13 @@ export default function PermanentDrawerLeft() {
     height: '7vh', // Take full height of the viewport
   }}
 >
-        <Toolbar />
 
-        <Stack direction="row" spacing={1} justifyContent="center" pb={7}>
+        <Stack direction="row" spacing={1} justifyContent="center">
           <Typography 
           variant="h3"
             >
             Banbury Cloud
           </Typography>
-
-
         </Stack>
 </Box>
         <Divider />
@@ -140,9 +137,8 @@ export default function PermanentDrawerLeft() {
       </Drawer>
       <Box
         component="main"
-        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 0 }}
+        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 0}}
       >
-        <Toolbar />
   {(() => {
     switch (activeTab) {
       case 'Dashboard':

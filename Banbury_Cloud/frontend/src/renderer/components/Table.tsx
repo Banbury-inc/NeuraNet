@@ -31,18 +31,27 @@ import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 
 
+interface Device {
+  id: string;
+  name: string;
+  files: File[];
+}
+
 // Simplified data interface to match your file structure
 interface FileData {
   id: number;
   fileName: string;
   dateUploaded: string;
   fileSize: string;
+  deviceID: string;
+  deviceName: string;
 }
 
 // Define head cells according to FileData
 const headCells = [
   { id: 'fileName', numeric: false, label: 'Name' },
   { id: 'fileSize', numeric: false, label: 'Size' },
+  { id: 'fileSize', numeric: false, label: 'Location' },
   { id: 'dateUploaded', numeric: true, label: 'Date Uploaded' },
 ];
 
@@ -70,10 +79,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const createSortHandler = (property: keyof FileData) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
-
-    
-
-
 
     
   return (
@@ -245,11 +250,14 @@ function formatBytes(bytes: number, decimals: number = 2): string {
         console.log(fetchedFirstname);
         const files = response.data.devices.flatMap((device, index) =>
           device.files.map((file: any, fileIndex: number): FileData => ({
-            id: index * 1000 + fileIndex, // Generating unique IDs
+            // id: index * 1000 + fileIndex, // Generating unique IDs
+            id: device.id + fileIndex,
             fileName: file["File Name"],
             // fileSize: file["File Size"],
             fileSize: formatBytes(file["File Size"]),
             dateUploaded: file["Date Uploaded"],
+            deviceID: device.device_number,
+            deviceName: device.device_name
           }))
         );
 
@@ -426,27 +434,21 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
 
   return (
     <Container>
-      <Box sx={{ width: '100%', mt: 0 }}>
+      <Box sx={{ width: '100%', mt: 0, pt: 0 }}>
         <Stack spacing={2}>
-
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
-
             <Grid item>
           <Typography variant="h2" textAlign="left">
             Files
           </Typography>
-
             </Grid>
 
             <Grid item>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
         <Chip avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} label={`${Firstname} ${Lastname}`} />
       </Box>
-
             </Grid>
             </Grid>
-
-
           <Grid container spacing={2}>
             <Grid item>
               <InputFileUpload />
@@ -513,6 +515,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
                           {row.fileName}
                         </TableCell>
                         <TableCell align="left">{row.fileSize}</TableCell>
+                        <TableCell align="left">{row.deviceName}</TableCell>
                         <TableCell align="right">{row.dateUploaded}</TableCell>
                       </TableRow>
                     );
