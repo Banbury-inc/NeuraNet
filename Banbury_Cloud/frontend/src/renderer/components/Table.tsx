@@ -250,8 +250,8 @@ function formatBytes(bytes: number, decimals: number = 2): string {
         console.log(fetchedFirstname);
         const files = response.data.devices.flatMap((device, index) =>
           device.files.map((file: any, fileIndex: number): FileData => ({
-            // id: index * 1000 + fileIndex, // Generating unique IDs
-            id: device.id + fileIndex,
+            id: index * 1000 + fileIndex, // Generating unique IDs
+            // id: device.id + fileIndex,
             fileName: file["File Name"],
             // fileSize: file["File Size"],
             fileSize: formatBytes(file["File Size"]),
