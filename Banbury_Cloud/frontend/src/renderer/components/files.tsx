@@ -48,7 +48,8 @@ export default function Files(): JSX.Element {
 
 
   return (
+    <Container>
         <EnhancedTable  />
-
+    </Container>
   );
 }

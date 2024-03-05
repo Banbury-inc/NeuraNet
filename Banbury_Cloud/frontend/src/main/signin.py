@@ -37,17 +37,6 @@ if not os.path.exists(CONFIG_FILE):
         config.write(config_file)
 
 
-def connect_to_relay_server():
-    load_dotenv()
-    RELAY_HOST = os.getenv("RELAY_HOST")
-    RELAY_PORT = 8002
-
-    sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sender_socket.connect((RELAY_HOST, RELAY_PORT))
-    return sender_socket
-
-
-
 def load_credentials():
     try:
         # Create a ConfigParser instance and read the configuration file
@@ -93,6 +82,7 @@ def login(username, password_str):
         hashed_password = hashlib.sha256(password_str.encode()).hexdigest()
         credentials[username] = hashed_password
         save_credentials(credentials)
+        
     else:
         print("Login unsuccessful!")
 

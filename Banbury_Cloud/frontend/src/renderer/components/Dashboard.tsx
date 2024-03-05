@@ -12,6 +12,8 @@ import Stack from '@mui/material/Stack';
 export default function Dashboard(): JSX.Element {
   return (
     <Container>
+
+      <Box sx={{ width: '100%', mt: 0, pt: 4 }}>
     <Stack spacing={1}>
       <Typography variant="h2" textAlign="left">
         Dashboard
@@ -37,6 +39,7 @@ export default function Dashboard(): JSX.Element {
          </Grid>
      </Grid>
      </Stack>
+     </Box>
     </Container>
   );
 }

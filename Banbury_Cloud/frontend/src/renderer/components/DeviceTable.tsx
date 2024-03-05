@@ -147,7 +147,7 @@ export default function DevicesTable() {
   return (
     <Container>
 
-      <Box sx={{ width: '100%', mt: 0 }}>
+      <Box sx={{ width: '100%', mt: 0, pt: 4 }}>
 
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
