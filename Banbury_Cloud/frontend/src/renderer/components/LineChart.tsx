@@ -93,27 +93,43 @@ export default function DifferentLength() {
 
 
   const xLabels: string[] = Array.from(Array(uploadSpeeds.length).keys()).map(String);
+
+  const cpulabels: string[] = Array.from(Array(cpu_usage.length).keys()).map(String);
+  const downloadlabels: string[] = Array.from(Array(downloadSpeeds.length).keys()).map(String);
+  const uploadlabels: string[] = Array.from(Array(uploadSpeeds.length).keys()).map(String);
+
+
+
   const totalDates = overallDateAdded.map(date =>
     `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
   );
 
+
+  // Limit the data points to match the number of dates available
+// /*   */ const limitedCpuUsage = cpu_usage.slice(0, totalDates.length);
+  // const cpuSeries = [{ data: limitedCpuUsage, label: "CPU Usage" }];
+
   // Prepare series data for each device for Upload Speeds
   const uploadSeries = devices.map(device => ({
     data: device.upload_network_speed,
-    label: device.device_name // Use the device name as the label for each series
+    label: device.device_name, // Use the device name as the label for each series
+    showMark: false,
   }));
+
 
   // Prepare series data for each device for Upload Speeds
   const downloadSeries = devices.map(device => ({
     data: device.download_network_speed,
-    label: device.device_name // Use the device name as the label for each series
+    label: device.device_name, // Use the device name as the label for each series
+    showMark: false,
   }));
 
 
   // Prepare series data for each device for CPU Usage
   const cpuSeries = devices.map(device => ({
     data: device.cpu_usage,
-    label: device.device_name 
+    label: device.device_name, 
+    showMark: false,
 
   }));
 
@@ -142,17 +158,17 @@ const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
           width={500}
           height={300}
           series={uploadSeries}
-          xAxis={[{ scaleType: 'point', data: totalDates }]}
+          xAxis={[{ scaleType: 'point', data: uploadlabels }]}
         />
       </Box>
 
       <Box my={4}>
-        <Typography variant="h5" gutterBottom>Download Usage</Typography>
+        <Typography variant="h5" gutterBottom>Download Speeds</Typography>
         <LineChart
           width={500}
           height={300}
           series={downloadSeries}
-          xAxis={[{ scaleType: 'point', data: totalDates }]}
+          xAxis={[{ scaleType: 'point', data: downloadlabels }]}
         />
       </Box>
  
@@ -162,7 +178,7 @@ const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
           width={500}
           height={300}
           series={cpuSeries}
-          xAxis={[{ scaleType: 'point', data: totalDates }]}
+          xAxis={[{ scaleType: 'point', data: cpulabels }]}
         />
       </Box>
  
