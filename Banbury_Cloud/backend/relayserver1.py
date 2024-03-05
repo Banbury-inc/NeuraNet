@@ -4,7 +4,6 @@ import os
 from dotenv import load_dotenv
 import json
 import time
-from datetime import datetime
 import schedule
 # from pymongo.mongo_client import MongoClient
 from pymongo import MongoClient
@@ -50,9 +49,7 @@ class ClientHandler(threading.Thread):
             if file_type == "MSG":
                 # It's a regular message; process and broadcast it
                 message_content = buffer.decode()
-
-                date_time = datetime.now()
-                print(f"{date_time} Received message from {self.client_address}: {message_content}")
+                print(f"Received message from {self.client_address}: {message_content}")
                 # Broadcast the data to each of the clients in the list of addresses
                 for socket in ClientHandler.client_sockets:
                     if socket != self.client_socket:
@@ -73,9 +70,7 @@ class ClientHandler(threading.Thread):
                 user_collection = db['users']
                 user = user_collection.find_one({'username': username})
                 if user and bcrypt.checkpw(password_bytes, user['password']):
-
-                    date_time = datetime.now()
-                    print(f"{date_time} Login successful!")
+                    print("Login successful!")
 
                     for socket in ClientHandler.client_sockets:
                         if socket == self.client_socket:
@@ -124,8 +119,7 @@ class ClientHandler(threading.Thread):
                                            "You may place as many files in here as you would like, and they will appear on all of "
                                            "your other devices.")
 
-                date_time = datetime.now()
-                print(f"{date_time} Receiving file...")
+                print("Receiving file...")
                 # Send acknowledgment (optional)
                 #self.client_socket.send("ACK".encode())
                     # Open the file and start writing the content received so far
@@ -143,9 +137,9 @@ class ClientHandler(threading.Thread):
                         file.write(data)
                         bytes_received += len(data)
 
-                date_time = datetime.now()
-                print(f"{date_time} Received {file_name}.")
+                print(f"Received {file_name}.")
 
+                print("Broadcasting to other devices") 
                 # Broadcast the data to each of the clients in the list of addresses
 
 
@@ -154,7 +148,9 @@ class ClientHandler(threading.Thread):
                         try:
 
                             file_name = os.path.basename(file_save_path)
+                            print(f"File Name: {file_name}")
                             file_size = os.path.getsize(file_save_path)
+                            print(f"File Size: {file_size}")
                             file_header = f"FILE:{file_name}:{file_size}:"
                             socket.send(file_header.encode())
                             socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
@@ -166,8 +162,7 @@ class ClientHandler(threading.Thread):
                                         break  # File transmission is done
                                     socket.sendall(bytes_read)
 
-                            date_time = datetime.now()
-                            print(f"{date_time} {file_name} has been sent successfully.")
+                            print(f"{file_name} has been sent successfully.")
 
 
 
@@ -182,8 +177,8 @@ class ClientHandler(threading.Thread):
                 file_save_path = os.path.join(directory_path, file_name)
 
 
-                date_time = datetime.now()
-                print(f"{date_time} Received file request from {self.client_address}: {self.client_socket}")
+                print(f"Device is requesting file: {file_name}")
+                print(f"Received the request from {self.client_address}: {self.client_socket}")
                 # Broadcast the request to each of the clients in the list of addresses
                 for socket in ClientHandler.client_sockets:
                     print(socket)
@@ -191,8 +186,7 @@ class ClientHandler(threading.Thread):
                         try:
 
                             file_header = f"FILE_REQUEST:{file_name}:END_OF_HEADER"
-                            date_time = datetime.now()
-                            print(f"{date_time} sending response with file")
+                            print("sending response with file")
                             socket.send(file_header.encode())
                             #socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
                             #socket.sendall(buffer)
@@ -204,9 +198,8 @@ class ClientHandler(threading.Thread):
        
             elif file_type == "FILE_REQUEST_RESPONSE":
                 # It's a file; process the file header to get file info
-
-                date_time = datetime.now()
-                print(f"{date_time} Received the request from {self.client_address}: {self.client_socket}")
+                print("Received FILE_REQUEST_RESPONSE")
+                print(f"Received the request from {self.client_address}: {self.client_socket}")
                 directory_name = "BCloudServer"
                 directory_path = os.path.expanduser(f"~/{directory_name}")
                 file_save_path = os.path.join(directory_path, file_name)
@@ -272,9 +265,8 @@ class ClientHandler(threading.Thread):
 
             elif file_type == "FILE_DELETE_REQUEST":
                 # It's a file; process the file header to get file info
-
-                date_time = datetime.now()
-                print(f"{date_time} Received file delete request from {self.client_address}: {self.client_socket}")
+                print("Received FILE_DELETE_REQUEST")
+                print(f"Received the request from {self.client_address}: {self.client_socket}")
                 directory_name = "BCloud"
                 directory_path = os.path.expanduser(f"~/{directory_name}")
                 file_save_path = os.path.join(directory_path, file_name)
@@ -343,18 +335,14 @@ class ClientHandler(threading.Thread):
                             for index, device in enumerate(devices):
                                 files_to_remove = [file for file in device.get('files', []) if file.get('File Name') == file_name]
                                 for some_file in files_to_remove:
-
-                                    date_time = datetime.now()
-                                    print(f"{date_time} File detected in database, deleting...")
+                                    print(f"File detected in database, deleting...")
                                     if any(file['File Name'] == some_file['File Name'] for file in devices[index]['files']):
                                         devices[index]['files'].remove(some_file)  # Add the file if it doesn't exist
                                         user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
                                         file_removed = True
 
                             if file_removed:
-
-                                date_time = datetime.now()
-                                print(f"{date_time} {file_name} has been successfully removed from database")
+                                print(f"{file_name} has been successfully removed from database")
                             else:
                                 print(f"{file_name} not found in the database")
                         except BrokenPipeError:
@@ -368,8 +356,8 @@ class ClientHandler(threading.Thread):
 
             elif file_type == "FILE_DELETE_REQUEST_RESPONSE":
 
-                date_time = datetime.now()
-                print(f"{date_time} Received file delete request response from {self.client_address}: {self.client_socket}")
+                print("Received FILE_DELETE_REQUEST_RESPONSE")
+                print(f"Received the request from {self.client_address}: {self.client_socket}")
                 directory_name = "BCloud"
                 directory_path = os.path.expanduser(f"~/{directory_name}")
                 file_save_path = os.path.join(directory_path, file_name)
@@ -405,9 +393,7 @@ class ClientHandler(threading.Thread):
                             for index, device in enumerate(devices):
                                 files_to_remove = [file for file in device.get('files', []) if file.get('File Name') == file_name]
                                 for some_file in files_to_remove:
-
-                                    date_time = datetime.now()
-                                    print(f"{date_time} File detected in database, deleting...")
+                                    print(f"File detected in database, deleting...")
                                     if any(file['File Name'] == some_file['File Name'] for file in devices[index]['files']):
                                         devices[index]['files'].remove(some_file)  # Add the file if it doesn't exist
                                         user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
@@ -424,20 +410,21 @@ class ClientHandler(threading.Thread):
  
             elif file_type == "PING_REQUEST_RESPONSE":
 
-
-
-                date_time = datetime.now()
-                print(f"{date_time} Received ping request response")
+                print("Received ping request response")
 
                 message_content = buffer.decode()
+                print(f"message_content: {message_content}")
                 end_of_JSON = "END_OF_JSON"
                 limited_message_content = message_content.split(end_of_JSON)[0]
+                print(limited_message_content)
                 # if end_ofJSON is not in message content,  then the message is incomplete
                 total_json = ""
                 if end_of_JSON not in message_content:
+                    print("Incomplete message")
                     # add meesage_content to a variable called total_json
                     total_json += message_content
                 elif end_of_JSON in message_content:
+                    print("Complete message")
                     # add message_content to a variable called total_json
                     total_json += limited_message_content
                     # parse the JSON
@@ -532,6 +519,7 @@ class ClientHandler(threading.Thread):
 
                                 # Instead of directly appending or extending, check if the file exists
                                 for new_file in files:  # Iterate through the new files to be added
+                                    print(f"new file: {new_file}")
                                     # Check if the file already exists in the 'files' array of the device
                                     if not any(file['File Name'] == new_file['File Name'] for file in devices[index]['files']):
                                         devices[index]['files'].append(new_file)  # Add the file if it doesn't exist
@@ -541,6 +529,7 @@ class ClientHandler(threading.Thread):
                                 devices[index]['average_gpu_usage'] = average_gpu_usage
                                 devices[index]['average_cpu_usage'] = average_cpu_usage
                                 devices[index]['average_ram_usage'] = average_ram_usage
+                                print('updated existing device')
                                 device_exists = True
                                 break  # Exit loop after updating
 
@@ -591,6 +580,7 @@ class ClientHandler(threading.Thread):
                                 'sync_status': sync_status,
                                 'optimization_status': optimization_status,
                             }
+                            print('added new device')
                             device_exists = True
                             devices.append(new_device)
 
@@ -638,8 +628,7 @@ class ClientHandler(threading.Thread):
                             }})
 
 
-                        date_time = datetime.now()
-                        print(f"{date_time} Data uploaded to Banbury Cloud") 
+                        print("data uploaded to Banbury Cloud") 
                         header = None
                         buffer = b""
                         data = None
@@ -655,14 +644,10 @@ class ClientHandler(threading.Thread):
 
 def send_ping():
         time.sleep(10)
-
-        date_time = datetime.now()
-        print(f"{date_time} Pinging all devices")
+        print("Pinging all devices")
         while True:
             for socket in ClientHandler.client_sockets:
-
-                    date_time = datetime.now()
-                    print(f"{date_time} Sending ping request to {socket}")
+                    print(f"Sending ping request to {socket}")
                     try:
                         null_string = ""
                         file_header = f"PING_REQUEST:{null_string}:{null_string}:END_OF_HEADER"
@@ -680,9 +665,7 @@ def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((SERVER_HOST, SERVER_PORT))
     server_socket.listen(5)
-
-    date_time = datetime.now()
-    print(f"{date_time} Server listening on {SERVER_HOST}:{SERVER_PORT}")
+    print(f"Server listening on {SERVER_HOST}:{SERVER_PORT}")
     client_sockets = []
     client_addresses = []
     running = True
@@ -692,15 +675,11 @@ def main():
             # Accept incoming connections
             schedule.run_pending()
             client_socket, client_address = server_socket.accept()
-
-            date_time = datetime.now()
-            print(f"{date_time} Accepted connection from {client_address}")
+            print(f"Accepted connection from {client_address}")
             # Start a new thread to handle the client
             client_handler = ClientHandler(client_socket, client_address)
             client_handler.start()
-
-            date_time = datetime.now()
-            print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
+            print(f"All connected client addresses: {ClientHandler.client_addresses}")
     except KeyboardInterrupt:
         print("Server shutting down...")
         running = False

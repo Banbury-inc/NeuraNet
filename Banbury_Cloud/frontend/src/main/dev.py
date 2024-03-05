@@ -1,33 +1,31 @@
 import psutil
 import GPUtil
 import subprocess
+import re
 
+def get_wifi_speed():
+    command = "speedtest"
+    network_speed_result = subprocess.run(command, shell=True, capture_output=True, check=True, text=True)
+    # Use regular expressions to extract the Wi-Fi speed
+    download_speed_pattern = r"Download:\s+(\d+(\.\d+)?)\s[MG]?bit/s"
+    match = re.search(download_speed_pattern, network_speed_result.stdout)
+    if match:
+        download_speed_value = match.group(1)
+        download_network_speed = download_speed_value
+    else:
+        download_network_speed = 0
 
+    upload_speed_pattern = r"Upload:\s+(\d+(\.\d+)?)\s[MG]?bit/s"
+    match = re.search(upload_speed_pattern, network_speed_result.stdout)
+    if match:
+        upload_speed_value = match.group(1)
+        upload_network_speed = upload_speed_value
+    else:
+        upload_network_speed = 0
+    return upload_network_speed, download_network_speed
 
-def get_gpu_usage():
-    """
-    Returns the GPU usage.
-    """
-    try:
-        gpus = GPUtil.getGPUs()
-        list_gpus = []
-        for gpu in gpus:
-            gpu_id = gpu.id
-            gpu_name = gpu.name
-            gpu_load = f"{gpu.load*100}%"
-            gpu_free_memory = f"{gpu.memoryFree}MB"
-            gpu_used_memory = f"{gpu.memoryUsed}MB"
-            gpu_total_memory = f"{gpu.memoryTotal}MB"
-            gpu_temperature = f"{gpu.temperature} °C"
-            list_gpus.append(f"ID: {gpu_id}, Name: {gpu_name}, Load: {gpu_load}, Free Memory: {gpu_free_memory}, Used Memory: {gpu_used_memory}, Total Memory: {gpu_total_memory}, Temperature: {gpu_temperature}")
-        return gpu_load
-    except Exception as e:
-        gpu_load = 0
-        return gpu_load
-
-
-gpu_usage = get_gpu_usage()
-print(gpu_usage)
+wifi_speed = get_wifi_speed()
+print(wifi_speed)
 
 
 

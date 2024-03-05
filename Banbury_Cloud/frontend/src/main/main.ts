@@ -46,7 +46,7 @@ function createWindow(): void {
 }
 
 function runPythonScript() {
-  const scriptPath = "src/main/receiver4.py"; // Update this to the path of your Python script
+  const scriptPath = "src/main/receiver5.py"; // Update this to the path of your Python script
   exec(`python "${scriptPath}"`, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
