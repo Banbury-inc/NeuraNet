@@ -558,7 +558,7 @@ def send_device_info():
     device_info = get_device_info()
     print("Sending a ping response")
     null_string = ""
-    file_header = f"PING_REQUEST_RESPONSE:{null_string}:END_OF_HEADER"
+    file_header = f"PING_REQUEST_RESPONSE:{null_string}:{null_string}:{null_string}:END_OF_HEADER"
     sender_socket.send(file_header.encode())
     device_info_with_stop_signal = f"{device_info}END_OF_JSON"
     #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done

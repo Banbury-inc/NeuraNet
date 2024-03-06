@@ -56,19 +56,18 @@ interface UserResponse {
 
 const { ipcRenderer } = window.require('electron');
 
-
 ipcRenderer.on('python-output', (event: any, data: any) => {
   console.log('Received Python output:', data);
 });
+
+
+
 
 export default function DevicesTable() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -92,13 +91,40 @@ export default function DevicesTable() {
         console.error('Error fetching data:', error);
       }
     };
-
     fetchData();
-
-
-
   }, []);
 
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+        const data = response.data;
+        // Processing data for the frontend, assuming your API returns data directly usable by the UI
+        const roundedDevices = data.devices.map(device => ({
+          ...device,
+          average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
+          average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
+          average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
+          average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
+          average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
+          date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
+        }));
+
+        setDevices(roundedDevices);
+        setFirstname(data.first_name);
+        setLastname(data.last_name);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, 10000); // Refresh every 10 seconds 
+
+    return () => clearInterval(interval);
+  },
+  []);
 
 
 

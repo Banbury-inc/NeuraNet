@@ -235,6 +235,7 @@ function formatBytes(bytes: number, decimals: number = 2): string {
   const [Firstname, setFirstname] = useState<string>('');
   const [Lastname, setLastname] = useState<string>('');
   useEffect(() => {
+    const interval = setInterval(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get<{
@@ -268,7 +269,12 @@ function formatBytes(bytes: number, decimals: number = 2): string {
       }
     };
     fetchData();
-  }, []);
+  }, 10000); 
+
+  return () => clearInterval(interval);
+  },
+
+  []);
 
 
 

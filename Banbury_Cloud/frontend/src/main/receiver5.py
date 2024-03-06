@@ -159,24 +159,28 @@ def run(receiver_socket):
 
             print(f"Device is requesting to delete file: {file_name}")
 
-            file_name = os.path.basename(file_save_path)
-            file_size = os.path.getsize(file_save_path)
 
-            # search file_save_path for the file and delete it
-            if os.path.exists(file_save_path):
-                os.remove(file_save_path)
-                print(f"{file_name} has been deleted successfully.")
-            else:
-                print(f"{file_name} does not exist. Doesn't matter because it's supposed to be deleted anyway.")
+            try:
 
-            print("Sending a confirmation of file deleteion response")
+                file_name = os.path.basename(file_save_path)
+                file_size = os.path.getsize(file_save_path)
 
-            file_header = f"FILE_DELETE_REQUEST_RESPONSE:{file_name}:{file_size}:END_OF_HEADER"
-            receiver_socket.send(file_header.encode())
-            #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+                # search file_save_path for the file and delete it
+                if os.path.exists(file_save_path):
+                    os.remove(file_save_path)
+                    print(f"{file_name} has been deleted successfully.")
+                else:
+                    print(f"{file_name} does not exist. Doesn't matter because it's supposed to be deleted anyway.")
 
-            print("Confirmation of file deletion has been send successfully")
- 
+                print("Sending a confirmation of file deleteion response")
+                null_string=""
+                file_header = f"FILE_DELETE_REQUEST_RESPONSE:{file_name}:{file_size}:{null_string}:END_OF_HEADER"
+                receiver_socket.send(file_header.encode())
+                #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+
+                print("Confirmation of file deletion has been send successfully")
+            except Exception as e:
+                print(f"Error deleting file: {e}") 
 
 
         else:
