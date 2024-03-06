@@ -179,9 +179,20 @@ def run(receiver_socket):
                 #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
 
                 print("Confirmation of file deletion has been send successfully")
+                data = None 
+                buffer = b""
+                header = None
+                file_type = ""
+
+
+
+
             except Exception as e:
                 print(f"Error deleting file: {e}") 
-
+                data = None 
+                buffer = b""
+                header = None
+                file_type = ""
 
         else:
             print(f"Unknown data type received")
