@@ -103,6 +103,10 @@ class ClientHandler(threading.Thread):
 
 
 
+
+
+
+
             elif file_type == "FILE":
                 # It's a file; process the file header to get file info
 
@@ -638,32 +642,10 @@ class ClientHandler(threading.Thread):
 
                         date_time = datetime.now()
                         print(f"{date_time} Data uploaded to Banbury Cloud") 
-
-                        # Tell all connected devices to fetch new data from database
-
-                        for socket in ClientHandler.client_sockets:
-
-                                date_time = datetime.now()
-                                print(f"{date_time} Sending update request to {socket}")
-                                try:
-                                    null_string = ""
-                                    header = None
-                                    buffer = b""
-                                    data = None
-                                    total_json = ""
-
-                                    file_header = f"UPDATE:{null_string}:{null_string}:END_OF_HEADER"
-                                    socket.send(file_header.encode())
-                                    #socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
-                   
-                                except BrokenPipeError:
-                                    print(f"Broken pipe, removing socket, moving on to the next socket.")
-
-                                    ClientHandler.client_sockets.remove(socket)
-                                    continue  # This skips the rest of the current iteration and moves to the next socket
-                                except Exception as e:
-                                    print(f"Error sending to device: {e}")
-             
+                        header = None
+                        buffer = b""
+                        data = None
+                        total_json = ""
 
                     except Exception as e:
                         print(f"Ping request failed {e}")

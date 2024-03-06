@@ -1,9 +1,12 @@
+import React, { createContext, useContext, useState } from 'react';
 import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import * as url from "url";
 import { exec } from "child_process";
+const { spawn } = require("child_process");
 import axios from 'axios'; // Adjusted import for axios
-
+import { useStdout } from './StdoutContext';
+import { resolve } from 'path';
 let mainWindow: BrowserWindow | null;
 
 function createWindow(): void {
@@ -45,27 +48,57 @@ function createWindow(): void {
   });
 }
 
+
+
 function runPythonScript() {
   const scriptPath = "src/main/receiver5.py"; // Update this to the path of your Python script
-  exec(`python "${scriptPath}"`, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`Python Script Error: ${stderr}`);
-      return
-    }
-    if (stdout) {
-      console.log(`Python Script Message: ${stdout}`);
-      return
-    }
-    console.log(`Python Script Message: ${stdout}`);
+  const python = spawn('python3', [scriptPath]);
 
-    // Example: Send output to renderer process if needed
-     mainWindow?.webContents.send('python-output', stdout);
+  // Listen for data on the stdout stream
+  python.stdout.on("data", (data: Buffer) => {
+    const result = data.toString();
+    console.log(`Python Script Message: ${result}`);
+  });
+
+  // Listen for errors on the stderr stream
+  python.stderr.on("data", (data: Buffer) => {
+    const error = data.toString();
+    console.error(`Python Script Error: ${error}`);
+  });
+
+  // Handle the exit event
+  python.on("close", (code: number) => {
+    console.log(`Python Script exited with code ${code}`);
   });
 }
+
+
+
+
+// function runPythonScript() {
+//   const scriptPath = "src/main/receiver5.py"; // Update this to the path of your Python script
+//   exec(`python3 "${scriptPath}"`, (error, stdout, stderr) => {
+
+//     console.log(`Python Script Message: ${stdout}`);
+//     console.log(`Python Script Message: ${stderr}`);
+//     console.log(`Python Script Message: ${error}`);
+//     if (error) {
+//       console.error(`exec error: ${error}`);
+//       return
+//     }
+//     if (stderr) {
+//       console.error(`Python Script Error: ${stderr}`);
+//       return
+//     }
+//     if (stdout) {
+//       console.log(`Python Script Message: ${stdout}`);
+//       return
+//     }
+//     resolve(stdout); 
+//     // Example: Send output to renderer process if needed
+//      // mainWindow?.webContents.send('python-output', stdout);
+//   });
+// }
 
 ipcMain.on('fetch-data', async (event, args) => {
   try {
@@ -79,6 +112,7 @@ ipcMain.on('fetch-data', async (event, args) => {
 app.on("ready", () => {
   createWindow();
   runPythonScript();
+
 
 });
 

@@ -78,6 +78,39 @@ export default function DevicesTable() {
       }
     };
     fetchData();
+
+    const stderrListener = (data: any) => {
+      const errorMessage = data.toString();
+      if (errorMessage.includes('UPDATE')) {
+
+        console.log(" err updating")
+        process.stdout.write('UPDATE');
+        fetchData();
+      }
+    };
+    // Listen to stderr
+    process.stderr.on('data', stderrListener);
+    // Cleanup function to remove the listener
+    return () => {
+      process.stderr.removeListener('data', stderrListener);
+    };
+
+    const stdoutListener = (data: any) => {
+      const message = data.toString();
+      if (message.includes('UPDATE')) {
+        console.log("out updating")
+        process.stdout.write('UPDATE');
+        fetchData();
+      }
+    };
+    // Listen to stderr
+    process.stderr.on('data', stdoutListener);
+    // Cleanup function to remove the listener
+    return () => {
+      process.stderr.removeListener('data', stdoutListener);
+    };
+
+
   }, []);
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {

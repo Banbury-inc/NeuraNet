@@ -1,5 +1,6 @@
 import socket
 from dotenv import load_dotenv
+import sys
 import subprocess
 import threading
 import os
@@ -13,7 +14,6 @@ import time
 import psutil
 import GPUtil
 
-
 def run(receiver_socket):
     end_of_header = b"END_OF_HEADER"
     buffer = b""
@@ -22,7 +22,9 @@ def run(receiver_socket):
 
     while True:
 
+        sys.stdout.flush()
         data = receiver_socket.recv(4096)
+        print(data)
         if not data:
             break
         buffer += data
@@ -42,6 +44,19 @@ def run(receiver_socket):
             # It's a regular message; process and broadcast it
             message_content = buffer.decode()
             print(f"Received message: {message_content}")
+
+
+        elif file_type == "UPDATE":
+
+            date_time = get_current_date_and_time()
+            print(f"{date_time} Received an update request")
+            print("UPDATE")
+            #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+
+            data = None 
+            buffer = b""
+            header = None
+            file_type = ""
 
 
         elif file_type == "FILE":
@@ -133,7 +148,8 @@ def run(receiver_socket):
             print(f"{date_time} Ping response has been sent successfully.")
             data = None 
             buffer = b""
-
+            header = None
+            file_type = ""
 
         elif file_type == "FILE_DELETE_REQUEST":
 
@@ -501,6 +517,8 @@ def main():
     SERVER_HOST = os.getenv("RELAY_HOST")
     #SERVER_HOST = "0.0.0.0"
     print("Launching Banbury Cloud")
+
+    sys.stdout.flush()
     SERVER_PORT = 8002
     receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     receiver_socket.connect((SERVER_HOST, SERVER_PORT))
