@@ -413,7 +413,9 @@ class ClientHandler(threading.Thread):
                                         user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
                                         file_removed = True
                         except BrokenPipeError:
-                            print(f"Broken pipe moving on to the next socket.")
+                            print(f"Broken pipe, removing socket, moving on to the next socket.")
+                            # remove the current socket from the list of client sockets
+                            ClientHandler.client_sockets.remove(socket)
                             continue  # This skips the rest of the current iteration and moves to the next socket
                         except Exception as e:
                             print(f"Error sending to device: {e}")
@@ -670,11 +672,14 @@ def send_ping():
                         #socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
        
                     except BrokenPipeError:
-                        print(f"Broken pipe moving on to the next socket.")
+                        print(f"Broken pipe, removing socket, moving on to the next socket.")
+
+                        ClientHandler.client_sockets.remove(socket)
                         continue  # This skips the rest of the current iteration and moves to the next socket
                     except Exception as e:
                         print(f"Error sending to device: {e}")
-            time.sleep(900)
+            # time.sleep(900)
+            time.sleep(120)
 def main():
     # Create a server socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
