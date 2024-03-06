@@ -16,7 +16,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const InputFileUpload: React.FC = () => {
+const InputFileUploadButton: React.FC = () => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) {
@@ -70,5 +70,5 @@ const InputFileUpload: React.FC = () => {
   );
 };
 
-export default InputFileUpload;
+export default InputFileUploadButton;
 

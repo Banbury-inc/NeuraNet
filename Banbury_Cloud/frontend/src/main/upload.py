@@ -7,7 +7,7 @@ import os
 import socket
 from dotenv import load_dotenv
 import shutil
-from sender3 import send_device_info
+from sender4 import send_device_info
 
 def connect_to_relay_server():
     load_dotenv()
@@ -42,6 +42,7 @@ def upload_file(file_path):
     except Exception as e:
         print(f"Error uploading to cloud: {e}")
 
+    sys.stdout.flush()
 def main():
 
     if len(sys.argv) > 1:

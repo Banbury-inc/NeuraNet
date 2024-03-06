@@ -35,16 +35,16 @@ def run(receiver_socket):
             file_type = split_header[0]
             file_name = split_header[1]
             file_size = split_header[2]
+            password = split_header[2]
             username = split_header[3]
             buffer = content 
-
-
 
         if file_type == "MSG":
             # It's a regular message; process and broadcast it
             message_content = buffer.decode()
             print(f"Received message: {message_content}")
 
+            sys.stdout.flush()
 
         elif file_type == "UPDATE":
 
@@ -52,7 +52,7 @@ def run(receiver_socket):
             print(f"{date_time} Received an update request")
             print("UPDATE")
             #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
-
+            sys.stdout.flush()
             data = None 
             buffer = b""
             header = None
@@ -112,8 +112,8 @@ def run(receiver_socket):
             print(f'The file size of {file_name} is {file_size} bytes')
 
             print("Sending a file request response")
-
-            file_header = f"FILE_REQUEST_RESPONSE:{file_name}:{file_size}:END_OF_HEADER"
+            null_string=""
+            file_header = f"FILE_REQUEST_RESPONSE:{file_name}:{file_size}:{null_string}:END_OF_HEADER"
             receiver_socket.send(file_header.encode())
             #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
 
@@ -182,6 +182,7 @@ def run(receiver_socket):
         else:
             print(f"Unknown data type received")
 
+        sys.stdout.flush()
 
 
 

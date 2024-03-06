@@ -53,10 +53,10 @@ def request_file(files):
     sender_socket = connect_to_relay_server()
 
     print(f"File Name: {file_name}")
-    file_header = f"FILE_REQUEST:{file_name}:"
+    null_string = ""
+    file_header = f"FILE_REQUEST:{file_name}:{null_string}:{null_string}:"
     sender_socket.send(file_header.encode())
     sender_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
-
     end_of_header = b"END_OF_HEADER"
     buffer = b""
     header = None
@@ -75,9 +75,8 @@ def request_file(files):
             file_type = split_header[0]
             file_name = split_header[1]
             file_size = split_header[2]
-            print(f"file type: {file_type}")
-            print(f"file size: {file_size}")
-            print(f"file name: {file_name}")
+            password = split_header[2]
+            username = split_header[3]
             buffer = content 
 
         if file_type == "FILE_REQUEST_RESPONSE":
@@ -148,7 +147,7 @@ def main():
         print(f"Argument received: {files}")
     else:
         print("No argument received.")
-        files = "chamonix.mp4"
+        files = "picture.png"
 
     request_file(files)
 

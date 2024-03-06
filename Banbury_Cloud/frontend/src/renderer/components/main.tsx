@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -26,14 +26,13 @@ import { Stack } from '@mui/material';
 const drawerWidth = 240;
 import { Chip } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import axios from 'axios';
 import DevicesTable from './DeviceTable';
-
+const { ipcRenderer } = window.require('electron');
 
 
 export default function PermanentDrawerLeft() {
-
-
-  const [activeTab, setActiveTab] = React.useState('Files');
+ const [activeTab, setActiveTab] = React.useState('Files');
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -146,7 +145,7 @@ export default function PermanentDrawerLeft() {
       case 'Files':
         return <Files />;
       case 'Devices':
-        return <DevicesTable />;
+        return <DevicesTable  />;
       case 'Settings':
         // Replace <Typography> with your settings component
         return <Typography paragraph>Settings Component Here</Typography>;

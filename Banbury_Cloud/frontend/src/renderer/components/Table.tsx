@@ -8,7 +8,6 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import InputFileUpload from './uploadfilebutton';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
@@ -29,6 +28,7 @@ import { visuallyHidden } from '@mui/utils';
 import { Container } from "@mui/material";
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
+import InputFileUploadButton from './uploadfilebutton';
 
 
 interface Device {
@@ -374,6 +374,32 @@ function formatBytes(bytes: number, decimals: number = 2): string {
   };
 
 
+  const handleUploadClick = async () => {
+    try{
+
+      const scriptPath = 'src/main/upload.py'; // Update this to the path of your Python script
+       
+      exec(`python "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`Python Script Error: ${stderr}`);
+          return
+        }
+        if (stdout) {
+          console.log(`Python Script Message: ${stdout}`);
+          return
+        }
+        console.log(`Python Script Message: ${stdout}`);
+
+      });
+    } catch (error) {
+      console.error('There was an error!', error);
+ 
+    } 
+  };
 
 
 
@@ -451,7 +477,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
             </Grid>
           <Grid container spacing={2}>
             <Grid item>
-              <InputFileUpload />
+              <InputFileUploadButton />
             </Grid>
             <Grid item>
               <Button variant="outlined" onClick={handleDownloadClick} size="small">

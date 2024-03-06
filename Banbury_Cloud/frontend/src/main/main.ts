@@ -58,6 +58,8 @@ function runPythonScript() {
   python.stdout.on("data", (data: Buffer) => {
     const result = data.toString();
     console.log(`Python Script Message: ${result}`);
+
+     mainWindow?.webContents.send('python-output', result);
   });
 
   // Listen for errors on the stderr stream
@@ -70,6 +72,7 @@ function runPythonScript() {
   python.on("close", (code: number) => {
     console.log(`Python Script exited with code ${code}`);
   });
+
 }
 
 

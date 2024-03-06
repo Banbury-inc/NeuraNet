@@ -186,7 +186,8 @@ class ClientHandler(threading.Thread):
                     if socket != self.client_socket:
                         try:
 
-                            file_header = f"FILE_REQUEST:{file_name}:END_OF_HEADER"
+                            null_string=""
+                            file_header = f"FILE_REQUEST:{file_name}:{null_string}:{null_string}:END_OF_HEADER"
                             date_time = datetime.now()
                             print(f"{date_time} sending response with file")
                             socket.send(file_header.encode())
