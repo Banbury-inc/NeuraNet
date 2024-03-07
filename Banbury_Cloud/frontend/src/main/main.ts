@@ -76,8 +76,6 @@ function runPythonScript() {
 }
 
 
-
-
 // function runPythonScript() {
 //   const scriptPath = "src/main/receiver5.py"; // Update this to the path of your Python script
 //   exec(`python3 "${scriptPath}"`, (error, stdout, stderr) => {
