@@ -108,11 +108,13 @@ def login(username, password_str):
             credentials = load_credentials()
             credentials[username] = hashed_password
             save_credentials(credentials)
+            sender_socket.close()
 
             return result
         elif file_type == "LOGIN_FAIL":
             job_completed = True
             result = "fail"
+            sender_socket.close()
             return result
  
 

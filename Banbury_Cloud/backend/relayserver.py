@@ -20,6 +20,8 @@ SERVER_PORT = 8002  # Server port
 class ClientHandler(threading.Thread):
     client_sockets = []
     client_addresses = []
+    device_websockets = {}
+    device_username = {}
     def __init__(self, client_socket, client_address):
         super().__init__()
         self.client_socket = client_socket
@@ -426,7 +428,7 @@ class ClientHandler(threading.Thread):
 
 
                 date_time = datetime.now()
-                print(f"{date_time} Received ping request response")
+                print(f"{date_time} Received ping request response from {self.client_address}: {self.client_socket}")
 
                 message_content = buffer.decode()
                 end_of_JSON = "END_OF_JSON"
@@ -466,6 +468,11 @@ class ClientHandler(threading.Thread):
                         device_priority = data["device_priority"]
                         sync_status = data["sync_status"]
                         optimization_status = data["optimization_status"]
+
+
+                        ClientHandler.device_websockets[device_name] = self.client_socket
+                        ClientHandler.device_username[username] = self.client_socket
+
 
 
                         load_dotenv()
@@ -518,6 +525,10 @@ class ClientHandler(threading.Thread):
                                 average_gpu_usage = total_gpu_usage / gpu_usage_count if gpu_usage_count else 0
                                 average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
                                 average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
+                                try:
+                                    online = device.get('online')
+                                except Exception as e:
+                                    print("online attribute doesn't exist, skipping")
 
 
 
@@ -540,6 +551,7 @@ class ClientHandler(threading.Thread):
                                 devices[index]['average_gpu_usage'] = average_gpu_usage
                                 devices[index]['average_cpu_usage'] = average_cpu_usage
                                 devices[index]['average_ram_usage'] = average_ram_usage
+                                devices[index]['online'] = True
                                 device_exists = True
                                 break  # Exit loop after updating
 
@@ -564,7 +576,7 @@ class ClientHandler(threading.Thread):
                             average_gpu_usage = total_gpu_usage / gpu_usage_count if gpu_usage_count else 0
                             average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
                             average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
-
+                            
 
                             # Create a new device object
                             new_device = {
@@ -574,6 +586,7 @@ class ClientHandler(threading.Thread):
                                 'storage_capacity_GB': storage_capacity_GB,
                                 'date_added': [date_added], 
                                 'ip_address': ip_address,
+                                'online': True,
                                 'average_upload_speed': average_upload_speed,
                                 'average_download_speed': average_download_speed,
                                 'average_gpu_usage': average_gpu_usage,
@@ -642,29 +655,29 @@ class ClientHandler(threading.Thread):
 
                         # Tell all connected devices to fetch new data from database
 
-                        for socket in ClientHandler.client_sockets:
+             #            for socket in ClientHandler.client_sockets:
 
-                                date_time = datetime.now()
-                                print(f"{date_time} Sending update request to {socket}")
-                                try:
-                                    null_string = ""
-                                    header = None
-                                    buffer = b""
-                                    data = None
-                                    total_json = ""
+             #                    date_time = datetime.now()
+             #                    print(f"{date_time} Sending update request to {socket}")
+             #                    try:
+             #                        null_string = ""
+             #                        header = None
+             #                        buffer = b""
+             #                        data = None
+             #                        total_json = ""
 
-                                    file_header = f"UPDATE:{null_string}:{null_string}:END_OF_HEADER"
-                                    socket.send(file_header.encode())
-                                    #socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
-                   
-                                except BrokenPipeError:
-                                    print(f"Broken pipe, removing socket, moving on to the next socket.")
+             #                        file_header = f"UPDATE:{null_string}:{null_string}:END_OF_HEADER"
+             #                        socket.send(file_header.encode())
+             #                        #socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+             #       
+             #                    except BrokenPipeError:
+             #                        print(f"Broken pipe, removing socket, moving on to the next socket.")
 
-                                    ClientHandler.client_sockets.remove(socket)
-                                    continue  # This skips the rest of the current iteration and moves to the next socket
-                                except Exception as e:
-                                    print(f"Error sending to device: {e}")
-             
+             #                        ClientHandler.client_sockets.remove(socket)
+             #                        continue  # This skips the rest of the current iteration and moves to the next socket
+             #                    except Exception as e:
+             #                        print(f"Error sending to device: {e}")
+             # 
 
                     except Exception as e:
                         print(f"Ping request failed {e}")
@@ -691,10 +704,41 @@ def send_ping():
                         #socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
        
                     except BrokenPipeError:
-                        print(f"Broken pipe, removing socket, moving on to the next socket.")
+                        print(f"Broken pipe, removing socket, setting device to offline, moving on to the next socket.")
+                        # figure out what device is connected to the socket
 
-                        ClientHandler.client_sockets.remove(socket)
+
+                        # # search for the device in the database, change the online status to false
+                        # load_dotenv()
+                        # uri = os.getenv("MONGODB_URL")
+                        # client = MongoClient(uri)
+                        # db = client['myDatabase']
+                        # user_collection = db['users']
+                        # username = ClientHandler.device_username.get(socket)
+                        # print(username)
+                        # device_name = ClientHandler.device_websockets.get(socket)
+                        # print(device_name)
+                        # user = user_collection.find_one({'username': username})
+                        # try:
+                        #     devices = user.get('devices', [])
+
+                        #     for index, device in enumerate(devices):
+                        #         if device.get('device_name') == device_name:
+                        #             devices[index]['online'] = False
+
+                        #             user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
+                        #     ClientHandler.client_sockets.remove(socket)
+                        # 
+                        # except Exception as e:
+                        #     print(f"Error sending to device: {e}")
+
+                        # for device, device_socket in ClientHandler.device_websockets.items():
+                        #     if device_socket == socket:
+                        #         print(f"Removing {device} from the list of devices")
+                        #         del ClientHandler.device_websockets[device]
+
                         continue  # This skips the rest of the current iteration and moves to the next socket
+
                     except Exception as e:
                         print(f"Error sending to device: {e}")
             # time.sleep(900)
@@ -725,6 +769,8 @@ def main():
 
             date_time = datetime.now()
             print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
+            print(f"{date_time} All connected devices: {ClientHandler.device_websockets}")
+
     except KeyboardInterrupt:
         print("Server shutting down...")
         running = False
