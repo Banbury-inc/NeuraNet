@@ -260,15 +260,15 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
                         inputProps={{ 'aria-label': 'select all devices' }}
                       />
                     </TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>IP Address</TableCell>
-                    <TableCell>Total Storage</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Avg. Upload Speed</TableCell>
-                    <TableCell>Avg. Download Speed</TableCell>
-                    <TableCell>Avg. GPU usage</TableCell>
-                    <TableCell>Avg. CPU usage</TableCell>
-                    <TableCell>Avg. RAM usage</TableCell>
+                    <TableCell align='left'>Name</TableCell>
+                    <TableCell align='left'>IP Address</TableCell>
+                    <TableCell align='left'>Total Storage</TableCell>
+                    <TableCell align='left'>Status</TableCell>
+                    <TableCell align='left'>Avg. Upload Speed</TableCell>
+                    <TableCell align='left'>Avg. Download Speed</TableCell>
+                    <TableCell align='left'>Avg. GPU usage</TableCell>
+                    <TableCell align='left'>Avg. CPU usage</TableCell>
+                    <TableCell align='left'>Avg. RAM usage</TableCell>
                     {/* Add more table headers as needed */}
                   </TableRow>
                 </TableHead>
@@ -297,39 +297,39 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
                             inputProps={{ 'aria-labelledby': labelId }}
                           />
                         </TableCell>
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                        <TableCell align='left' component="th" id={labelId} scope="row">
                           {device.device_name}
                         </TableCell>
 
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                        <TableCell align='left' component="th" id={labelId} scope="row">
                           {device.ip_address}
                         </TableCell>
 
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                        <TableCell align='right'component="th" id={labelId} scope="row">
                           {device.storage_capacity_GB}
                         </TableCell>
  
-                        <TableCell component="th" id={labelId} scope="row" padding="none" style={{ color: device.onlineStatus === "Online" ? "#1DB954" : "red" }}>
+                        <TableCell align='left'component="th" id={labelId} scope="row" style={{ color: device.onlineStatus === "Online" ? "#1DB954" : "red" }}>
                           {device.onlineStatus}
                         </TableCell>
  
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                        <TableCell align='right'component="th" id={labelId} scope="row">
                           {device.average_upload_speed}
                         </TableCell>
  
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                        <TableCell align='right'component="th" id={labelId} scope="row">
                           {device.average_download_speed}
                         </TableCell>
  
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                        <TableCell align='right'component="th" id={labelId} scope="row">
                           {device.average_gpu_usage}
                         </TableCell>
  
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                        <TableCell align='right'component="th" id={labelId} scope="row">
                           {device.average_cpu_usage}
                         </TableCell>
  
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                        <TableCell align='right'component="th" id={labelId} scope="row">
                           {device.average_ram_usage}
                         </TableCell>
   

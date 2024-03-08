@@ -234,6 +234,48 @@ function formatBytes(bytes: number, decimals: number = 2): string {
 
   const [Firstname, setFirstname] = useState<string>('');
   const [Lastname, setLastname] = useState<string>('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get<{
+          devices: any[] 
+          first_name: string;
+          last_name: string;
+        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+
+        const fetchedFirstname = response.data.first_name;
+        const fetchedLastname = response.data.last_name;
+        setFirstname(fetchedFirstname); 
+        setLastname(fetchedLastname); 
+        console.log(fetchedFirstname);
+        const files = response.data.devices.flatMap((device, index) =>
+          device.files.map((file: any, fileIndex: number): FileData => ({
+            id: index * 1000 + fileIndex, // Generating unique IDs
+            // id: device.id + fileIndex,
+            fileName: file["File Name"],
+            // fileSize: file["File Size"],
+            fileSize: formatBytes(file["File Size"]),
+            dateUploaded: file["Date Uploaded"],
+            deviceID: device.device_number,
+            deviceName: device.device_name
+          }))
+        );
+
+        console.log(files);
+        setFileRows(files);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+
+  },
+
+  []);
+
+
+
   useEffect(() => {
     const interval = setInterval(() => {
     const fetchData = async () => {
