@@ -25,13 +25,14 @@ import LineChart from './LineChart';
 interface Device {
   device_number: number;
   device_name: string;
-  storage_capacity_GB: string;
+  storage_capacity_GB: any;
   average_cpu_usage: number;
   average_download_speed: number;
   average_gpu_usage: number;
   average_ram_usage: number;
   average_time_online: number;
   average_upload_speed: number;
+  onlineStatus: string;
   cpu_usage: number[];
   date_added: Date[];
   device_priority: number;
@@ -43,6 +44,7 @@ interface Device {
   ram_usage: number[];
   sync_status: boolean;
   upload_network_speed: number[];
+  online: boolean;
   // Add more device properties as needed
 }
 
@@ -77,11 +79,13 @@ export default function DevicesTable() {
         const roundedDevices = data.devices.map(device => ({
           ...device,
           average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
+          storage_capacity_GB: formatBytes(device.storage_capacity_GB),
           average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
           average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
           average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
           average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
           date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
+          onlineStatus: device.online ? "Online" : "Offline"
         }));
 
         setDevices(roundedDevices);
@@ -95,6 +99,26 @@ export default function DevicesTable() {
   }, []);
 
 
+
+function formatBytes(gigabytes: number, decimals: number = 2): string {
+  if (gigabytes === 0) return '0 GB';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  // Since we're starting from GB, there's no need to find the initial index based on the log.
+  // Instead, we convert the input gigabytes to bytes to use the original formula,
+  // adjusting it to start from GB.
+  const bytes = gigabytes * Math.pow(k, 3); // Converting GB to Bytes for calculation
+  const i = Math.floor(Math.log(bytes) / Math.log(k)) - 3; // Adjusting index to start from GB
+
+  // Ensure the index does not fall below 0
+  const adjustedIndex = Math.max(i, 0);
+
+  return parseFloat((gigabytes / Math.pow(k, adjustedIndex)).toFixed(dm)) + ' ' + sizes[adjustedIndex];
+}
+
   useEffect(() => {
     const interval = setInterval(() => {
     const fetchData = async () => {
@@ -105,11 +129,13 @@ export default function DevicesTable() {
         const roundedDevices = data.devices.map(device => ({
           ...device,
           average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
+          storage_capacity_GB: formatBytes(device.storage_capacity_GB),
           average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
           average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
           average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
           average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
           date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
+          onlineStatus: device.online ? "Online" : "Offline"
         }));
 
         setDevices(roundedDevices);
@@ -125,8 +151,6 @@ export default function DevicesTable() {
     return () => clearInterval(interval);
   },
   []);
-
-
 
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,17 +229,13 @@ export default function DevicesTable() {
           <Typography variant="h2" textAlign="left">
             Devices
           </Typography>
-
             </Grid>
             <Grid item>
-
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
         <Chip avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} label={`${Firstname} ${Lastname}`} />
       </Box>
-
             </Grid>
             </Grid>
-
           <Grid container spacing={1}>
             <Grid item>
               <Button variant="outlined" size="small">Add Device</Button>
@@ -243,6 +263,7 @@ export default function DevicesTable() {
                     <TableCell>Name</TableCell>
                     <TableCell>IP Address</TableCell>
                     <TableCell>Total Storage</TableCell>
+                    <TableCell>Status</TableCell>
                     <TableCell>Avg. Upload Speed</TableCell>
                     <TableCell>Avg. Download Speed</TableCell>
                     <TableCell>Avg. GPU usage</TableCell>
@@ -288,7 +309,10 @@ export default function DevicesTable() {
                           {device.storage_capacity_GB}
                         </TableCell>
  
-
+                        <TableCell component="th" id={labelId} scope="row" padding="none" style={{ color: device.onlineStatus === "Online" ? "#1DB954" : "red" }}>
+                          {device.onlineStatus}
+                        </TableCell>
+ 
                         <TableCell component="th" id={labelId} scope="row" padding="none">
                           {device.average_upload_speed}
                         </TableCell>
@@ -308,7 +332,7 @@ export default function DevicesTable() {
                         <TableCell component="th" id={labelId} scope="row" padding="none">
                           {device.average_ram_usage}
                         </TableCell>
- 
+  
 
                         {/* Render other device details here */}
                       </TableRow>
