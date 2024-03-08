@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { Box, Container, Grid, Typography } from "@mui/material";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import PieActiveArc from './Piechart';
 
 
 
@@ -154,6 +157,10 @@ const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
 
   return (
     <Container>
+<Grid container spacing={2} columns={16}>
+<Grid item xs={8}>
+    <Card>
+      <CardContent>
       <Box my={0}>
         <Typography variant="h5" gutterBottom>Upload Speeds</Typography>
         <LineChart
@@ -163,8 +170,18 @@ const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
           xAxis={[{ scaleType: 'point', data: uploadlabels }]}
         />
       </Box>
+    </CardContent>
+    </Card>
+</Grid> 
 
-      <Box my={4}>
+
+
+        
+<Grid item xs={8}>
+    <Card>
+      <CardContent>
+ 
+      <Box my={0}>
         <Typography variant="h5" gutterBottom>Download Speeds</Typography>
         <LineChart
           width={500}
@@ -173,8 +190,16 @@ const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
           xAxis={[{ scaleType: 'point', data: downloadlabels }]}
         />
       </Box>
+     </CardContent>
+    </Card>
  
-      <Box my={4}>
+</Grid> 
+
+<Grid item xs={8}>
+   <Card>
+      <CardContent>
+
+      <Box my={0}>
         <Typography variant="h5" gutterBottom>CPU Usage</Typography>
         <LineChart
           width={500}
@@ -183,9 +208,12 @@ const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
           xAxis={[{ scaleType: 'point', data: cpulabels }]}
         />
       </Box>
+      </CardContent>
+    </Card>
  
+</Grid> 
 
-
+</Grid>
     </Container>
   );
 }
