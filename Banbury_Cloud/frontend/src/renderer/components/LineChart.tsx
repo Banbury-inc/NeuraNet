@@ -94,12 +94,14 @@ export default function DifferentLength() {
 
   const xLabels: string[] = Array.from(Array(uploadSpeeds.length).keys()).map(String);
 
-  const cpulabels: string[] = Array.from(Array(cpu_usage.length).keys()).map(String);
-  const downloadlabels: string[] = Array.from(Array(downloadSpeeds.length).keys()).map(String);
-  const uploadlabels: string[] = Array.from(Array(uploadSpeeds.length).keys()).map(String);
 
 
-
+  const downloadMaxLength = devices.reduce((max, device) => Math.max(max, device.cpu_usage.length), 0);
+  const downloadlabels: string[] = Array.from({ length: downloadMaxLength }, (_, index) => index.toString());
+  const cpuMaxLength = devices.reduce((max, device) => Math.max(max, device.cpu_usage.length), 0);
+  const cpulabels: string[] = Array.from({ length: cpuMaxLength }, (_, index) => index.toString());
+  const uploadMaxLength = devices.reduce((max, device) => Math.max(max, device.upload_network_speed.length), 0);
+  const uploadlabels: string[] = Array.from({ length: uploadMaxLength }, (_, index) => index.toString());
   const totalDates = overallDateAdded.map(date =>
     `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
   );
