@@ -98,34 +98,38 @@ def run(receiver_socket):
 
 
         elif file_type == "FILE_REQUEST":
-
             directory_name = "BCloud"
             directory_path = os.path.expanduser(f"~/{directory_name}")
             file_save_path = os.path.join(directory_path, file_name)
 
-
             print(f"Device is requesting file: {file_name}")
 
-
             file_name = os.path.basename(file_save_path)
-            file_size = os.path.getsize(file_save_path)
-            print(f'The file size of {file_name} is {file_size} bytes')
 
-            print("Sending a file request response")
-            null_string=""
-            file_header = f"FILE_REQUEST_RESPONSE:{file_name}:{file_size}:{null_string}:END_OF_HEADER"
-            receiver_socket.send(file_header.encode())
-            #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+            try:
+                # Attempt to open the file
+                with open(file_save_path, 'rb') as file:
+                    file_size = os.path.getsize(file_save_path)
+                    print(f'The file size of {file_name} is {file_size} bytes')
 
-            with open(file_save_path, 'rb') as file:
-                while True:
-                    bytes_read = file.read(4096)  # Read the file in chunks
-                    if not bytes_read:
-                        break  # File transmission is done
-                    receiver_socket.sendall(bytes_read)
+                    print("Sending a file request response")
+                    null_string = ""
+                    file_header = f"FILE_REQUEST_RESPONSE:{file_name}:{file_size}:{null_string}:END_OF_HEADER"
+                    receiver_socket.send(file_header.encode())
 
-            print(f"{file_name} has been sent successfully.")
-            
+                    # Start sending the file contents
+                    while True:
+                        bytes_read = file.read(4096)  # Read the file in chunks
+                        if not bytes_read:
+                            break  # File transmission is done
+                        receiver_socket.sendall(bytes_read)
+
+                    print(f"{file_name} has been sent successfully.")
+
+            except FileNotFoundError:
+                # Handle the case where the file doesn't exist
+                print(f"Error: File '{file_name}' not found.")
+                # Send an appropriate response to the client indicating that the file doesn't exist
 
         elif file_type == "FILE_REQUEST_RESPONSE":
             print("received File_REQUEST_RESONSE")

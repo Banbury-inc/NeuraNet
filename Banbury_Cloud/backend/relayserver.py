@@ -472,6 +472,9 @@ class ClientHandler(threading.Thread):
                                 optimization_status = data["optimization_status"]
 
 
+
+
+                                #stay away from this shit
                                 ClientHandler.device_websockets[device_name] = self.client_socket
 
                                 if username in ClientHandler.device_username:
@@ -551,11 +554,19 @@ class ClientHandler(threading.Thread):
                                         devices[index]['cpu_usage'].append(float(cpu_usage))
                                         devices[index]['ram_usage'].append(float(ram_usage))
 
-                                        # Instead of directly appending or extending, check if the file exists
-                                        for new_file in files:  # Iterate through the new files to be added
-                                            # Check if the file already exists in the 'files' array of the device
-                                            if not any(file['File Name'] == new_file['File Name'] for file in devices[index]['files']):
-                                                devices[index]['files'].append(new_file)  # Add the file if it doesn't exist
+
+                                        # # Instead of directly appending or extending, check if the file exists
+                                        # for new_file in files:  # Iterate through the new files to be added
+                                        #     # Check if the file already exists in the 'files' array of the device
+                                        #     if not any(file['File Name'] == new_file['File Name'] for file in devices[index]['files']):
+                                        #         devices[index]['files'].append(new_file)  # Add the file if it doesn't exist
+
+                                        # # Make a copy of the list to avoid modifying it while iterating
+                                        # device_files = devices[index]['files'][:]
+
+
+                                        devices[index]['files'] = files
+
 
                                         devices[index]['average_upload_speed'] = average_upload_speed
                                         devices[index]['average_download_speed'] = average_download_speed
