@@ -707,7 +707,7 @@ def send_ping():
         date_time = datetime.now()
         print(f"{date_time} Pinging all devices")
         while True:
-            for client_sock in ClientHandler.client_sockets[:]:
+            for client_sock in ClientHandler.client_sockets:
                     perm_sock = client_sock
                     date_time = datetime.now()
                     print(f"{date_time} Sending ping request to {client_sock}")
@@ -751,11 +751,12 @@ def send_ping():
                         ClientHandler.device_websockets.pop(device_name, None)
                         ClientHandler.device_username.pop(username, None)
                         # ClientHandler.client_addresses.remove(client_socket) 
+                        ClientHandler.client_sockets.remove(client_sock)
                     print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
                     print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
                     print(f"{date_time} All connected client users: {ClientHandler.device_username}")
 
-
+                
             # time.sleep(900)
             time.sleep(30)
 
