@@ -470,9 +470,18 @@ class ClientHandler(threading.Thread):
                                 device_priority = data["device_priority"]
                                 sync_status = data["sync_status"]
                                 optimization_status = data["optimization_status"]
-                               # Associate the device name with the client socket
+
+
                                 ClientHandler.device_websockets[device_name] = self.client_socket
-                                ClientHandler.device_username[username] = self.client_socket
+
+                                if username in ClientHandler.device_username:
+                                    # if the device is already appended to the list of devices, do nothing
+                                    if self.client_socket not in ClientHandler.device_username[username]:
+                                        print("current socket not in list of devices, adding")
+                                        ClientHandler.device_username[username].append(self.client_socket)
+                                else:
+                                    ClientHandler.device_username[username] = [self.client_socket]
+
                                 print(f"{date_time} All connected devices: {ClientHandler.device_websockets}")
                                 print(f"{date_time} All connected users: {ClientHandler.device_username}")
 
@@ -558,6 +567,8 @@ class ClientHandler(threading.Thread):
                                         break  # Exit loop after updating
 
                                 else:
+
+                                    # set up a new device
                                     upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
                                     download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
                                     gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
@@ -579,6 +590,9 @@ class ClientHandler(threading.Thread):
                                     average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
                                     average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
                                     
+
+                                    ClientHandler.device_websockets[username].append(self.client_socket)
+
 
                                     # Create a new device object
                                     new_device = {
@@ -673,6 +687,9 @@ class ClientHandler(threading.Thread):
                         if client_socket == self.client_socket:
                             device_name = reverse_lookup(ClientHandler.device_websockets, client_socket)
                             username = reverse_lookup(ClientHandler.device_username, client_socket)
+                            # if the username returns none, try another function 
+                            if username == None:
+                                username = reverse_lookup_list(ClientHandler.device_username, client_socket)
                             if username and device_name:
                                 user = user_collection.find_one({'username': username})
                                 if user:
@@ -727,12 +744,16 @@ def send_ping():
                         user_collection = db['users']
                         print(client_sock)
                         print(ClientHandler.device_websockets)
+                        print(ClientHandler.device_username)
 
 
                         device_name = reverse_lookup(ClientHandler.device_websockets, perm_sock)
                         print(f"Device name: {device_name}")
                         username = reverse_lookup(ClientHandler.device_username, perm_sock)
                         print(f"Username: {username}")
+                        if username == None:
+                            print("username is none trying another function")
+                            username = reverse_lookup_list(ClientHandler.device_username, perm_sock)
                         if username and device_name:
                             print("passed first if")
                             user = user_collection.find_one({'username': username})
@@ -747,6 +768,9 @@ def send_ping():
                                         # break
                                 user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
                                 print(f"Set {device_name} of {username} to offline")
+                        elif device_name:
+                            print("only have device name, looking up user")
+
                         # Remove the socket from the mappings
                         ClientHandler.device_websockets.pop(device_name, None)
                         ClientHandler.device_username.pop(username, None)
@@ -767,6 +791,11 @@ def reverse_lookup(dictionary, value):
             return key
     return None
 
+def reverse_lookup_list(dictionary, value):
+    for key, sockets in dictionary.items():
+        if value in sockets:
+            return key
+    return None
 
 
 def main():
