@@ -83,7 +83,7 @@ def request_file(files):
             # It's a file; process the file header to get file info
 
             print("entering the file request response logic")
-            directory_name = "BCloudFILEREQUEST"
+            directory_name = "BCloud"
             directory_path = os.path.expanduser(f"~/{directory_name}")
             file_save_path = os.path.join(directory_path, file_name)
 

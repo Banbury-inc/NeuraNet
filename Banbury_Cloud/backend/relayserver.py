@@ -800,6 +800,25 @@ def reverse_lookup_list(dictionary, value):
 
 def main():
 
+
+    print("Welcome to the Banbury Relay Server")
+
+
+    print("Initializing database...")
+    # Iterate through every device of every user, set every device to offline
+    load_dotenv()
+    uri = os.getenv("MONGODB_URL")
+    client = MongoClient(uri)
+    db = client['myDatabase']
+    user_collection = db['users']
+    for user in user_collection.find():
+        if user:
+            devices = user.get('devices', [])
+            for device in devices:
+                device['online'] = False
+            user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
+
+
     # Create a server socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((SERVER_HOST, SERVER_PORT))
