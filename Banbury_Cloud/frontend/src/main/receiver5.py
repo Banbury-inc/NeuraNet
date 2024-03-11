@@ -101,17 +101,13 @@ def run(receiver_socket):
             directory_name = "BCloud"
             directory_path = os.path.expanduser(f"~/{directory_name}")
             file_save_path = os.path.join(directory_path, file_name)
-
             print(f"Device is requesting file: {file_name}")
-
             file_name = os.path.basename(file_save_path)
-
             try:
                 # Attempt to open the file
                 with open(file_save_path, 'rb') as file:
                     file_size = os.path.getsize(file_save_path)
                     print(f'The file size of {file_name} is {file_size} bytes')
-
                     print("Sending a file request response")
                     null_string = ""
                     file_header = f"FILE_REQUEST_RESPONSE:{file_name}:{file_size}:{null_string}:END_OF_HEADER"
@@ -119,6 +115,7 @@ def run(receiver_socket):
 
                     # Start sending the file contents
                     while True:
+                        print("sending file...")
                         bytes_read = file.read(4096)  # Read the file in chunks
                         if not bytes_read:
                             break  # File transmission is done

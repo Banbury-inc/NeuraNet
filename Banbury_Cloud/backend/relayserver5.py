@@ -177,54 +177,44 @@ class ClientHandler(threading.Thread):
 
 
                     elif file_type == "FILE_REQUEST":
-
-                        date_time = datetime.now()
-                        print(f"Received file request")
+                        print("received FILE_REQUEST")
                         directory_name = "BCloud"
                         directory_path = os.path.expanduser(f"~/{directory_name}")
                         file_save_path = os.path.join(directory_path, file_name)
 
-                        load_dotenv()
-                        uri = os.getenv("MONGODB_URL")
-                        client = MongoClient(uri)
-                        db = client['myDatabase']
-                        user_collection = db['users']
-                        user = user_collection.find_one({'username': username})
-                        devices = user.get('devices', [])
-                        for device in devices:
-                            print("searching device")
-                            online_status = device.get('online')
-                            print(online_status)
-                            if online_status == True:
-                                print('device is online')
-                                for file in device.get('files', []):
-                                    if file.get('File Name') == file_name:
-                                        print(f"sending file request to {device.get('device_name')}")
 
-                                        # Retrieve the socket associated with the device from device_websockets
-                                        target_socket = ClientHandler.device_websockets.get(device.get('device_name'))  # Corrected from device_name to device.get('device_name')
-                                        if target_socket:
-                                            try:
-                                                null_string = ""
-                                                file_header = f"FILE_REQUEST:{file_name}:{null_string}:{null_string}:END_OF_HEADER"
-                                                date_time = datetime.now()
-                                                print(f"{date_time} Sending response with file to device: {device.get('device_name')}")
-                                                target_socket.send(file_header.encode())
-                                                print("File request sent successfully.")
-                                            except Exception as e:
-                                                print(f"Error sending file request to device {device.get('device_name')}: {e}")
-                                        else:
-                                            print(f"No socket found for device {device.get('device_name')}.")
+                        date_time = datetime.now()
+                        print(f"{date_time} Received file request from {self.client_address}: {self.client_socket}")
+                        # Broadcast the request to each of the clients in the list of addresses
+                        for socket in ClientHandler.client_sockets:
+                            print(socket)
+                            if socket != self.client_socket:
+                                try:
+
+                                    null_string=""
+                                    file_header = f"FILE_REQUEST:{file_name}:{null_string}:{null_string}:END_OF_HEADER"
+                                    date_time = datetime.now()
+                                    print(f"{date_time} sending response with file")
+                                    socket.send(file_header.encode())
+                                    #socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+                                    #socket.sendall(buffer)
+                                except Exception as e:
+                                    print(f"Error sending to device: {e}")
+
+                        print("Completed request to device with file, waiting for response...")
 
                
                     elif file_type == "FILE_REQUEST_RESPONSE":
                         # It's a file; process the file header to get file info
 
                         date_time = datetime.now()
-                        print(f"{date_time} Received the request")
+                        print(f"{date_time} Received the request from {self.client_address}: {self.client_socket}")
                         directory_name = "BCloudServer"
                         directory_path = os.path.expanduser(f"~/{directory_name}")
                         file_save_path = os.path.join(directory_path, file_name)
+
+
+
 
                         # Check if the directory exists, create if it does not and create a welcome text file
                         if not os.path.exists(directory_path):
@@ -441,7 +431,7 @@ class ClientHandler(threading.Thread):
 
 
                         date_time = datetime.now()
-                        print(f"{date_time} Received ping request response")
+                        print(f"{date_time} Received ping request response from {self.client_address}: {self.client_socket}")
                         message_content = buffer.decode()
                         end_of_JSON = "END_OF_JSON"
                         limited_message_content = message_content.split(end_of_JSON)[0]
@@ -495,8 +485,8 @@ class ClientHandler(threading.Thread):
                                 else:
                                     ClientHandler.device_username[username] = [self.client_socket]
 
-                                # print(f"{date_time} All connected devices: {ClientHandler.device_websockets}")
-                                # print(f"{date_time} All connected users: {ClientHandler.device_username}")
+                                print(f"{date_time} All connected devices: {ClientHandler.device_websockets}")
+                                print(f"{date_time} All connected users: {ClientHandler.device_username}")
 
 
                                 load_dotenv()
@@ -727,9 +717,9 @@ class ClientHandler(threading.Thread):
                             # ClientHandler.client_addresses.remove(client_socket) 
                             ClientHandler.client_sockets.remove(client_socket)
                         date_time = datetime.now()
-                        # print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
-                        # print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
-                        # print(f"{date_time} All connected client users: {ClientHandler.device_username}")
+                        print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
+                        print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
+                        print(f"{date_time} All connected client users: {ClientHandler.device_username}")
 
 
         except Exception as e:
@@ -748,8 +738,7 @@ def send_ping():
             for client_sock in ClientHandler.client_sockets:
                     perm_sock = client_sock
                     date_time = datetime.now()
-                    # print(f"{date_time} Sending ping request to {client_sock}")
-                    print(f"{date_time} Sending ping request")
+                    print(f"{date_time} Sending ping request to {client_sock}")
                     try:
                         null_string = ""
                         file_header = f"PING_REQUEST:{null_string}:{null_string}:END_OF_HEADER"
@@ -765,14 +754,14 @@ def send_ping():
                         db = client['myDatabase']
                         user_collection = db['users']
                         print(client_sock)
-                        # print(ClientHandler.device_websockets)
-                        # print(ClientHandler.device_username)
+                        print(ClientHandler.device_websockets)
+                        print(ClientHandler.device_username)
 
 
                         device_name = reverse_lookup(ClientHandler.device_websockets, perm_sock)
-                        # print(f"Device name: {device_name}")
+                        print(f"Device name: {device_name}")
                         username = reverse_lookup(ClientHandler.device_username, perm_sock)
-                        # print(f"Username: {username}")
+                        print(f"Username: {username}")
                         if username == None:
                             print("username is none trying another function")
                             username = reverse_lookup_list(ClientHandler.device_username, perm_sock)
@@ -798,9 +787,9 @@ def send_ping():
                         ClientHandler.device_username.pop(username, None)
                         # ClientHandler.client_addresses.remove(client_socket) 
                         ClientHandler.client_sockets.remove(client_sock)
-                    # print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
-                    # print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
-                    # print(f"{date_time} All connected client users: {ClientHandler.device_username}")
+                    print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
+                    print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
+                    print(f"{date_time} All connected client users: {ClientHandler.device_username}")
 
                 
             # time.sleep(900)
@@ -868,8 +857,8 @@ def main():
             unique_identifier = str(client_address)
             client_handlers[unique_identifier] = client_handler
             date_time = datetime.now()
-            # print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
-            # print(f"{date_time} All connected devices: {ClientHandler.device_websockets}")
+            print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
+            print(f"{date_time} All connected devices: {ClientHandler.device_websockets}")
 
     except KeyboardInterrupt:
         print("Server shutting down...")
