@@ -784,17 +784,13 @@ def send_ping():
 
                     except BrokenPipeError:
                         print("Broken pipe, removing socket, setting device to offline, moving on to the next socket.")
-                        print(perm_sock)
                         load_dotenv()
                         uri = os.getenv("MONGODB_URL")
                         client = MongoClient(uri)
                         db = client['myDatabase']
                         user_collection = db['users']
-                        print(client_sock)
                         # print(ClientHandler.device_websockets)
                         # print(ClientHandler.device_username)
-
-
                         device_name = reverse_lookup(ClientHandler.device_websockets, perm_sock)
                         # print(f"Device name: {device_name}")
                         username = reverse_lookup(ClientHandler.device_username, perm_sock)
@@ -827,7 +823,6 @@ def send_ping():
                     # print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
                     # print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
                     # print(f"{date_time} All connected client users: {ClientHandler.device_username}")
-
                 
             # time.sleep(900)
             time.sleep(30)

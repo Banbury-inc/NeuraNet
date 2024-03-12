@@ -30,6 +30,9 @@ import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import InputFileUploadButton from './uploadfilebutton';
 
+import { useAuth } from '../context/AuthContext';
+
+
 
 interface Device {
   id: string;
@@ -226,7 +229,6 @@ function formatBytes(bytes: number, decimals: number = 2): string {
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
@@ -234,7 +236,9 @@ function formatBytes(bytes: number, decimals: number = 2): string {
 
   const [Firstname, setFirstname] = useState<string>('');
   const [Lastname, setLastname] = useState<string>('');
+  const { username } = useAuth();
 
+  console.log(username)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -242,7 +246,9 @@ function formatBytes(bytes: number, decimals: number = 2): string {
           devices: any[] 
           first_name: string;
           last_name: string;
-        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+        // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/mmills6060/');
+        // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
 
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;
@@ -284,7 +290,7 @@ function formatBytes(bytes: number, decimals: number = 2): string {
           devices: any[] 
           first_name: string;
           last_name: string;
-        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/${username}');
 
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;

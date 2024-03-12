@@ -12,5 +12,6 @@ urlpatterns = [
     path('update_profile/<str:username>/', views.update_user_profile, name='update_profile'),
     path('download-deb/', views.download_debian_package, name='download-deb'),
     path('getuserinfo/', views.getuserinfo, name='login'),
+    path('getuserinfo2/<str:username>/', views.getuserinfo2, name='login2'),
 
 ]

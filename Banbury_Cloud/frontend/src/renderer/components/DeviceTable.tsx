@@ -21,6 +21,7 @@ import { Stack } from '@mui/material';
 import LineChart from './LineChart';
 
 
+import { useAuth } from '../context/AuthContext';
 
 interface Device {
   device_number: number;
@@ -70,10 +71,12 @@ export default function DevicesTable() {
   const [selected, setSelected] = useState<number[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const { username } = useAuth();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/${username}');
+
         const data = response.data;
         // Processing data for the frontend, assuming your API returns data directly usable by the UI
         const roundedDevices = data.devices.map(device => ({
@@ -106,7 +109,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = ['GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
+  const { username } = useAuth();
   // Since we're starting from GB, there's no need to find the initial index based on the log.
   // Instead, we convert the input gigabytes to bytes to use the original formula,
   // adjusting it to start from GB.
@@ -123,7 +126,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
     const interval = setInterval(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/${username}');
         const data = response.data;
         // Processing data for the frontend, assuming your API returns data directly usable by the UI
         const roundedDevices = data.devices.map(device => ({
@@ -202,7 +205,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
           devices: any[] 
           first_name: string;
           last_name: string;
-        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/${username}');
 
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;

@@ -23,7 +23,7 @@ import MiniDrawer from "./VariantDrawer";
 import { BrowserRouter, Route, Routes, Outlet, Navigate } from "react-router-dom";
 import Signup from "./signup";
 import Main from "./main";
-
+import { useAuth } from '../context/AuthContext';
 
 function Copyright(props: any) {
   return (
@@ -41,11 +41,14 @@ function Copyright(props: any) {
 
 
 export default function SignIn() {
+  const { setUsername } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const username = data.get('email') as string | null; // Cast the value to string
+    const password = data.get('password') as string | null; // Cast the value to string
     console.log({
       email: data.get('email'),
       password: data.get('password'),
@@ -64,6 +67,8 @@ export default function SignIn() {
         }
         if (stdout && stdout.trim() === 'Result: success') {
           console.log('Login successful');
+          console.log(username)
+          setUsername(username); // Set username in context
           setIsAuthenticated(true);
         }
       });

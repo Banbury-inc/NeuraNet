@@ -56,6 +56,46 @@ def getuserinfo(request):
                         }
                 return JsonResponse(user_data)
 
+def getuserinfo2(request, username):
+    load_dotenv()
+    uri = os.getenv("MONGODB_URL")
+    client = MongoClient(uri)
+    username = username 
+    db = client['myDatabase']
+    user_collection = db['users']
+    user = user_collection.find_one({'username': username})
+    if not user:
+        print("Please login first.")
+    else:
+        if user['username'] == username:
+                first_name = user.get('first_name')
+                last_name = user.get('last_name')
+                phone_number = user.get('phone_number')
+                email = user.get('email')
+
+                devices = user.get('devices', [])
+                number_of_files = user.get('number_of_files', [])
+                number_of_devices = user.get('number_of_devices', [])
+                overall_date_added = user.get('overall_date_added', [])
+                total_average_upload_speed = user.get('total_average_upload_speed', [])
+                total_average_download_speed = user.get('total_average_download_speed', [])
+                total_device_storage = user.get('total_device_storage', [])
+ 
+                user_data = {
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "phone_number": phone_number,
+                        "email": email,
+                        "devices": devices,
+                        "number_of_devices": number_of_devices,
+                        "number_of_files": number_of_files,
+                        "overall_date_added": overall_date_added,
+                        "total_average_upload_speed": total_average_upload_speed,
+                        "total_average_download_speed": total_average_download_speed,
+                        "total_device_storage": total_device_storage,
+                        }
+                return JsonResponse(user_data)
+
 
 
 
