@@ -183,6 +183,7 @@ export default function EnhancedTable() {
   const [orderBy, setOrderBy] = useState<keyof FileData>('fileName');
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [selectedFileNames, setSelectedFileNames] = useState<string[]>([]);
+  const [selectedDeviceNames, setSelectedDeviceNames] = useState<string[]>([]);
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [dense, setDense] = useState(false);
@@ -194,6 +195,7 @@ export default function EnhancedTable() {
       return file ? file.fileName : null;
     }).filter(fileName => fileName !== null); // Filter out any null values if a file wasn't found
   };
+
 const handleApiCall = async () => {
   const selectedFileNames = getSelectedFileNames();
 
@@ -358,8 +360,11 @@ function formatBytes(bytes: number, decimals: number = 2): string {
     setSelected(newSelected);
 
     const fileName = fileRows.find(file => file.id === id)?.fileName;
+    const deviceName = fileRows.find(file => file.id === id)?.deviceName;
     const newSelectedFileNames = newSelected.map(id => fileRows.find(file => file.id === id)?.fileName).filter(name => name !== undefined) as string[];
+    const newSelectedDeviceNames = newSelected.map(id => fileRows.find(file => file.id === id)?.deviceName).filter(name => name !== undefined) as string[];
     setSelectedFileNames(newSelectedFileNames);
+    setSelectedDeviceNames(newSelectedDeviceNames);
     console.log(newSelectedFileNames)
     console.log(selectedFileNames)
 
@@ -400,7 +405,7 @@ function formatBytes(bytes: number, decimals: number = 2): string {
 
       const scriptPath = 'src/main/delete.py'; // Update this to the path of your Python script
        
-      exec(`python "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
+      exec(`python "${scriptPath}" "${selectedFileNames}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;

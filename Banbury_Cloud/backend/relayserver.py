@@ -346,84 +346,67 @@ class ClientHandler(threading.Thread):
 
                            
                         for socket in ClientHandler.client_sockets:
-                            if socket != self.client_socket:
-                                try:
-                                    # Search each device object in database for a file object that is equal to file_save_path
-                                    devices = user.get('devices', [])
-                                    for device in devices:
-                                        for file in device.get('files', []):
-                                            if file.get('File Name') == file_name:
-                                                # send a request to that device to delete the file
+                            try:
+                                # Search each device object in database for a file object that is equal to file_save_path
+                                devices = user.get('devices', [])
+                                for device in devices:
+                                    device_name = device.get('device_name')
+                                    for file in device.get('files', []):
+                                        if file.get('File Name') == file_name:
+                                            file_header = f"FILE_DELETE_REQUEST:{file_name}:{file_size}:{username}:END_OF_HEADER"
+                                            socket.send(file_header.encode())
+                                            print(f"{file_name} has been requested to be deleted")
+                                            data = None 
+                                            buffer = b""
+                                            header = None
+                                            file_type = ""
+                
+                            except BrokenPipeError:
+                                print(f"Broken pipe moving on to the next socket.")
+                                continue  # This skips the rest of the current iteration and moves to the next socket
+                            except Exception as e:
+                                print(f"Error sending to device: {e}")
+                
 
-                                                file_header = f"FILE_DELETE_REQUEST:{file_name}:{file_size}:{username}:END_OF_HEADER"
-                                                socket.send(file_header.encode())
-                                                print(f"{file_name} has been requested to be deleted")
-                                                data = None 
-                                                buffer = b""
-                                                header = None
-                                                file_type = ""
+                          
+                        try:
+                            # Search each device object in database for a file object that is equal to file_save_path
+                            devices = user.get('devices', [])
+                            file_removed = False
+                            for index, device in enumerate(devices):
+                                files_to_remove = [file for file in device.get('files', []) if file.get('File Name') == file_name]
+                                for some_file in files_to_remove:
+
+                                    date_time = datetime.now()
+                                    print(f"{date_time} File detected in database, deleting...")
+                                    if any(file['File Name'] == some_file['File Name'] for file in devices[index]['files']):
+                                        devices[index]['files'].remove(some_file)  # Add the file if it doesn't exist
+                                        user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
+                                        file_removed = True
+
+                            if file_removed:
+
+                                date_time = datetime.now()
+                                print(f"{date_time} {file_name} has been successfully removed from database")
+                                data = None 
+                                buffer = b""
+                                header = None
+                                file_type = ""
 
 
-
-                    
-                                except BrokenPipeError:
-                                    print(f"Broken pipe moving on to the next socket.")
-                                    continue  # This skips the rest of the current iteration and moves to the next socket
-                                except Exception as e:
-                                    print(f"Error sending to device: {e}")
-
-                    
                             else:
-                                # TODO: Once all devices confirm that the file doesn't exist, remove it from the database.
-                                # Otherwise, the file will be deleted from the database but will still exist on a device.
-                                print("No devices to send delete request to. Removing file from database.")
-                                # Load Database
-                                load_dotenv()
-                                uri = os.getenv("MONGODB_URL")
-
-                                client = MongoClient(uri)
-                                db = client['myDatabase']
-                                user_collection = db['users']
-                                user = user_collection.find_one({'username': username})
-                                   
-                                try:
-                                    # Search each device object in database for a file object that is equal to file_save_path
-                                    devices = user.get('devices', [])
-                                    file_removed = False
-                                    for index, device in enumerate(devices):
-                                        files_to_remove = [file for file in device.get('files', []) if file.get('File Name') == file_name]
-                                        for some_file in files_to_remove:
-
-                                            date_time = datetime.now()
-                                            print(f"{date_time} File detected in database, deleting...")
-                                            if any(file['File Name'] == some_file['File Name'] for file in devices[index]['files']):
-                                                devices[index]['files'].remove(some_file)  # Add the file if it doesn't exist
-                                                user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
-                                                file_removed = True
-
-                                    if file_removed:
-
-                                        date_time = datetime.now()
-                                        print(f"{date_time} {file_name} has been successfully removed from database")
-                                        data = None 
-                                        buffer = b""
-                                        header = None
-                                        file_type = ""
+                                print(f"{file_name} not found in the database")
+                                data = None 
+                                buffer = b""
+                                header = None
+                                file_type = ""
 
 
-                                    else:
-                                        print(f"{file_name} not found in the database")
-                                        data = None 
-                                        buffer = b""
-                                        header = None
-                                        file_type = ""
-
-
-                                except BrokenPipeError:
-                                    print(f"Broken pipe moving on to the next socket.")
-                                    continue  # This skips the rest of the current iteration and moves to the next socket
-                                except Exception as e:
-                                    print(f"Error removing file from database: {e}")
+                        except BrokenPipeError:
+                            print(f"Broken pipe moving on to the next socket.")
+                            continue  # This skips the rest of the current iteration and moves to the next socket
+                        except Exception as e:
+                            print(f"Error removing file from database: {e}")
 
 
 
@@ -491,8 +474,6 @@ class ClientHandler(threading.Thread):
          
                     elif file_type == "PING_REQUEST_RESPONSE":
 
-
-
                         date_time = datetime.now()
                         print(f"{date_time} Received ping request response")
                         message_content = buffer.decode()
@@ -513,153 +494,92 @@ class ClientHandler(threading.Thread):
                             except json.JSONDecodeError as e:
                                 print(f"JSON decode error {e}")
                                 data = None
-                            try:
-                                username = data["user"]
-                                device_number = data["device_number"]
-                                device_name = data["device_name"]
-                                files = data["files"]
-                                number_of_files = str(len(files))
-                                storage_capacity_GB = data["storage_capacity_GB"]
-                                date_added = data["date_added"]
-                                ip_address = data["ip_address"]
-                                average_network_speed = data["average_network_speed"]
-                                upload_network_speed = data["upload_network_speed"]
-                                download_network_speed = data["download_network_speed"]
-                                gpu_usage = data["gpu_usage"]
-                                cpu_usage = data["cpu_usage"]
-                                ram_usage = data["ram_usage"]
-                                network_reliability = data["network_reliability"]
-                                average_time_online = data["average_time_online"]
-                                device_priority = data["device_priority"]
-                                sync_status = data["sync_status"]
-                                optimization_status = data["optimization_status"]
+                            # try:
+                            username = data["user"]
+                            device_number = data["device_number"]
+                            device_name = data["device_name"]
+                            files = data["files"]
+                            number_of_files = str(len(files))
+                            storage_capacity_GB = data["storage_capacity_GB"]
+                            date_added = data["date_added"]
+                            ip_address = data["ip_address"]
+                            average_network_speed = data["average_network_speed"]
+                            upload_network_speed = data["upload_network_speed"]
+                            download_network_speed = data["download_network_speed"]
+                            gpu_usage = data["gpu_usage"]
+                            cpu_usage = data["cpu_usage"]
+                            ram_usage = data["ram_usage"]
+                            network_reliability = data["network_reliability"]
+                            average_time_online = data["average_time_online"]
+                            device_priority = data["device_priority"]
+                            sync_status = data["sync_status"]
+                            optimization_status = data["optimization_status"]
 
 
 
 
-                                #stay away from this shit
-                                ClientHandler.device_websockets[device_name] = self.client_socket
+                            #stay away from this shit
+                            ClientHandler.device_websockets[device_name] = self.client_socket
 
-                                if username in ClientHandler.device_username:
-                                    # if the device is already appended to the list of devices, do nothing
-                                    if self.client_socket not in ClientHandler.device_username[username]:
-                                        print("current socket not in list of devices, adding")
-                                        ClientHandler.device_username[username].append(self.client_socket)
-                                else:
-                                    ClientHandler.device_username[username] = [self.client_socket]
+                            if username in ClientHandler.device_username:
+                                # if the device is already appended to the list of devices, do nothing
+                                if self.client_socket not in ClientHandler.device_username[username]:
+                                    print("current socket not in list of devices, adding")
+                                    ClientHandler.device_username[username].append(self.client_socket)
+                            else:
+                                ClientHandler.device_username[username] = [self.client_socket]
 
-                                # print(f"{date_time} All connected devices: {ClientHandler.device_websockets}")
-                                # print(f"{date_time} All connected users: {ClientHandler.device_username}")
-
-
-                                load_dotenv()
-                                uri = os.getenv("MONGODB_URL")
-             
-                                client = MongoClient(uri)
-                                db = client['myDatabase']
-                                user_collection = db['users']
-                                user = user_collection.find_one({'username': username})
-
-                                # If the device was not able to gather the ip_address, just keep it the way it 
-                                # was before
-                                if ip_address == "Unknown":
-                                    '''
-                                    Todo: create logic that will have the database search for what the device IP was previously,
-                                    and set the variable to whatever it was during the last ping.
-                                    '''
-                                    ip_address = "0.0.0.0"
-
-                                devices = user.get('devices', [])
-                                total_upload_speed = 0
-                                total_download_speed = 0
-                                total_gpu_usage = 0
-                                total_cpu_usage = 0
-                                total_ram_usage = 0
-                                upload_speed_count = 0
-                                download_speed_count = 0
-                                gpu_usage_count = 0
-                                cpu_usage_count = 0
-                                ram_usage_count = 0
-
-                                device_numbers = [device['device_number'] for device in devices]
-                                # Find the maximum device number (start from 0 if no devices)
-                                max_device_number = max(device_numbers, default=0)
-
-                                for index, device in enumerate(devices):
-                                    # Check if the current device number is unique
-                                    if device_numbers.count(device['device_number']) > 1:
-                                        # If not unique, assign a new device number
-                                        max_device_number += 1
-                                        device['device_number'] = max_device_number
-                                        print("changed device number")
-                                        # Update the device_numbers list for further checks
-                                        device_numbers[index] = max_device_number
+                            # print(f"{date_time} All connected devices: {ClientHandler.device_websockets}")
+                            # print(f"{date_time} All connected users: {ClientHandler.device_username}")
 
 
+                            load_dotenv()
+                            uri = os.getenv("MONGODB_URL")
+         
+                            client = MongoClient(uri)
+                            db = client['myDatabase']
+                            user_collection = db['users']
+                            user = user_collection.find_one({'username': username})
 
-                                for index, device in enumerate(devices):
-                                    if device.get('device_name') == device_name:
-                                        upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
-                                        download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
-                                        gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
-                                        cpu_usages = [float(usage) for usage in device.get('cpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
-                                        ram_usages = [float(usage) for usage in device.get('ram_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
-                                        total_upload_speed = sum(upload_speeds) + float(upload_network_speed)
-                                        total_download_speed = sum(download_speeds) + float(download_network_speed)
-                                        total_gpu_usage = sum(gpu_usages) + float(gpu_usage)
-                                        total_cpu_usage = sum(cpu_usages) + float(cpu_usage)
-                                        total_ram_usage = sum(ram_usages) + float(ram_usage)
-                                        upload_speed_count = len(upload_speeds) + 1
-                                        download_speed_count = len(download_speeds) + 1
-                                        gpu_usage_count = len(gpu_usages) + 1
-                                        cpu_usage_count = len(cpu_usages) + 1
-                                        ram_usage_count = len(ram_usages) + 1
-                                        average_upload_speed = total_upload_speed / upload_speed_count if upload_speed_count else 0
-                                        average_download_speed = total_download_speed / download_speed_count if download_speed_count else 0
-                                        average_gpu_usage = total_gpu_usage / gpu_usage_count if gpu_usage_count else 0
-                                        average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
-                                        average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
-                                        try:
-                                            online = device.get('online')
-                                        except Exception as e:
-                                            print("online attribute doesn't exist, skipping")
+                            # If the device was not able to gather the ip_address, just keep it the way it 
+                            # was before
+                            if ip_address == "Unknown":
+                                '''
+                                Todo: create logic that will have the database search for what the device IP was previously,
+                                and set the variable to whatever it was during the last ping.
+                                '''
+                                ip_address = "0.0.0.0"
+
+                            devices = user.get('devices', [])
+                            total_upload_speed = 0
+                            total_download_speed = 0
+                            total_gpu_usage = 0
+                            total_cpu_usage = 0
+                            total_ram_usage = 0
+                            upload_speed_count = 0
+                            download_speed_count = 0
+                            gpu_usage_count = 0
+                            cpu_usage_count = 0
+                            ram_usage_count = 0
+
+                            device_numbers = [device['device_number'] for device in devices]
+                            # Find the maximum device number (start from 0 if no devices)
+                            max_device_number = max(device_numbers, default=0)
+
+                            for index, device in enumerate(devices):
+                                # Check if the current device number is unique
+                                if device_numbers.count(device['device_number']) > 1:
+                                    # If not unique, assign a new device number
+                                    max_device_number += 1
+                                    device['device_number'] = max_device_number
+                                    print("changed device number")
+                                    # Update the device_numbers list for further checks
+                                    device_numbers[index] = max_device_number
 
 
 
-                                        # Update existing device in the list
-                                        devices[index]['upload_network_speed'].append(float(upload_network_speed))
-                                        devices[index]['download_network_speed'].append(float(download_network_speed))
-                                        devices[index]['date_added'].append(date_added)
-                                        devices[index]['gpu_usage'].append(float(gpu_usage))
-                                        devices[index]['cpu_usage'].append(float(cpu_usage))
-                                        devices[index]['ram_usage'].append(float(ram_usage))
-
-
-                                        # # Instead of directly appending or extending, check if the file exists
-                                        # for new_file in files:  # Iterate through the new files to be added
-                                        #     # Check if the file already exists in the 'files' array of the device
-                                        #     if not any(file['File Name'] == new_file['File Name'] for file in devices[index]['files']):
-                                        #         devices[index]['files'].append(new_file)  # Add the file if it doesn't exist
-
-                                        # # Make a copy of the list to avoid modifying it while iterating
-                                        # device_files = devices[index]['files'][:]
-
-
-                                        devices[index]['files'] = files
-
-
-                                        devices[index]['average_upload_speed'] = average_upload_speed
-                                        devices[index]['average_download_speed'] = average_download_speed
-                                        devices[index]['average_gpu_usage'] = average_gpu_usage
-                                        devices[index]['average_cpu_usage'] = average_cpu_usage
-                                        devices[index]['average_ram_usage'] = average_ram_usage
-                                        devices[index]['online'] = True
-                                        device_exists = True
-                                        break  # Exit loop after updating
-
-                                else:
-
-                                    # set up a new device
+                            for index, device in enumerate(devices):
+                                if device.get('device_name') == device_name:
                                     upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
                                     download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
                                     gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
@@ -680,97 +600,158 @@ class ClientHandler(threading.Thread):
                                     average_gpu_usage = total_gpu_usage / gpu_usage_count if gpu_usage_count else 0
                                     average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
                                     average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
-                                    
+                                    try:
+                                        online = device.get('online')
+                                    except Exception as e:
+                                        print("online attribute doesn't exist, skipping")
 
-                                    ClientHandler.device_websockets[username].append(self.client_socket)
 
 
-                                    # Create a new device object
-                                    new_device = {
-                                        'device_number': device_number,
-                                        'device_name': device_name,
-                                        'files': files,  # Assuming files is already a list
-                                        'storage_capacity_GB': storage_capacity_GB,
-                                        'date_added': [date_added], 
-                                        'ip_address': ip_address,
-                                        'online': True,
-                                        'average_upload_speed': average_upload_speed,
-                                        'average_download_speed': average_download_speed,
-                                        'average_gpu_usage': average_gpu_usage,
-                                        'average_cpu_usage': average_cpu_usage,
-                                        'average_ram_usage': average_ram_usage,
-                                        'upload_network_speed': [float(upload_network_speed)],
-                                        'download_network_speed': [float(download_network_speed)],
-                                        'gpu_usage': [float(gpu_usage)],
-                                        'cpu_usage': [float(cpu_usage)],
-                                        'ram_usage': [float(ram_usage)],
-                                        'network_reliability': network_reliability,
-                                        'average_time_online': average_time_online,
-                                        'device_priority': device_priority,
-                                        'sync_status': sync_status,
-                                        'optimization_status': optimization_status,
-                                    }
+                                    # Update existing device in the list
+                                    devices[index]['upload_network_speed'].append(float(upload_network_speed))
+                                    devices[index]['download_network_speed'].append(float(download_network_speed))
+                                    devices[index]['date_added'].append(date_added)
+                                    devices[index]['gpu_usage'].append(float(gpu_usage))
+                                    devices[index]['cpu_usage'].append(float(cpu_usage))
+                                    devices[index]['ram_usage'].append(float(ram_usage))
+
+
+                                    # # Instead of directly appending or extending, check if the file exists
+                                    # for new_file in files:  # Iterate through the new files to be added
+                                    #     # Check if the file already exists in the 'files' array of the device
+                                    #     if not any(file['File Name'] == new_file['File Name'] for file in devices[index]['files']):
+                                    #         devices[index]['files'].append(new_file)  # Add the file if it doesn't exist
+
+                                    # # Make a copy of the list to avoid modifying it while iterating
+                                    # device_files = devices[index]['files'][:]
+
+
+                                    devices[index]['files'] = files
+
+
+                                    devices[index]['average_upload_speed'] = average_upload_speed
+                                    devices[index]['average_download_speed'] = average_download_speed
+                                    devices[index]['average_gpu_usage'] = average_gpu_usage
+                                    devices[index]['average_cpu_usage'] = average_cpu_usage
+                                    devices[index]['average_ram_usage'] = average_ram_usage
+                                    devices[index]['online'] = True
                                     device_exists = True
-                                    devices.append(new_device)
+                                    break  # Exit loop after updating
 
-                                # Update the user document with the modified 'devices' array
-                                user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
+                            else:
 
-                                # Initialize variables
-                                number_of_devices = len(devices)
-                                number_of_files = 0
-                                total_device_storage = 0
-                                # Initialize sums for calculating averages
-                                total_average_download_speed_sum = 0
-                                total_average_upload_speed_sum = 0
-                                total_average_gpu_usage_sum = 0
-                                total_average_cpu_usage_sum = 0
-                                total_average_ram_usage_sum = 0
+                                # set up a new device
+                                upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
+                                download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
+                                gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                                cpu_usages = [float(usage) for usage in device.get('cpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                                ram_usages = [float(usage) for usage in device.get('ram_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                                total_upload_speed = sum(upload_speeds) + float(upload_network_speed)
+                                total_download_speed = sum(download_speeds) + float(download_network_speed)
+                                total_gpu_usage = sum(gpu_usages) + float(gpu_usage)
+                                total_cpu_usage = sum(cpu_usages) + float(cpu_usage)
+                                total_ram_usage = sum(ram_usages) + float(ram_usage)
+                                upload_speed_count = len(upload_speeds) + 1
+                                download_speed_count = len(download_speeds) + 1
+                                gpu_usage_count = len(gpu_usages) + 1
+                                cpu_usage_count = len(cpu_usages) + 1
+                                ram_usage_count = len(ram_usages) + 1
+                                average_upload_speed = total_upload_speed / upload_speed_count if upload_speed_count else 0
+                                average_download_speed = total_download_speed / download_speed_count if download_speed_count else 0
+                                average_gpu_usage = total_gpu_usage / gpu_usage_count if gpu_usage_count else 0
+                                average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
+                                average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
+                                
 
-                                # Iterate through devices to aggregate values
-                                for device in devices:
-                                    number_of_files += len(device.get('files', []))
-                                    total_device_storage += float(device.get('storage_capacity_GB', 0))
-                                    total_average_download_speed_sum += float(device.get('average_download_speed', 0))
-                                    total_average_upload_speed_sum += float(device.get('average_upload_speed', 0))
-                                    total_average_cpu_usage_sum += float(device.get('average_cpu_usage', 0))
-                                    total_average_gpu_usage_sum += float(device.get('average_gpu_usage', 0))
-                                    total_average_ram_usage_sum += float(device.get('average_ram_usage', 0))
+                                # ClientHandler.device_websockets[username].append(self.client_socket)
 
-                                # Calculate averages, avoid division by zero
-                                total_average_download_speed = total_average_download_speed_sum / number_of_devices if number_of_devices > 0 else 0
-                                total_average_upload_speed = total_average_upload_speed_sum / number_of_devices if number_of_devices > 0 else 0
-                                total_average_cpu_usage = total_average_cpu_usage_sum / number_of_devices if number_of_devices > 0 else 0
-                                total_average_gpu_usage = total_average_gpu_usage_sum / number_of_devices if number_of_devices > 0 else 0
-                                total_average_ram_usage = total_average_ram_usage_sum / number_of_devices if number_of_devices > 0 else 0
 
-                                user_collection.update_one({'_id': user['_id']}, {'$push': {
-                                    'number_of_devices': number_of_devices,
-                                    'number_of_files': number_of_files,
-                                    'total_device_storage': total_device_storage,
-                                    'total_average_download_speed': total_average_download_speed,
-                                    'total_average_upload_speed': total_average_upload_speed,
-                                    'total_average_cpu_usage': total_average_cpu_usage,
-                                    'total_average_gpu_usage': total_average_gpu_usage,
-                                    'total_average_ram_usage': total_average_ram_usage,
-                                    'overall_date_added': date_added,
-                                    }})
+                                # Create a new device object
+                                new_device = {
+                                    'device_number': device_number,
+                                    'device_name': device_name,
+                                    'files': files,  # Assuming files is already a list
+                                    'storage_capacity_GB': storage_capacity_GB,
+                                    'date_added': [date_added], 
+                                    'ip_address': ip_address,
+                                    'online': True,
+                                    'average_upload_speed': average_upload_speed,
+                                    'average_download_speed': average_download_speed,
+                                    'average_gpu_usage': average_gpu_usage,
+                                    'average_cpu_usage': average_cpu_usage,
+                                    'average_ram_usage': average_ram_usage,
+                                    'upload_network_speed': [float(upload_network_speed)],
+                                    'download_network_speed': [float(download_network_speed)],
+                                    'gpu_usage': [float(gpu_usage)],
+                                    'cpu_usage': [float(cpu_usage)],
+                                    'ram_usage': [float(ram_usage)],
+                                    'network_reliability': network_reliability,
+                                    'average_time_online': average_time_online,
+                                    'device_priority': device_priority,
+                                    'sync_status': sync_status,
+                                    'optimization_status': optimization_status,
+                                }
+                                device_exists = True
+                                devices.append(new_device)
 
-                                date_time = datetime.now()
-                                print(f"{date_time} Data uploaded to Banbury Cloud") 
-                                header = None
-                                buffer = b""
-                                file_type = "Unknown"
+                            # Update the user document with the modified 'devices' array
+                            user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
 
-                            except Exception as e:
-                                print(f"Error parsing JSON: {e}")
+                            # Initialize variables
+                            number_of_devices = len(devices)
+                            number_of_files = 0
+                            total_device_storage = 0
+                            # Initialize sums for calculating averages
+                            total_average_download_speed_sum = 0
+                            total_average_upload_speed_sum = 0
+                            total_average_gpu_usage_sum = 0
+                            total_average_cpu_usage_sum = 0
+                            total_average_ram_usage_sum = 0
+
+                            # Iterate through devices to aggregate values
+                            for device in devices:
+                                number_of_files += len(device.get('files', []))
+                                total_device_storage += float(device.get('storage_capacity_GB', 0))
+                                total_average_download_speed_sum += float(device.get('average_download_speed', 0))
+                                total_average_upload_speed_sum += float(device.get('average_upload_speed', 0))
+                                total_average_cpu_usage_sum += float(device.get('average_cpu_usage', 0))
+                                total_average_gpu_usage_sum += float(device.get('average_gpu_usage', 0))
+                                total_average_ram_usage_sum += float(device.get('average_ram_usage', 0))
+
+                            # Calculate averages, avoid division by zero
+                            total_average_download_speed = total_average_download_speed_sum / number_of_devices if number_of_devices > 0 else 0
+                            total_average_upload_speed = total_average_upload_speed_sum / number_of_devices if number_of_devices > 0 else 0
+                            total_average_cpu_usage = total_average_cpu_usage_sum / number_of_devices if number_of_devices > 0 else 0
+                            total_average_gpu_usage = total_average_gpu_usage_sum / number_of_devices if number_of_devices > 0 else 0
+                            total_average_ram_usage = total_average_ram_usage_sum / number_of_devices if number_of_devices > 0 else 0
+
+                            user_collection.update_one({'_id': user['_id']}, {'$push': {
+                                'number_of_devices': number_of_devices,
+                                'number_of_files': number_of_files,
+                                'total_device_storage': total_device_storage,
+                                'total_average_download_speed': total_average_download_speed,
+                                'total_average_upload_speed': total_average_upload_speed,
+                                'total_average_cpu_usage': total_average_cpu_usage,
+                                'total_average_gpu_usage': total_average_gpu_usage,
+                                'total_average_ram_usage': total_average_ram_usage,
+                                'overall_date_added': date_added,
+                                }})
+
+                            date_time = datetime.now()
+                            print(f"{date_time} Data uploaded to Banbury Cloud") 
+                            header = None
+                            buffer = b""
+                            file_type = "Unknown"
+
+                            # except Exception as e:
+                                # print(f"Error parsing JSON: {e}")
                     else:
                         print(f"Unknown data type received from {self.client_address}")
 
 
 
                 except Exception as e:
-                    print("we are handling a socket timeout")
+                    print(f"we are handling a socket timeout {e}")
                     load_dotenv()
                     uri = os.getenv("MONGODB_URL")
                     client = MongoClient(uri)
@@ -800,8 +781,8 @@ class ClientHandler(threading.Thread):
                             ClientHandler.client_sockets.remove(client_socket)
                         date_time = datetime.now()
                         # print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
-                        # print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
-                        # print(f"{date_time} All connected client users: {ClientHandler.device_username}")
+        #                 # print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
+        #                 # print(f"{date_time} All connected client users: {ClientHandler.device_username}")
 
 
         except Exception as e:

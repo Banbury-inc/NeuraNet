@@ -59,7 +59,7 @@ def connect_to_relay_server():
 
 
 
-def delete_file(files):
+def delete_file(files, device):
 
     credentials = load_credentials()
 
@@ -79,33 +79,22 @@ def delete_file(files):
 
     return
 
-def request_file_test():
-    # Log a debug message
-
-    # Get the JSON data sent with the POST request
-    data = request.get_json()
-
-    # You can now access `files` sent in the request body
-    files = data.get('files', [])
-
-    # Perform your logic here with the received files list
-    # For example, prepare the requested files for download
-
-    # Respond back with a message or relevant data
-    response = jsonify({'message': 'Requesting file...', 'receivedFiles': files})
-    return response
-
-
 def main():
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) == 2:
         files = sys.argv[1]
+        device = "default"
         print(f"Argument received: {files}")
+    if len(sys.argv) == 3:
+        files = sys.argv[1]
+        device = sys.argv[2]
+        print(f"Argument received: {files}" + " " + f"Device: {device}")
+ 
     else:
         print("No argument received.")
         files = "welcome.txt"
-
-    delete_file(files)
+        device = "default"
+    delete_file(files, device)
 
 if __name__ == '__main__':
     main()
