@@ -19,7 +19,7 @@ import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import { Stack } from '@mui/material';
 import LineChart from './LineChart';
-
+import { exec } from "child_process";
 
 import { useAuth } from '../context/AuthContext';
 
@@ -69,9 +69,22 @@ ipcRenderer.on('python-output', (event: any, data: any) => {
 export default function DevicesTable() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
+  const [selectedDeviceNames, setSelectedDeviceNames] = useState<string[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { username } = useAuth();
+  const [deviceRows, setDeviceRows] = useState<Device[]>([]); // State for storing fetched file data
+  const getSelectedDeviceNames = () => {
+    return selected.map(device_number => {
+      const device = deviceRows.find(device => device.device_number === device_number);
+      return device ? device.device_name : null;
+    }).filter(deviceName => deviceName !== null); // Filter out any null values if a file wasn't found
+  };
+
+
+const handleApiCall = async () => {
+  const selectedDeviceNames = getSelectedDeviceNames();
+  }
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -92,6 +105,7 @@ export default function DevicesTable() {
         }));
 
         setDevices(roundedDevices);
+        setDeviceRows(roundedDevices);
         setFirstname(data.first_name);
         setLastname(data.last_name);
       } catch (error) {
@@ -140,6 +154,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
         }));
 
         setDevices(roundedDevices);
+        setDeviceRows(roundedDevices);
         setFirstname(data.first_name);
         setLastname(data.last_name);
       } catch (error) {
@@ -180,6 +195,10 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
       );
     }
     setSelected(newSelected);
+
+
+    const newSelectedDeviceNames = newSelected.map(device_number => deviceRows.find(device => device.device_number === device_number)?.device_name).filter(name => name !== undefined) as string[];
+    setSelectedDeviceNames(newSelectedDeviceNames);
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -192,6 +211,34 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   };
 
   const isSelected = (device_number: number) => selected.indexOf(device_number) !== -1;
+
+
+  const handleDeleteClick = async () => {
+    try{
+
+      const scriptPath = 'src/main/deleteDevice.py'; // Update this to the path of your Python script
+       
+      exec(`python "${scriptPath}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`Python Script Error: ${stderr}`);
+          return
+        }
+        if (stdout) {
+          console.log(`Python Script Message: ${stdout}`);
+          return
+        }
+        console.log(`Python Script Message: ${stdout}`);
+
+      });
+    } catch (error) {
+      console.error('There was an error!', error);
+ 
+    } 
+  };
 
 
   const [Firstname, setFirstname] = useState<string>('');
@@ -238,11 +285,11 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
             </Grid>
             </Grid>
           <Grid container spacing={1}>
+            {/* <Grid item> */}
+              {/* <Button variant="outlined" size="small">Add Device</Button> */}
+            {/* </Grid> */}
             <Grid item>
-              <Button variant="outlined" size="small">Add Device</Button>
-            </Grid>
-            <Grid item>
-              <Button variant="outlined" size="small">Remove Device</Button>
+              <Button variant="outlined" onClick={handleDeleteClick} size="small">Remove Device</Button>
             </Grid>
           </Grid>
       </Stack>

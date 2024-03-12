@@ -48,6 +48,7 @@ class ClientHandler(threading.Thread):
                         split_header = header.split(":")
                         file_type = split_header[0]
                         file_name = split_header[1]
+                        device_name = split_header[1]
                         file_size = split_header[2]
                         password = split_header[2]
                         username = split_header[3]
@@ -285,6 +286,34 @@ class ClientHandler(threading.Thread):
                                     continue  # This skips the rest of the current iteration and moves to the next socket
                                 except Exception as e:
                                     print(f"Error sending to device: {e}")
+
+                    elif file_type == "DEVICE_DELETE_REQUEST":
+                        # It's a file; process the file header to get file info
+
+                        date_time = datetime.now()
+                        print(f"{date_time} Received device delete request from {self.client_address}: {self.client_socket}")
+                        print(f"{date_time} Client is requesting to delete {device_name} from {username}'s devices.")
+                        # Load Database
+                        load_dotenv()
+                        uri = os.getenv("MONGODB_URL")
+
+                        client = MongoClient(uri)
+                        db = client['myDatabase']
+                        user_collection = db['users']
+                        user = user_collection.find_one({'username': username})
+
+                                   # Find the user document and remove the device with the specified device_name
+                        result = user_collection.update_one(
+                            {'username': username},
+                            {'$pull': {'devices': {'device_name': device_name}}}
+                        )                
+
+                        # Check if the update was successful
+                        if result.modified_count > 0:
+                            print("Device successfully deleted.")
+                        else:
+                            print("No matching device found or deletion failed.")
+
 
                     elif file_type == "FILE_DELETE_REQUEST":
                         # It's a file; process the file header to get file info
