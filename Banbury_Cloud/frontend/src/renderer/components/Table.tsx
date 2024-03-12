@@ -237,7 +237,6 @@ function formatBytes(bytes: number, decimals: number = 2): string {
   const [Firstname, setFirstname] = useState<string>('');
   const [Lastname, setLastname] = useState<string>('');
   const { username } = useAuth();
-
   console.log(username)
   useEffect(() => {
     const fetchData = async () => {
@@ -247,14 +246,13 @@ function formatBytes(bytes: number, decimals: number = 2): string {
           first_name: string;
           last_name: string;
         // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
-        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/mmills6060/');
+        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
         // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
 
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;
         setFirstname(fetchedFirstname); 
         setLastname(fetchedLastname); 
-        console.log(fetchedFirstname);
         const files = response.data.devices.flatMap((device, index) =>
           device.files.map((file: any, fileIndex: number): FileData => ({
             id: index * 1000 + fileIndex, // Generating unique IDs
@@ -268,7 +266,6 @@ function formatBytes(bytes: number, decimals: number = 2): string {
           }))
         );
 
-        console.log(files);
         setFileRows(files);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -290,13 +287,12 @@ function formatBytes(bytes: number, decimals: number = 2): string {
           devices: any[] 
           first_name: string;
           last_name: string;
-        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/${username}');
+        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
 
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;
         setFirstname(fetchedFirstname); 
         setLastname(fetchedLastname); 
-        console.log(fetchedFirstname);
         const files = response.data.devices.flatMap((device, index) =>
           device.files.map((file: any, fileIndex: number): FileData => ({
             id: index * 1000 + fileIndex, // Generating unique IDs
@@ -310,7 +306,6 @@ function formatBytes(bytes: number, decimals: number = 2): string {
           }))
         );
 
-        console.log(files);
         setFileRows(files);
       } catch (error) {
         console.error('Error fetching data:', error);

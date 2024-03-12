@@ -7,7 +7,7 @@ import { BrowserRouter, Route, Routes, Outlet, Navigate } from "react-router-dom
 import Signup from "./signup";
 import Signin from "./Login";
 import Main from "./main";
-
+import { AuthProvider } from "../context/AuthContext";
 
 
 
@@ -18,6 +18,7 @@ export default function App(): JSX.Element {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter> {/* Wrap your content with BrowserRouter */}
+        <AuthProvider>
         <Box
           sx={{
             backgroundColor: (theme) => theme.palette.background.default,
@@ -44,6 +45,7 @@ export default function App(): JSX.Element {
 
 
         </Box>
+        </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>
   );

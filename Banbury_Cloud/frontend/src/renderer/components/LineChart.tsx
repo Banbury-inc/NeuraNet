@@ -5,7 +5,7 @@ import { Box, Container, Grid, Typography } from "@mui/material";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import PieActiveArc from './Piechart';
-
+import { useAuth } from '../context/AuthContext';
 
 
 
@@ -48,10 +48,11 @@ export default function DifferentLength() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [UserResponse, setUserResponse] = useState<UserResponse[]>([]);
   const [overallDateAdded, setOverallDateAdded] = useState<Date[]>([]);
+  const { username } = useAuth();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
         const roundedDevices = response.data.devices.map(device => ({
           ...device,
           average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),

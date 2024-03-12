@@ -41,13 +41,13 @@ function Copyright(props: any) {
 
 
 export default function SignIn() {
-  const { setUsername } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { setUsername } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const username = data.get('email') as string | null; // Cast the value to string
+    const email = data.get('email') as string | null; // Cast the value to string
     const password = data.get('password') as string | null; // Cast the value to string
     console.log({
       email: data.get('email'),
@@ -67,8 +67,8 @@ export default function SignIn() {
         }
         if (stdout && stdout.trim() === 'Result: success') {
           console.log('Login successful');
-          console.log(username)
-          setUsername(username); // Set username in context
+          console.log(email)
+          setUsername(email); // Set username in context
           setIsAuthenticated(true);
         }
       });
