@@ -29,6 +29,8 @@ import Grid from '@mui/material/Grid';
 import axios from 'axios';
 import DevicesTable from './DeviceTable';
 const { ipcRenderer } = window.require('electron');
+const { spawn } = require("child_process");
+
 
 
 export default function PermanentDrawerLeft() {
