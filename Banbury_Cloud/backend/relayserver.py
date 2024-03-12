@@ -329,6 +329,11 @@ class ClientHandler(threading.Thread):
                                                 file_header = f"FILE_DELETE_REQUEST:{file_name}:{file_size}:{username}:END_OF_HEADER"
                                                 socket.send(file_header.encode())
                                                 print(f"{file_name} has been requested to be deleted")
+                                                data = None 
+                                                buffer = b""
+                                                header = None
+                                                file_type = ""
+
 
 
                     
@@ -371,8 +376,20 @@ class ClientHandler(threading.Thread):
 
                                         date_time = datetime.now()
                                         print(f"{date_time} {file_name} has been successfully removed from database")
+                                        data = None 
+                                        buffer = b""
+                                        header = None
+                                        file_type = ""
+
+
                                     else:
                                         print(f"{file_name} not found in the database")
+                                        data = None 
+                                        buffer = b""
+                                        header = None
+                                        file_type = ""
+
+
                                 except BrokenPipeError:
                                     print(f"Broken pipe moving on to the next socket.")
                                     continue  # This skips the rest of the current iteration and moves to the next socket
@@ -428,6 +445,12 @@ class ClientHandler(threading.Thread):
                                                 devices[index]['files'].remove(some_file)  # Add the file if it doesn't exist
                                                 user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
                                                 file_removed = True
+                                                data = None 
+                                                buffer = b""
+                                                header = None
+                                                file_type = ""
+
+
                                 except BrokenPipeError:
                                     print(f"Broken pipe, removing socket, moving on to the next socket.")
                                     # remove the current socket from the list of client sockets
@@ -435,9 +458,6 @@ class ClientHandler(threading.Thread):
                                     continue  # This skips the rest of the current iteration and moves to the next socket
                                 except Exception as e:
                                     print(f"Error sending to device: {e}")
-
-
-
 
          
                     elif file_type == "PING_REQUEST_RESPONSE":

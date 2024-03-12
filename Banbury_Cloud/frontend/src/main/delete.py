@@ -103,7 +103,7 @@ def main():
         print(f"Argument received: {files}")
     else:
         print("No argument received.")
-        files = "chamonix.mp4"
+        files = "welcome.txt"
 
     delete_file(files)
 
