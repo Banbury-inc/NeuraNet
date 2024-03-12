@@ -112,16 +112,17 @@ def run(receiver_socket):
                     null_string = ""
                     file_header = f"FILE_REQUEST_RESPONSE:{file_name}:{file_size}:{null_string}:END_OF_HEADER"
                     receiver_socket.send(file_header.encode())
-
-                    # Start sending the file contents
-                    while True:
+                    total_bytes_sent = 0
+                    while total_bytes_sent < file_size:
                         print("sending file...")
                         bytes_read = file.read(4096)  # Read the file in chunks
-                        if not bytes_read:
-                            break  # File transmission is done
                         receiver_socket.sendall(bytes_read)
-
+                        total_bytes_sent =+ len(bytes_read)
                     print(f"{file_name} has been sent successfully.")
+                    data = None 
+                    buffer = b""
+                    header = None
+                    file_type = ""
 
             except FileNotFoundError:
                 # Handle the case where the file doesn't exist

@@ -30,9 +30,6 @@ if not os.path.exists(CONFIG_FILE):
     with open(CONFIG_FILE, "w") as config_file:
         config.write(config_file)
 
-
-
-
 def connect_to_relay_server():
     load_dotenv()
     RELAY_HOST = os.getenv("RELAY_HOST")
@@ -139,6 +136,7 @@ def request_file(files):
 
 
     job_completed = True 
+    sender_socket.close()
     return
 
 
@@ -169,7 +167,8 @@ def main():
         files = "welcome.txt"
 
     request_file(files)
-
+    
+    # close the socket
 if __name__ == '__main__':
     main()
 

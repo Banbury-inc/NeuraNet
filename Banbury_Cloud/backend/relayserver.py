@@ -274,6 +274,10 @@ class ClientHandler(threading.Thread):
                                             socket.sendall(bytes_read)
 
                                     print(f"{file_name} has been sent successfully.")
+                                    data = None 
+                                    buffer = b""
+                                    header = None
+                                    file_type = ""
 
                     
                                 except BrokenPipeError:
