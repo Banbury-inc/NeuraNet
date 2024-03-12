@@ -686,9 +686,11 @@ class ClientHandler(threading.Thread):
                                     'overall_date_added': date_added,
                                     }})
 
-
                                 date_time = datetime.now()
                                 print(f"{date_time} Data uploaded to Banbury Cloud") 
+                                header = None
+                                buffer = b""
+                                file_type = "Unknown"
 
                             except Exception as e:
                                 print(f"Error parsing JSON: {e}")
