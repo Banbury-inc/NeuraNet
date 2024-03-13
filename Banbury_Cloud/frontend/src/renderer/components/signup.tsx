@@ -42,6 +42,8 @@ export default function SignUp() {
   const data = new FormData(event.currentTarget);
   const email = data.get('email') as string | null; // Cast the value to string
   const password = data.get('password') as string | null; // Cast the value to string
+  const firstName = data.get('firstName') as string | null; // Cast the value to string
+  const lastName = data.get('lastName') as string | null; // Cast the value to string
  
     console.log({
       firstName: data.get('firstName'),
@@ -52,19 +54,22 @@ export default function SignUp() {
 
 
     try {
-      const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
-      exec(`python "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
+      const scriptPath = 'src/main/signup.py'; // Update this to the path of your Python script
+      exec(`python "${scriptPath}" "${data.get('username')}" "${data.get('password')}" "${data.get('firstName')}" "${data.get('lasttName')}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
+          console.log(error)
           return;
         }
         if (stderr) {
           console.error(`Python Script Error: ${stderr}`);
+          console.log(stderr)
           return;
         }
         if (stdout && stdout.trim() === 'Result: success') {
-          console.log('Login successful');
+          console.log('registration successful');
           console.log(email)
+          console.log(stdout)
           setregistration_success(true);
         }
       });
