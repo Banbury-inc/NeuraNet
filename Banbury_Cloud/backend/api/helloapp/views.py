@@ -289,6 +289,65 @@ def login_api(request):
     except ValueError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
+@csrf_exempt  # Disable CSRF token for this view only if necessary (e.g., for external API access)
+@require_http_methods(["POST"])
+def registration_api(request):
+
+    load_dotenv()
+    uri = os.getenv("MONGODB_URL")
+ 
+
+    client = pymongo.MongoClient(uri, server_api=ServerApi('1'))
+    db = client['myDatabase']
+    user_collection = db['users']
+
+    # Ensure the request body is JSON
+    try:
+        data = json.loads(request.body)
+
+        # extract username and password from the JSON data
+        firstName = data.get('firstName')
+        lastName = data.get('last1Name')
+        username = data.get('username')
+        password = data.get('password').encode('utf-8')
+
+
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+
+        # Create a new user document with additional fields set to null
+        new_user = {
+            "username": username,
+            "password": hashed_password,
+            "first_name": firstName,
+            "last_name": lastName,
+            "phone_number": None,
+            "email": None,
+            "devices": [],
+            "number_of_devices": [],
+            "number_of_files": [],
+            "overall_date_added": [],
+            "total_average_download_speed": [],
+            "total_average_upload_speed": [],
+            "total_device_storage": [],
+            "total_average_cpu_usage": [],
+            "total_average_gpu_usage": [],
+            "total_average_ram_usage": [],
+        }
+
+        try:
+            user_collection.insert_one(new_user)
+            message = f"User '{username}' added successfully."
+            return JsonResponse({'response': 'success'})
+
+        except pymongo.errors.OperationFailure as e:
+            message = f"An error occurred: {e}"
+            return JsonResponse({'response': 'fail'})
+    except ValueError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+
+
+
 
 
 def dashboard(request, username):

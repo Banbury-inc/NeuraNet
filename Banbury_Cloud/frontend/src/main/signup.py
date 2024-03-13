@@ -17,12 +17,11 @@ def signup(username, password_str, email="", firstname="", lastname="", phone_nu
 
     # Prepare the data for the API call
     data = {
+       'firstName': firstname,
+        'lastName': lastname,
         'username': username,
         'password': hashed_password.decode(),  # Convert bytes to string for JSON serialization
-        'email': email,
-        'firstname': firstname,
-        'lastname': lastname,
-        'phone_number': phone_number
+ 
     }
 
     # Make the API call to register the user

@@ -66,6 +66,8 @@ class ClientHandler(threading.Thread):
                                     socket.sendall(buffer)
                                 except Exception as e:
                                     print(f"Error sending to client")
+
+
                     elif file_type == "LOGIN_REQUEST":
                         # It's a regular message; process and broadcast it
                         message_content = buffer.decode()
@@ -106,7 +108,6 @@ class ClientHandler(threading.Thread):
 
                                     except Exception as e:
                                         print(f"Error sending to device: {e}")
-
 
 
                     elif file_type == "FILE":

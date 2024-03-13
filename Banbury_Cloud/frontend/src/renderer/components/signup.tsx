@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
+import { useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -13,8 +14,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from "../theme";
-
-
+import { exec } from "child_process";
+import SignIn from './Login';
 
 function Copyright(props: any) {
   return (
@@ -33,13 +34,51 @@ function Copyright(props: any) {
 const defaultTheme = createTheme();
 
 export default function SignUp() {
+  const [registration_success, setregistration_success] = useState(false);
+
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+   event.preventDefault();
+  const data = new FormData(event.currentTarget);
+  const email = data.get('email') as string | null; // Cast the value to string
+  const password = data.get('password') as string | null; // Cast the value to string
+ 
     console.log({
-      email: data.get('email'),
+      firstName: data.get('firstName'),
+      lastName: data.get('lastName'),
+      username: data.get('username'),
       password: data.get('password'),
     });
+
+
+    try {
+      const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
+      exec(`python "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`Python Script Error: ${stderr}`);
+          return;
+        }
+        if (stdout && stdout.trim() === 'Result: success') {
+          console.log('Login successful');
+          console.log(email)
+          setregistration_success(true);
+        }
+      });
+    } catch (error) {
+      console.error('There was an error!', error);
+    }
+  };
+
+  if (registration_success) {
+
+    return <SignIn />;
+
+
+
   };
 
   return (
@@ -103,11 +142,11 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
+                  id="username"
+                  label="Username"
+                  name="username"
                   size='small'
-                  autoComplete="email"
+                  autoComplete="username"
               InputProps={{
                 style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
               }}
