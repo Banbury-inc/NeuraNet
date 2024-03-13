@@ -11,6 +11,7 @@ import DevicesList from "./DevicesList";
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 
+import AccountMenuIcon from './AccountMenuIcon';
 export default function Greetings(): JSX.Element {
 
 
@@ -57,9 +58,9 @@ export default function Greetings(): JSX.Element {
 
             <Grid item>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-        <Chip avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} label={`${Firstname} ${Lastname}`} />
+                <AccountMenuIcon />
       </Box>
-
+ 
             </Grid>
 
             </Grid>

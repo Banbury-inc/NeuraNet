@@ -29,7 +29,7 @@ import { Container } from "@mui/material";
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import InputFileUploadButton from './uploadfilebutton';
-
+import AccountMenuIcon from './AccountMenuIcon';
 import { useAuth } from '../context/AuthContext';
 
 
@@ -523,11 +523,13 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
           </Typography>
             </Grid>
 
-            <Grid item>
+           <Grid item>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-        <Chip avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} label={`${Firstname} ${Lastname}`} />
+                <AccountMenuIcon />
       </Box>
             </Grid>
+
+
             </Grid>
           <Grid container spacing={2}>
             <Grid item>
@@ -549,7 +551,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
         <Box my={2}>
           {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
           <TableContainer>
-            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
+            <Table aria-labelledby="tableTitle" size="small">
               <EnhancedTableHead
                 numSelected={selected.length}
                 order={order}

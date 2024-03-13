@@ -8,7 +8,8 @@ import Signup from "./signup";
 import Signin from "./Login";
 import Main from "./main";
 import { AuthProvider } from "../context/AuthContext";
-
+import Settings from "./Settings";
+import Profile from "./Profile";
 
 
 export default function App(): JSX.Element {
@@ -40,6 +41,8 @@ export default function App(): JSX.Element {
             <Route path="/main" element={<Main />} />
             <Route path="/register" element={<Signup />} />
             <Route path="/login" element={<Signin />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>  
 
 

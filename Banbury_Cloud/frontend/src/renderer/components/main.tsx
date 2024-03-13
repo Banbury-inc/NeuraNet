@@ -13,6 +13,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import Files from './files';
 import DevicesIcon from '@mui/icons-material/Devices';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -28,13 +29,25 @@ import { Chip } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
 import DevicesTable from './DeviceTable';
+import Settings from './Settings';
+import { useAuth } from '../context/AuthContext';
+import { useLocation } from 'react-router-dom';
+import AccountMenuIcon from './AccountMenuIcon';
+import Profile from './Profile';
+
+
+
+
 const { ipcRenderer } = window.require('electron');
 const { spawn } = require("child_process");
 
 
 
 export default function PermanentDrawerLeft() {
- const [activeTab, setActiveTab] = React.useState('Files');
+  const location = useLocation();
+  const initialActiveTab = location.state?.activeTab || 'Files'; // Set default value to 'Files' if not provided
+  const [activeTab, setActiveTab] = React.useState(initialActiveTab);
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -82,7 +95,7 @@ export default function PermanentDrawerLeft() {
 
         <List>
  
-          {['Dashboard', 'Files', 'Devices'].map((text, index) => (
+          {['Dashboard', 'Files', 'Devices', 'Profile'].map((text, index) => (
             <ListItem key={text} disablePadding>
                 <ListItemButton onClick={() => setActiveTab(text)}>
               <ListItemIcon
@@ -93,13 +106,15 @@ export default function PermanentDrawerLeft() {
                 }}
               >
                 {(() => {
-                  switch (index % 3) {
+                  switch (index % 4) {
                     case 0:
                       return <DashboardIcon fontSize='inherit' />;
                     case 1:
                       return <FolderIcon fontSize='inherit'/>;
                     case 2:
                       return <DevicesIcon fontSize='inherit'/>;
+                    case 3:
+                      return <AccountBoxIcon fontSize='inherit'/>;
                     default:
                       return null; // Just in case
                   }
@@ -117,7 +132,7 @@ export default function PermanentDrawerLeft() {
         <List>
           {['Settings'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
+                <ListItemButton onClick={() => setActiveTab(text)}>
                 <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -148,7 +163,10 @@ export default function PermanentDrawerLeft() {
         return <Files />;
       case 'Devices':
         return <DevicesTable  />;
+      case 'Profile':
+        return <Profile  />;
       case 'Settings':
+        return <Settings  />;
         // Replace <Typography> with your settings component
         return <Typography paragraph>Settings Component Here</Typography>;
       default:

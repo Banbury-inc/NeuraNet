@@ -66,7 +66,7 @@ ipcRenderer.on('python-output', (event: any, data: any) => {
 
 
 
-export default function DevicesTable() {
+export default function Profile() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [selectedDeviceNames, setSelectedDeviceNames] = useState<string[]>([]);
@@ -275,7 +275,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
             <Grid item>
           <Typography variant="h2" textAlign="left">
-            Devices
+            Profile
           </Typography>
             </Grid>
             <Grid item>
