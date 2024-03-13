@@ -186,9 +186,6 @@ def run(receiver_socket):
                 header = None
                 file_type = ""
 
-
-
-
             except Exception as e:
                 print(f"Error deleting file: {e}") 
                 data = None 

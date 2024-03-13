@@ -85,6 +85,15 @@ def register(username, password_str):
     file_header = f"REGISTRATION_REQUEST:{null_arg}:{password_str}:{username}:"
     sender_socket.send(file_header.encode())
     sender_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+    user_info = {
+        "username": username,
+        "password": password_str,
+        "first_name": "first_name",
+        "last_name": "last_name"
+            }
+    user_info_json = json.dumps(user_info)
+    user_info_with_stop_signal = f"{user_info_json}END_OF_JSON"
+    sender_socket.send(user_info_with_stop_signal.encode())
 
     job_completed = False
     while job_completed == False:
@@ -109,11 +118,11 @@ def register(username, password_str):
             credentials[username] = hashed_password
             save_credentials(credentials)
             sender_socket.close()
-
             return result
-        elif file_type == "REGISTRATION_FAIL":
+
+        elif file_type == "REGISTRATION_FAILURE_USER_ALREADY_EXISTS":
             job_completed = True
-            result = "fail"
+            result = "fail-user already exists"
             sender_socket.close()
             return result
 
@@ -131,7 +140,7 @@ def main():
         lastname = "lastname"
         result = register(username, password_str)
         print(f"Result: {result}")
- 
+        sys.stdout.flush()
 
 if __name__ == "__main__":
     main()

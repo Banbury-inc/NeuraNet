@@ -30,12 +30,22 @@ function Copyright(props: any) {
   );
 }
 
+interface Message {
+  type: string;
+  content: string;
+}
+
+
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function SignUp() {
   const [registration_success, setregistration_success] = useState(false);
-
+  const [user_already_exists, setuser_already_exists] = useState(false);
+  const userExistsMessage: Message = {
+    type: 'error',
+    content: 'User already exists. Please choose a different username.',
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
    event.preventDefault();
@@ -54,7 +64,7 @@ export default function SignUp() {
 
 
     try {
-      const scriptPath = 'src/main/signup.py'; // Update this to the path of your Python script
+      const scriptPath = 'src/main/register1.py'; // Update this to the path of your Python script
       exec(`python "${scriptPath}" "${data.get('username')}" "${data.get('password')}" "${data.get('firstName')}" "${data.get('lasttName')}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
@@ -72,6 +82,15 @@ export default function SignUp() {
           console.log(stdout)
           setregistration_success(true);
         }
+        if (stdout && stdout.trim() === 'Result: fail-user already exists') {
+          console.log('registration successful');
+          console.log(email)
+          console.log(stdout)
+          setuser_already_exists(true);
+        }
+ 
+
+
       });
     } catch (error) {
       console.error('There was an error!', error);
@@ -195,6 +214,13 @@ export default function SignUp() {
                 <Link href="/login" variant="body2">
                   Already have an account? Sign in
                 </Link>
+              </Grid>
+            </Grid>
+            <Grid container justifyContent="center">
+             <Grid item>
+                <div style={{ color:"#E22134", opacity: user_already_exists ? 1 : 0, transition: 'opacity 0.5s' }}>
+                  <p>{userExistsMessage.content}</p>
+                </div>
               </Grid>
             </Grid>
           </Box>
