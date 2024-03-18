@@ -1,5 +1,4 @@
 import { Box, Container, Grid, Typography } from "@mui/material";
-
 import React, { useEffect, useState } from 'react';
 import electronLogo from "../../../static/electron.svg";
 import DifferentLength from "./LineChart";
@@ -15,22 +14,23 @@ import axios from 'axios';
 import TotalFilesChart from "./TotalFilesChart";
 import AverageWifiChart from "./AverageWifiChart";
 import AccountMenuIcon from "./AccountMenuIcon";
+import { useAuth } from '../context/AuthContext';
+
+
+
 export default function Dashboard(): JSX.Element {
 
 
   // Initialize state to store the first name
-  const [total_device_storage, set_total_device_storage] = useState('');
-  const [number_of_devices, set_number_of_devices] = useState('');
-  const [number_of_files, set_number_of_files] = useState('');
-  const [total_average_download_speed, set_total_average_download_speed] = useState('');
-  const [total_average_upload_speed, set_total_average_upload_speed] = useState('');
-
-  useEffect(() => {
+   useEffect(() => {
     // Function to fetch data
     const fetchData = async () => {
       try {
         // Make sure to use the correct endpoint that returns the expected data
-        const response = await axios.get('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+        // const response = await axios.get('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+
+        const { username } = useAuth();
+        const response = await axios.get('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
         //const response = await axios.get('http://localhost:8080/getuserinfo/');
         //const response = await axios.get('http://localhost:8080/users/');
         const data = response.data;
@@ -51,8 +51,6 @@ export default function Dashboard(): JSX.Element {
         set_total_average_upload_speed(last_total_average_upload_speed.toFixed(2))
 
 
-
-
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -63,6 +61,59 @@ export default function Dashboard(): JSX.Element {
   }, []);
 
  
+   const [total_device_storage, set_total_device_storage] = useState('');
+  const [number_of_devices, set_number_of_devices] = useState('');
+  const [number_of_files, set_number_of_files] = useState('');
+  const [total_average_download_speed, set_total_average_download_speed] = useState('');
+  const [total_average_upload_speed, set_total_average_upload_speed] = useState('');
+  const [total_average_cpu_usage, set_total_average_cpu_usage] = useState('');
+  const [Firstname, setFirstname] = useState<string>('');
+  const [Lastname, setLastname] = useState<string>('');
+  const { username } = useAuth();
+  console.log(username)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get<{
+          devices: any[] 
+          first_name: string;
+          last_name: string;
+          number_of_devices: any[]
+          number_of_files: any[]
+          total_average_download_speed: any[]
+          total_average_upload_speed: any[]
+          total_average_cpu_usage: any[]
+          total_device_storage: any[]
+        // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+        // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+
+        const fetchedFirstname = response.data.first_name;
+        const fetchedLastname = response.data.last_name;
+        const last_number_of_devices = response.data.number_of_devices[response.data.number_of_devices.length-1];
+        const last_number_of_files = response.data.number_of_files[response.data.number_of_files.length-1];
+        const last_total_average_download_speed = response.data.total_average_download_speed[response.data.total_average_download_speed.length-1];
+        const last_total_average_upload_speed = response.data.total_average_upload_speed[response.data.total_average_upload_speed.length-1];
+        const last_total_device_storage = response.data.total_device_storage[response.data.total_device_storage.length-1];
+        set_number_of_devices(last_number_of_devices.toFixed(0))
+        set_number_of_files(last_number_of_files.toFixed(0))
+        set_total_average_download_speed(last_total_average_download_speed.toFixed(2))
+        set_total_average_upload_speed(last_total_average_upload_speed.toFixed(2))
+        set_total_device_storage(last_total_device_storage.toFixed(2))
+        setFirstname(fetchedFirstname); 
+        setLastname(fetchedLastname); 
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+
+  },
+
+  []);
+
+
 
 
 return (
@@ -100,7 +151,6 @@ return (
                     <br />
                   </Typography>
                   <Typography variant="h4" component="div">
-                            12
                     {number_of_devices}
                   </Typography>
                 </CardContent>
@@ -114,7 +164,6 @@ return (
                     <br />
                   </Typography>
                   <Typography variant="h4" component="div">
-                            12
                     {number_of_devices}
                   </Typography>
                 </CardContent>
@@ -128,8 +177,7 @@ return (
                     <br />
                   </Typography>
                   <Typography variant="h4" component="div">
-                            12
-                    {number_of_devices}
+                    {number_of_files}
                   </Typography>
                 </CardContent>
               </Card>
@@ -145,8 +193,7 @@ return (
                     <br />
                   </Typography>
                   <Typography variant="h4" component="div">
-                              12
-                    {number_of_devices}
+                    {total_average_upload_speed} mb/s
                   </Typography>
                 </CardContent>
               </Card>
@@ -159,8 +206,7 @@ return (
                     <br />
                   </Typography>
                   <Typography variant="h4" component="div">
-                              12
-                    {number_of_devices}
+                    {total_average_download_speed} mb/s
                   </Typography>
                 </CardContent>
               </Card>
@@ -169,12 +215,11 @@ return (
               <Card sx={{ width: '100%' }}>
                 <CardContent>
                   <Typography variant="body2">
-                    Average CPU Usage
+                    Total Device Storage
                     <br />
                   </Typography>
                   <Typography variant="h4" component="div">
-                              12
-                    {number_of_devices}
+                    {total_device_storage} GB
                   </Typography>
                 </CardContent>
               </Card>

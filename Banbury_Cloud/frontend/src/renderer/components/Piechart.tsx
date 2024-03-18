@@ -1,54 +1,93 @@
-import * as React from 'react';
+
 import { PieChart } from '@mui/x-charts/PieChart';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Box, Container, Grid, Typography } from '@mui/material';
+import { useAuth } from '../context/AuthContext';
 import {
   blueberryTwilightPalette,
   mangoFusionPalette,
   cheerfulFiestaPalette,
-} from '@mui/x-charts/colorPalettes';
-import { Stack } from '@mui/material';
+}
+ from '@mui/x-charts/colorPalettes';
 
-const data = [
-
-  { id: 0, value: 10, label: 'Desktop' },
-  { id: 1, value: 15, label: 'Macbook Pro' },
-  { id: 2, value: 20, label: 'Linux-Workstation' },
-];
-
-const categories = {
-  blueberryTwilight: blueberryTwilightPalette,
-  mangoFusion: mangoFusionPalette,
-  cheerfulFiesta: cheerfulFiestaPalette,
-} as const;
-
-type PaletteKey = keyof typeof categories;
-export default function PieActiveArc() {
-    const [colorScheme, setColorScheme] =
-    React.useState<PaletteKey>('blueberryTwilight');
-  return (
-    <div style={{ justifyContent: 'center' }}>
-    <PieChart
-      colors={categories[colorScheme]}
-      series={[
-        {
-          data,
-          highlightScope: { faded: 'global', highlighted: 'item' },
-          faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
-
-        },
-      ]}
-  slotProps={{
-    legend: {
-      direction: 'row',
-      position: { vertical: 'bottom', horizontal: 'middle' },
-      padding: 0,
-    },
-  }}
-      // height={555}
-      // width={400}
-    />
-    </div>
-  );
+interface Device {
+  device_name: string;
+  storage_capacity_GB: number;
 }
 
+interface UserResponse {
+  devices: Device[];
+  overall_date_added: Date[];
+}
 
+const PieActiveArc: React.FC = () => {
+  const [devices, setDevices] = useState<Device[]>([]);
+  const [overallDateAdded, setOverallDateAdded] = useState<Date[]>([]);
+  const { username } = useAuth();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+        const roundedDevices = response.data.devices.map(device => ({
+          ...device,
+          storage_capacity_GB: parseFloat(device.storage_capacity_GB.toFixed(2)),
+        }));
+
+        // Convert overall_date_added strings to Date objects
+        const convertedOverallDates = response.data.overall_date_added.map(dateStr => new Date(dateStr));
+        setOverallDateAdded(convertedOverallDates);
+
+        setDevices(roundedDevices);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const totalStorage = devices.reduce((total, device) => total + device.storage_capacity_GB, 0);
+
+  const data = devices.map(device => ({
+    id: device.device_name,
+    // value: (device.storage_capacity_GB / totalStorage) * 100,
+    value: device.storage_capacity_GB,
+    label: device.device_name,
+    tooltipValue: device.storage_capacity_GB + ' GB',
+  }));
+
+  const categories = {
+    blueberryTwilight: blueberryTwilightPalette,
+    mangoFusion: mangoFusionPalette,
+    cheerfulFiesta: cheerfulFiestaPalette,
+  } as const;
+
+  type PaletteKey = keyof typeof categories;
+
+  const [colorScheme, setColorScheme] = useState<PaletteKey>('blueberryTwilight');
+
+  return (
+    <div style={{ justifyContent: 'center' }}>
+      <PieChart
+        colors={categories[colorScheme]}
+        series={[
+          {
+            data,
+            highlightScope: { faded: 'global', highlighted: 'item' },
+            faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+          },
+        ]}
+        slotProps={{
+          legend: {
+            direction: 'row',
+            position: { vertical: 'bottom', horizontal: 'middle' },
+            padding: 0,
+          },
+        }}
+      />
+    </div>
+  );
+};
+
+export default PieActiveArc;
 
