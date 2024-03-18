@@ -23,6 +23,7 @@ export default function Dashboard(): JSX.Element {
   const [number_of_devices, set_number_of_devices] = useState('');
   const [number_of_files, set_number_of_files] = useState('');
   const [total_average_download_speed, set_total_average_download_speed] = useState('');
+  const [total_average_upload_speed, set_total_average_upload_speed] = useState('');
 
   useEffect(() => {
     // Function to fetch data
@@ -38,13 +39,16 @@ export default function Dashboard(): JSX.Element {
         const last_number_of_devices = data.total_number_of_devices[data.total_number_of_devices.length-1];
         const last_number_of_files = data.total_number_of_files[data.total_number_of_files.length-1];
         const last_total_average_download_speed = data.total_average_download_speed[data.total_average_download_speed.length-1];
+        const last_total_average_upload_speed = data.total_average_upload_speed[data.total_average_upload_speed.length-1];
         const number_of_devices = data.total_number_of_devices[data.total_number_of_devices-1];
         const total_average_download_speed = data.total_average_download_speed[data.total_average_download_speed-1];
+        const total_average_upload_speed = data.total_average_upload_speed[data.total_average_upload_speed-1];
         const number_of_files = data.total_number_of_files[data.total_number_of_files-1];
         set_total_device_storage(last_total_device_storage.toFixed(2))
         set_number_of_devices(last_number_of_devices.toFixed(2))
         set_number_of_files(last_number_of_files.toFixed(2))
         set_total_average_download_speed(last_total_average_download_speed.toFixed(2))
+        set_total_average_upload_speed(last_total_average_upload_speed.toFixed(2))
 
 
 
