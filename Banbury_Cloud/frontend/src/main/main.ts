@@ -11,11 +11,11 @@ let mainWindow: BrowserWindow | null;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
-    width: 1100,
+    width: 1366,
     // frame: false,
     // titleBarStyle: "hidden",
     titleBarOverlay: false,
-    height: 700,
+    height: 768,
     backgroundColor: "#23272a",
     webPreferences: {
       nodeIntegration: true,

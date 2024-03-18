@@ -25,13 +25,13 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { Container } from "@mui/material";
+import { CardContent, Container } from "@mui/material";
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import InputFileUploadButton from './uploadfilebutton';
 import AccountMenuIcon from './AccountMenuIcon';
 import { useAuth } from '../context/AuthContext';
-
+import Card from '@mui/material/Card';
 
 
 interface Device {
@@ -528,9 +528,14 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
                 <AccountMenuIcon />
       </Box>
             </Grid>
-
-
             </Grid>
+ 
+          <Grid container spacing={2}>
+            </Grid>
+
+       </Stack>
+<Card>
+<CardContent>
           <Grid container spacing={2}>
             <Grid item>
               <InputFileUploadButton />
@@ -546,8 +551,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
               </Button>
             </Grid>
           </Grid>
-        </Stack>
-
+ 
         <Box my={2}>
           {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
           <TableContainer>
@@ -616,6 +620,8 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Box>
+        </CardContent>
+        </Card>
       </Box>
     </Container>
   );

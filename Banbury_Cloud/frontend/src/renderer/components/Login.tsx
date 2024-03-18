@@ -56,7 +56,7 @@ export default function SignIn() {
 
     try {
       const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
-      exec(`python "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
+      exec(`python3 "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;

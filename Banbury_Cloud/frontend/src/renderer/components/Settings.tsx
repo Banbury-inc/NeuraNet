@@ -22,7 +22,11 @@ import LineChart from './LineChart';
 import { exec } from "child_process";
 import AccountMenuIcon from './AccountMenuIcon';
 import { useAuth } from '../context/AuthContext';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Divider from '@mui/material/Divider';
 
+import { Email } from '@mui/icons-material';
 interface Device {
   device_number: number;
   device_name: string;
@@ -66,7 +70,7 @@ ipcRenderer.on('python-output', (event: any, data: any) => {
 
 
 
-export default function Settings() {
+export default function Profile() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [selectedDeviceNames, setSelectedDeviceNames] = useState<string[]>([]);
@@ -267,12 +271,9 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
   return (
     <Container>
-
       <Box sx={{ width: '100%', mt: 0, pt: 4 }}>
-
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
-
             <Grid item>
           <Typography variant="h2" textAlign="left">
             Settings
@@ -282,124 +283,56 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
                 <AccountMenuIcon />
       </Box>
- 
             </Grid>
             </Grid>
           <Grid container spacing={1}>
-            {/* <Grid item> */}
-              {/* <Button variant="outlined" size="small">Add Device</Button> */}
-            {/* </Grid> */}
-            <Grid item>
-              <Button variant="outlined" onClick={handleDeleteClick} size="small">Remove Device</Button>
-            </Grid>
-          </Grid>
+         </Grid>
       </Stack>
-
         <Box my={2}>
-            <TableContainer>
-              <Table sx={{ minWidth: 750 }} size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        color="primary"
-                        indeterminate={selected.length > 0 && selected.length < devices.length}
-                        checked={devices.length > 0 && selected.length === devices.length}
-                        onChange={handleSelectAllClick}
-                        inputProps={{ 'aria-label': 'select all devices' }}
-                      />
-                    </TableCell>
-                    <TableCell align='left'>Name</TableCell>
-                    <TableCell align='left'>IP Address</TableCell>
-                    <TableCell align='left'>Total Storage</TableCell>
-                    <TableCell align='left'>Status</TableCell>
-                    <TableCell align='left'>Avg. Upload Speed</TableCell>
-                    <TableCell align='left'>Avg. Download Speed</TableCell>
-                    <TableCell align='left'>Avg. GPU usage</TableCell>
-                    <TableCell align='left'>Avg. CPU usage</TableCell>
-                    <TableCell align='left'>Avg. RAM usage</TableCell>
-                    {/* Add more table headers as needed */}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(rowsPerPage > 0
-                    ? devices.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    : devices
-                  ).map((device) => {
-                    const isItemSelected = isSelected(device.device_number);
-                    const labelId = `enhanced-table-checkbox-${device.device_number}`;
+<Grid container spacing={2} columns={1}>
+<Grid item xs={8}>
 
-                    return (
-                      <TableRow
-                        hover
-                        onClick={(event) => handleClick(event, device.device_number)}
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={device.device_number}
-                        selected={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{ 'aria-labelledby': labelId }}
-                          />
-                        </TableCell>
-                        <TableCell align='left' component="th" id={labelId} scope="row">
-                          {device.device_name}
-                        </TableCell>
+<Stack spacing={4}>
 
-                        <TableCell align='left' component="th" id={labelId} scope="row">
-                          {device.ip_address}
-                        </TableCell>
+   <Card>
+      <CardContent>
+      <Box my={0}>
+        <Stack spacing={4}>
+        <Typography variant="h4" gutterBottom>App</Typography>
+        <Stack spacing={1}>
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+        <Typography variant="subtitle1" gutterBottom>Current version</Typography>
+        <Typography variant="body2" gutterBottom>v1.0.0 beta</Typography>
+            </Grid>
+           </Grid>
+        <Divider orientation="horizontal" variant="middle" />
+        <Stack spacing={1}>
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+        <Typography variant="subtitle1" gutterBottom>Help</Typography>
+        <Typography variant="body2" gutterBottom>Learn how to use Banbury Cloud
+            </Typography>
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" onClick={handleDeleteClick} size="small">
+                Open
+              </Button>
+            </Grid>
+ 
+            </Grid>
+        <Divider orientation="horizontal" variant="middle" />
 
-                        <TableCell align='right'component="th" id={labelId} scope="row">
-                          {device.storage_capacity_GB}
-                        </TableCell>
- 
-                        <TableCell align='left'component="th" id={labelId} scope="row" style={{ color: device.onlineStatus === "Online" ? "#1DB954" : "red" }}>
-                          {device.onlineStatus}
-                        </TableCell>
- 
-                        <TableCell align='right'component="th" id={labelId} scope="row">
-                          {device.average_upload_speed}
-                        </TableCell>
- 
-                        <TableCell align='right'component="th" id={labelId} scope="row">
-                          {device.average_download_speed}
-                        </TableCell>
- 
-                        <TableCell align='right'component="th" id={labelId} scope="row">
-                          {device.average_gpu_usage}
-                        </TableCell>
- 
-                        <TableCell align='right'component="th" id={labelId} scope="row">
-                          {device.average_cpu_usage}
-                        </TableCell>
- 
-                        <TableCell align='right'component="th" id={labelId} scope="row">
-                          {device.average_ram_usage}
-                        </TableCell>
-  
 
-                        {/* Render other device details here */}
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={devices.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          <LineChart />
+      </Stack>
+      </Stack>
+      </Stack>
+      </Box>
+    </CardContent>
+    </Card>
+      </Stack>
+    </Grid>
+</Grid>
         </Box>
       </Box>
     </Container>

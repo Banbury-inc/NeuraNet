@@ -24,7 +24,8 @@ import AccountMenuIcon from './AccountMenuIcon';
 import { useAuth } from '../context/AuthContext';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-
+import Divider from '@mui/material/Divider';
+import { Email } from '@mui/icons-material';
 
 
 interface Device {
@@ -57,6 +58,7 @@ interface UserResponse {
   devices: Device[];
   first_name: string;
   last_name: string;
+  email: string;
   // Include other fields from your API response as needed
 }
 
@@ -111,6 +113,7 @@ const handleApiCall = async () => {
         setDevices(roundedDevices);
         setDeviceRows(roundedDevices);
         setFirstname(data.first_name);
+        setEmail(data.email);
         setLastname(data.last_name);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -160,6 +163,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
         setDevices(roundedDevices);
         setDeviceRows(roundedDevices);
         setFirstname(data.first_name);
+        setEmail(data.email);
         setLastname(data.last_name);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -247,6 +251,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
   const [Firstname, setFirstname] = useState<string>('');
   const [Lastname, setLastname] = useState<string>('');
+  const [Email, setEmail] = useState<string>('');
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -254,10 +259,13 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
           devices: any[] 
           first_name: string;
           last_name: string;
+          email: string;
         }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username +'/');
 
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;
+        const fetchedEmail = response.data.email;
+        setEmail(fetchedEmail); 
         setFirstname(fetchedFirstname); 
         setLastname(fetchedLastname); 
         console.log(fetchedFirstname);
@@ -294,7 +302,94 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
     <Card>
       <CardContent>
       <Box my={0}>
-        <Typography variant="h5" gutterBottom>Account</Typography>
+        <Stack spacing={4}>
+        <Typography variant="h4" gutterBottom>Account</Typography>
+        <Stack spacing={1}>
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+        <Typography variant="subtitle1" gutterBottom>First Name</Typography>
+        <Typography variant="body2" gutterBottom>{Firstname}</Typography>
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" onClick={handleDeleteClick} size="small">
+                Change
+              </Button>
+            </Grid>
+            </Grid>
+        <Divider orientation="horizontal" variant="middle" />
+        <Stack spacing={1}>
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+        <Typography variant="subtitle1" gutterBottom>Last Name</Typography>
+        <Typography variant="body2" gutterBottom>{Lastname}</Typography>
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" onClick={handleDeleteClick} size="small">
+                Change
+              </Button>
+            </Grid>
+            </Grid>
+         <Divider orientation="horizontal" variant="middle" />
+        <Stack spacing={1}>
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+        <Typography variant="subtitle1" gutterBottom>Username</Typography>
+        <Typography variant="body2" gutterBottom>{username}</Typography>
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" onClick={handleDeleteClick} size="small">
+                Change
+              </Button>
+            </Grid>
+            </Grid>
+          <Divider orientation="horizontal" variant="middle" />
+        <Stack spacing={1}>
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+        <Typography variant="subtitle1" gutterBottom>Email</Typography>
+        <Typography variant="body2" gutterBottom>{Email}</Typography>
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" onClick={handleDeleteClick} size="small">
+                Change
+              </Button>
+            </Grid>
+            </Grid>
+           <Divider orientation="horizontal" variant="middle" />
+        <Stack spacing={1}>
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+        <Typography variant="subtitle1" gutterBottom>Password</Typography>
+        <Typography variant="body2" gutterBottom>Change your account password.</Typography>
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" onClick={handleDeleteClick} size="small">
+                Change
+              </Button>
+            </Grid>
+            </Grid>
+            <Divider orientation="horizontal" variant="middle" />
+        <Stack spacing={1}>
+         <Grid container columns={12} justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+        <Typography variant="subtitle1" gutterBottom>Delete Account</Typography>
+        <Typography variant="body2" gutterBottom>Permanently delete your account, licenses, and subscriptions. 
+        You will be asked for confirmation before deletion proceeds.</Typography>
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" color="error" onClick={handleDeleteClick} size="small">
+                Delete
+              </Button>
+            </Grid>
+            </Grid>
+ 
+      </Stack>
+      </Stack>
+      </Stack>
+      </Stack>
+      </Stack>
+      </Stack>
+      </Stack>
       </Box>
     </CardContent>
     </Card>
