@@ -14,8 +14,7 @@ import CardContent from '@mui/material/CardContent';
 import axios from 'axios';
 import TotalFilesChart from "./TotalFilesChart";
 import AverageWifiChart from "./AverageWifiChart";
-
-
+import AccountMenuIcon from "./AccountMenuIcon";
 export default function Dashboard(): JSX.Element {
 
 
@@ -62,96 +61,174 @@ export default function Dashboard(): JSX.Element {
  
 
 
-  return (
-    <Container>
-      <Grid container spacing={2}>
-      <Box sx={{ width: '100%', pt: 4 }}>
-    <Stack spacing={2}>
-      <Typography variant="h2" textAlign="left">
-        Dashboard
-      </Typography>
-  <Stack direction="row" spacing={2}>
-       <Grid item xs={3}>
-     <Card>
-      <CardContent>
-       <Typography variant="body2">
-          Total Number of Devices
-          <br />
-        </Typography>
-       <Typography variant="h4" component="div">
-          {number_of_devices}
-        </Typography>
-     </CardContent>
-   </Card>
-         </Grid>
+return (
+  <Container>
 
-       <Grid item xs={3}>
-<Card>
- <CardContent>
-  <Typography variant="body2">
-     Total Number of Devices
-     <br />
-   </Typography>
-  <Typography variant="h4" component="div">
-     {number_of_devices}
-   </Typography>
-</CardContent>
-</Card>
+    <Grid container spacing={2}>
+      <Box sx={{ maxwidth: '100%', p: 4, height: '100vh' }}>
+
+        <Stack spacing={2}>
+        <Stack direction = "row" justifyContent="space-between">
+        <Grid item>
+          <Typography variant="h2" textAlign="left">
+            Dashboard
+          </Typography>
+          </Grid>
+        <Grid item>
+                <AccountMenuIcon />
+          </Grid>
+        </Stack> 
+        </Stack> 
+
+        <Stack spacing={2}>
+
+
+    <Grid container sx={{pt:4}} spacing={2}>
+
+                <Stack  spacing={2} direction="row" justifyContent="space-between">
+          <Stack spacing={2}>
+                <Stack  spacing={2} direction="row" justifyContent="space-between">
+            <Grid item xs={4}>
+              <Card sx={{ width: '100%' }}>
+                <CardContent>
+                  <Typography variant="body2">
+                    Total Number of Devices
+                    <br />
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                            12
+                    {number_of_devices}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={4}>
+              <Card sx={{ width: '100%' }}>
+                <CardContent>
+                  <Typography variant="body2">
+                    Devices Online
+                    <br />
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                            12
+                    {number_of_devices}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={4}>
+              <Card sx={{ width: '100%' }}>
+                <CardContent>
+                  <Typography variant="body2">
+                    Total Number of Files
+                    <br />
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                            12
+                    {number_of_devices}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            </Stack>
+          <Stack spacing={2}>
+                <Stack  spacing={2} direction="row" justifyContent="space-between">
+            <Grid item xs={4}>
+              <Card sx={{ width: '100%' }}>
+                <CardContent>
+                  <Typography variant="body2">
+                    Average Upload Speed
+                    <br />
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                              12
+                    {number_of_devices}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={4}>
+              <Card sx={{ width: '100%' }}>
+                <CardContent>
+                  <Typography variant="body2">
+                    Average Download Speed
+                    <br />
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                              12
+                    {number_of_devices}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={4}>
+              <Card sx={{ width: '100%' }}>
+                <CardContent>
+                  <Typography variant="body2">
+                    Average CPU Usage
+                    <br />
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                              12
+                    {number_of_devices}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            </Stack>
+            </Stack>
+ 
+          <Grid item style={{ maxHeight: '50vh' }}>
+            <Card>
+              <CardContent>
+                <Typography variant="body2">
+                  Total Number of Files
+                  <br />
+                </Typography>
+                <Typography variant="h4" component="div">
+                  {number_of_files}
+                </Typography>
+                {/* <TotalFilesChart /> */}
+                <LineChart
+                  xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+                  series={[
+                    {
+                      data: [200, 500, 550, 700, 600, 800],
+                    },
+                  ]}
+                  width={550}
+                  // height={375}
+                />
+ 
+              </CardContent>
+            </Card>
+          </Grid>
+          </Stack>
+
+ 
+          <Grid item style={{ minWidth: '400', maxHeight: '75vh' }}>
+              <Card>
+                <CardContent>
+                  <Typography variant="body2">
+                    Total Device Storage
+                    <br />
+                  </Typography>
+                  <Typography variant="h4" component="div">
+                    {total_device_storage} Gb
+                  </Typography>
+                  <PieActiveArc />
+                </CardContent>
+              </Card>
+            </Grid>
+
+
+       </Stack>
+            </Grid>
+       </Stack>
+
+      </Box>
     </Grid>
+  </Container>
+);
+}import { LineChart } from "@mui/x-charts";
 
-       <Grid item xs={3}>
-     <Card>
-      <CardContent>
-       <Typography variant="body2">
-          Total Number of Devices
-          <br />
-        </Typography>
-       <Typography variant="h4" component="div">
-          {number_of_devices}
-        </Typography>
-     </CardContent>
-   </Card>
-         </Grid>
- 
-
-        <Grid item>
-    <Card sx={{ minWidth: 400 }}>
-      <CardContent>
-        <Typography variant="body2">
-          Total Device Storage
-          <br />
-        </Typography>
-        <Typography variant="h4" component="div">
-          {/* Display the fetched first name */}
-          {total_device_storage} Gb
-        </Typography>
-        <PieActiveArc />
-      </CardContent>
-    </Card>
- 
-         </Grid>
-
- </Stack>
-        <Grid item>
-    <Card sx={{ minWidth: 275 }}>
-      <CardContent>
-       <Typography variant="body2">
-          Total Number of Files
-          <br />
-        </Typography>
-       <Typography variant="h4" component="div">
-          {number_of_files}
-        </Typography>
-        <TotalFilesChart />
-     </CardContent>
-   </Card>
- 
-         </Grid>
-
-     </Stack>
-     </Box>
-
-         </Grid>
-    </Container>
-  );
-}

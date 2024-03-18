@@ -5,6 +5,7 @@ import {
   mangoFusionPalette,
   cheerfulFiestaPalette,
 } from '@mui/x-charts/colorPalettes';
+import { Stack } from '@mui/material';
 
 const data = [
 
@@ -24,6 +25,7 @@ export default function PieActiveArc() {
     const [colorScheme, setColorScheme] =
     React.useState<PaletteKey>('blueberryTwilight');
   return (
+    <div style={{ justifyContent: 'center' }}>
     <PieChart
       colors={categories[colorScheme]}
       series={[
@@ -31,9 +33,22 @@ export default function PieActiveArc() {
           data,
           highlightScope: { faded: 'global', highlighted: 'item' },
           faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+
         },
       ]}
-      height={250}
+  slotProps={{
+    legend: {
+      direction: 'row',
+      position: { vertical: 'bottom', horizontal: 'middle' },
+      padding: 0,
+    },
+  }}
+      // height={555}
+      // width={400}
     />
+    </div>
   );
 }
+
+
+
