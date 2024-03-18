@@ -33,8 +33,7 @@ export default function PieActiveArc() {
           faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
         },
       ]}
-      height={100}
-      width={400}
+      height={250}
     />
   );
 }

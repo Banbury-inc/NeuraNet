@@ -10,8 +10,8 @@ export default function TotalFilesChart() {
           data: [200, 500, 550, 700, 600, 800],
         },
       ]}
-      width={400}
-      height={300}
+      width={800}
+      height={225}
     />
   );
 }
