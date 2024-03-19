@@ -228,7 +228,7 @@ return (
             </Stack>
             </Stack>
  
-          <Grid item style={{ maxHeight: '56vh' }}>
+          <Grid item style={{ maxHeight: '48.5vh' }}>
             <Card>
               <CardContent>
                 <Typography variant="body2">
