@@ -99,6 +99,7 @@ export default function SignIn() {
           <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
+          {/* <img src="/Users/michaelmills/Documents/Logo.png" alt="Logo" style={{ width: 100, height: 100 }} /> */}
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>

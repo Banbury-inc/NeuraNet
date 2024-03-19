@@ -45,7 +45,7 @@ const { spawn } = require("child_process");
 
 export default function PermanentDrawerLeft() {
   const location = useLocation();
-  const initialActiveTab = location.state?.activeTab || 'Dashboard'; // Set default value to 'Files' if not provided
+  const initialActiveTab = location.state?.activeTab || 'Files'; // Set default value to 'Files' if not provided
   const [activeTab, setActiveTab] = React.useState(initialActiveTab);
 
   return (

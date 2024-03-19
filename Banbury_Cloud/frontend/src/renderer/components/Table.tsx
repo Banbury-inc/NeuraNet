@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import Stack from '@mui/material/Stack';
 import { exec } from "child_process";
 import axios from 'axios';
@@ -32,6 +32,11 @@ import InputFileUploadButton from './uploadfilebutton';
 import AccountMenuIcon from './AccountMenuIcon';
 import { useAuth } from '../context/AuthContext';
 import Card from '@mui/material/Card';
+import { SnackbarProvider, VariantType, useSnackbar } from 'notistack';
+import CircularProgress, {
+  CircularProgressProps,
+} from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
 
 
 interface Device {
@@ -506,6 +511,100 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0;
 }
 
+function CircularProgressWithLabel(
+  props: CircularProgressProps & { value: number },
+) {
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress variant="determinate" {...props} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          color="text.secondary"
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
+
+
+function MyApp() {
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [progress, setProgress] = useState(0);
+  const [trigger, setTrigger] = useState(false); // State to trigger re-renders
+  const timerRef = useRef<number | null>(null); // Ref to store timer
+
+  useEffect(() => {
+    timerRef.current = window.setInterval(() => {
+      setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+      setTrigger((prevTrigger) => !prevTrigger); // Toggle trigger to force re-render
+    }, 1000);
+    return () => {
+      if (timerRef.current !== null) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+
+  const handleClick = async () => {
+
+     enqueueSnackbar('Downloading' + {selectedFileNames}, {
+      variant: 'default' as VariantType,
+      autoHideDuration: null, // Snackbar will not automatically close
+      action: (
+        <React.Fragment>
+          <CircularProgress value={progress} />
+          <Button color="inherit" size="small" onClick={handleClose}>
+            Close
+          </Button>
+        </React.Fragment>
+      ),
+    });
+
+    await handleDownloadClick();
+  };
+
+  const handleClose = () => {
+    closeSnackbar();
+  };
+
+  return (
+    <React.Fragment>
+      <Button variant='outlined' size='small' onClick={handleClick}>Download</Button>
+    </React.Fragment>
+  );
+}
+
+
+
+
+function CircularWithValueLabel() {
+  const [progress, setProgress] = React.useState(10);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+    }, 800);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
+  return <CircularProgressWithLabel value={progress} />;
+}
 
 
 const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
@@ -542,8 +641,24 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
             </Grid>
             <Grid item>
               <Button variant="outlined" onClick={handleDownloadClick} size="small">
-                {buttonText}
+                old {buttonText}
               </Button>
+            </Grid>
+            <Grid item>
+              {/* <SnackbarProvider maxSnack={3}> */}
+              <SnackbarProvider 
+
+                  maxSnack={3} 
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                  TransitionProps={{
+                    // Customize your transition props here
+                    direction: 'up', // Set the direction of the transition
+                    // timeout: 500, // Set the duration of the transition in milliseconds
+                  }}
+                >
+
+                <MyApp />
+              </SnackbarProvider>
             </Grid>
             <Grid item>
               <Button variant="outlined" onClick={handleDeleteClick} size="small">
