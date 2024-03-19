@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import EnhancedTable from "./Table";
 import Button from '@mui/material/Button';
 import InputFileUpload from './uploadfilebutton';
-
+import Card from '@mui/material/Card';
 
 
 
@@ -48,8 +48,6 @@ export default function Files(): JSX.Element {
 
 
   return (
-    <Container>
         <EnhancedTable  />
-    </Container>
   );
 }

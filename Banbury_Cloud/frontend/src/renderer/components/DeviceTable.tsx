@@ -22,6 +22,8 @@ import LineChart from './LineChart';
 import { exec } from "child_process";
 import AccountMenuIcon from './AccountMenuIcon';
 import { useAuth } from '../context/AuthContext';
+import Card from '@mui/material/Card';
+import { CardContent } from "@mui/material";
 
 interface Device {
   device_number: number;
@@ -268,7 +270,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   return (
     <Container>
 
-      <Box sx={{ width: '100%', mt: 0, pt: 4 }}>
+      <Box sx={{ width: '100%', mt: 0, pt: 2 }}>
 
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
@@ -285,6 +287,13 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
  
             </Grid>
             </Grid>
+
+          <Grid container spacing={2}>
+            </Grid>
+
+      </Stack>
+<Card>
+<CardContent>
           <Grid container spacing={1}>
             {/* <Grid item> */}
               {/* <Button variant="outlined" size="small">Add Device</Button> */}
@@ -293,7 +302,6 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
               <Button variant="outlined" onClick={handleDeleteClick} size="small">Remove Device</Button>
             </Grid>
           </Grid>
-      </Stack>
 
         <Box my={2}>
             <TableContainer>
@@ -390,6 +398,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
                 </TableBody>
               </Table>
             </TableContainer>
+     </Box>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
@@ -399,10 +408,15 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
-          <LineChart />
-        </Box>
-      </Box>
+       </CardContent>
+      </Card>
+ 
+     </Box>
+     
+          {/* <LineChart /> */}
+
     </Container>
   );
+
 }
 

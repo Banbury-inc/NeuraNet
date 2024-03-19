@@ -117,28 +117,29 @@ export default function Dashboard(): JSX.Element {
 
 
 return (
-  <Container>
-
-    <Grid container spacing={2}>
-      <Box sx={{ maxwidth: '100%', p: 4, height: '100vh' }}>
-
+<Container>
+      <Box sx={{ width: '100%', mt: 0, pt: 2 }}>
         <Stack spacing={2}>
-        <Stack direction = "row" justifyContent="space-between">
-        <Grid item>
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
           <Typography variant="h2" textAlign="left">
             Dashboard
           </Typography>
-          </Grid>
-        <Grid item>
+            </Grid>
+
+           <Grid item>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
                 <AccountMenuIcon />
-          </Grid>
-        </Stack> 
-        </Stack> 
+      </Box>
+            </Grid>
+            </Grid>
+
+       </Stack>
 
         <Stack spacing={2}>
 
 
-    <Grid container sx={{pt:4}} spacing={2}>
+    <Grid container sx={{pt:4, pl:2}} spacing={2}>
 
                 <Stack  spacing={2} direction="row" justifyContent="space-between">
           <Stack spacing={2}>
@@ -183,8 +184,8 @@ return (
               </Card>
             </Grid>
             </Stack>
-          <Stack spacing={2}>
-                <Stack  spacing={2} direction="row" justifyContent="space-between">
+          <Stack spacing={2} alignItems="stretch">
+                <Stack  spacing={2} direction="row" justifyContent="space-evenly" alignItems="stretch">
             <Grid item xs={4}>
               <Card sx={{ width: '100%' }}>
                 <CardContent>
@@ -227,7 +228,7 @@ return (
             </Stack>
             </Stack>
  
-          <Grid item style={{ maxHeight: '50vh' }}>
+          <Grid item style={{ maxHeight: '56vh' }}>
             <Card>
               <CardContent>
                 <Typography variant="body2">
@@ -245,7 +246,7 @@ return (
                       data: [200, 500, 550, 700, 600, 800],
                     },
                   ]}
-                  width={550}
+                  width={630}
                   // height={375}
                 />
  
@@ -255,7 +256,7 @@ return (
           </Stack>
 
  
-          <Grid item style={{ minWidth: '400', maxHeight: '75vh' }}>
+          <Grid item style={{ minWidth: '400', maxHeight: '76.5vh' }}>
               <Card>
                 <CardContent>
                   <Typography variant="body2">
@@ -276,7 +277,6 @@ return (
        </Stack>
 
       </Box>
-    </Grid>
   </Container>
 );
 }import { LineChart } from "@mui/x-charts";
