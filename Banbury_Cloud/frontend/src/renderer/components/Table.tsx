@@ -534,7 +534,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
             </Grid>
 
        </Stack>
-<Card>
+<Card variant='outlined'>
 <CardContent>
           <Grid container spacing={2}>
             <Grid item>
@@ -588,7 +588,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
                           }
                         }}
                       >
-                        <TableCell padding="checkbox">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} padding="checkbox">
                           {hoveredRowId === row.id ? ( // Only render Checkbox if row is hovered
                           <Checkbox
                             color="primary"
@@ -597,12 +597,12 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
                           />
                           ) : null}
                         </TableCell>
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                        <TableCell component="th"  sx={{ borderBottomColor: "#424242" }} id={labelId} scope="row" padding="none">
                           {row.fileName}
                         </TableCell>
-                        <TableCell align="left">{row.fileSize}</TableCell>
-                        <TableCell align="left">{row.deviceName}</TableCell>
-                        <TableCell align="right">{row.dateUploaded}</TableCell>
+                        <TableCell align="left" sx={{ borderBottomColor: "#424242" }}>{row.fileSize}</TableCell>
+                        <TableCell align="left"  sx={{ borderBottomColor: "#424242" }} >{row.deviceName}</TableCell>
+                        <TableCell align="right" sx={{ borderBottomColor: "#424242" }} >{row.dateUploaded}</TableCell>
                       </TableRow>
                     );
                   })}

@@ -298,7 +298,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
       </Stack>
 <Grid container spacing={2} columns={1}>
 <Grid item xs={8}>
-    <Card>
+    <Card variant='outlined'>
       <CardContent>
       <Box my={0}>
         <Stack spacing={4}>

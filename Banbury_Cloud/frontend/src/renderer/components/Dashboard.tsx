@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Typography } from "@mui/material";
+import { Box, Container, Grid, Theme, Typography } from "@mui/material";
 import React, { useEffect, useState } from 'react';
 import electronLogo from "../../../static/electron.svg";
 import DifferentLength from "./LineChart";
@@ -15,8 +15,7 @@ import TotalFilesChart from "./TotalFilesChart";
 import AverageWifiChart from "./AverageWifiChart";
 import AccountMenuIcon from "./AccountMenuIcon";
 import { useAuth } from '../context/AuthContext';
-
-
+import theme from "../theme";
 
 export default function Dashboard(): JSX.Element {
 
@@ -145,7 +144,7 @@ return (
           <Stack spacing={2}>
                 <Stack  spacing={2} direction="row" justifyContent="space-between">
             <Grid item xs={4}>
-              <Card sx={{ width: '100%' }}>
+              <Card variant="outlined"sx={{ width: '100%'}}>
                 <CardContent>
                   <Typography variant="body2">
                     Total Number of Devices
@@ -158,7 +157,7 @@ return (
               </Card>
             </Grid>
             <Grid item xs={4}>
-              <Card sx={{ width: '100%' }}>
+              <Card variant="outlined" sx={{ width: '100%' }}>
                 <CardContent>
                   <Typography variant="body2">
                     Devices Online
@@ -171,7 +170,7 @@ return (
               </Card>
             </Grid>
             <Grid item xs={4}>
-              <Card sx={{ width: '100%' }}>
+              <Card variant="outlined"sx={{ width: '100%' }}>
                 <CardContent>
                   <Typography variant="body2">
                     Total Number of Files
@@ -187,7 +186,7 @@ return (
           <Stack spacing={2} alignItems="stretch">
                 <Stack  spacing={2} direction="row" justifyContent="space-evenly" alignItems="stretch">
             <Grid item xs={4}>
-              <Card sx={{ width: '100%' }}>
+              <Card variant="outlined"sx={{ width: '100%' }}>
                 <CardContent>
                   <Typography variant="body2">
                     Average Upload Speed
@@ -200,7 +199,7 @@ return (
               </Card>
             </Grid>
             <Grid item xs={4}>
-              <Card sx={{ width: '100%' }}>
+              <Card variant="outlined" sx={{ width: '100%' }}>
                 <CardContent>
                   <Typography variant="body2">
                     Average Download Speed
@@ -213,7 +212,7 @@ return (
               </Card>
             </Grid>
             <Grid item xs={4}>
-              <Card sx={{ width: '100%' }}>
+              <Card variant="outlined" sx={{ width: '100%' }}>
                 <CardContent>
                   <Typography variant="body2">
                     Total Device Storage
@@ -229,7 +228,7 @@ return (
             </Stack>
  
           <Grid item style={{ maxHeight: '48.5vh' }}>
-            <Card>
+            <Card variant="outlined">
               <CardContent>
                 <Typography variant="body2">
                   Total Number of Files
@@ -257,7 +256,7 @@ return (
 
  
           <Grid item style={{ minWidth: '400', maxHeight: '76.5vh' }}>
-              <Card>
+              <Card variant="outlined">
                 <CardContent>
                   <Typography variant="body2">
                     Total Device Storage

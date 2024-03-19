@@ -293,7 +293,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
 <Stack spacing={4}>
 
-   <Card>
+   <Card variant='outlined'>
       <CardContent>
       <Box my={0}>
         <Stack spacing={4}>

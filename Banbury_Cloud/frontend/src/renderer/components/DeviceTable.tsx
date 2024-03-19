@@ -292,7 +292,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
             </Grid>
 
       </Stack>
-<Card>
+<Card variant='outlined'>
 <CardContent>
           <Grid container spacing={1}>
             {/* <Grid item> */}
@@ -347,46 +347,46 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
                         key={device.device_number}
                         selected={isItemSelected}
                       >
-                        <TableCell padding="checkbox">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} padding="checkbox">
                           <Checkbox
                             color="primary"
                             checked={isItemSelected}
                             inputProps={{ 'aria-labelledby': labelId }}
                           />
                         </TableCell>
-                        <TableCell align='left' component="th" id={labelId} scope="row">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
                           {device.device_name}
                         </TableCell>
 
-                        <TableCell align='left' component="th" id={labelId} scope="row">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
                           {device.ip_address}
                         </TableCell>
 
-                        <TableCell align='right'component="th" id={labelId} scope="row">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
                           {device.storage_capacity_GB}
                         </TableCell>
  
-                        <TableCell align='left'component="th" id={labelId} scope="row" style={{ color: device.onlineStatus === "Online" ? "#1DB954" : "red" }}>
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='left'component="th" id={labelId} scope="row" style={{ color: device.onlineStatus === "Online" ? "#1DB954" : "red" }}>
                           {device.onlineStatus}
                         </TableCell>
  
-                        <TableCell align='right'component="th" id={labelId} scope="row">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
                           {device.average_upload_speed}
                         </TableCell>
  
-                        <TableCell align='right'component="th" id={labelId} scope="row">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
                           {device.average_download_speed}
                         </TableCell>
  
-                        <TableCell align='right'component="th" id={labelId} scope="row">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
                           {device.average_gpu_usage}
                         </TableCell>
  
-                        <TableCell align='right'component="th" id={labelId} scope="row">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
                           {device.average_cpu_usage}
                         </TableCell>
  
-                        <TableCell align='right'component="th" id={labelId} scope="row">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
                           {device.average_ram_usage}
                         </TableCell>
   

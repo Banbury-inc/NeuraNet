@@ -6,32 +6,23 @@ const theme = createTheme({
   palette: {
     mode: 'dark', // Spotify uses a dark theme
     background: {
-      default: '#212121', // Slightly lighter for elements considered "paper"
-      paper: '#171717', // Very dark gray, almost black, as the main background
+      default: '#121212', // Very dark gray, almost black, as the main background
+      paper: '#181818', // Slightly lighter for elements considered "paper"
     },
     primary: {
-      main: '#FFFFFF', // Updated to match Material UI's primary blue color
-      light: '#FFFFFF', // Updated to match Material UI's primary blue color
-      dark: '#FFFFFF', // Updated to match Material UI's primary blue color
+      main: '#1DB954', // Spotify's brand green for primary actions and highlights
     },
     secondary: {
-      main: '#000000', // Updated to match Material UI's secondary pink color
-      light: '#000000', // Updated to match Material UI's secondary pink color
-      dark: '#000000', // Updated to match Material UI's secondary pink color
+      main: '#535353', // A medium gray for secondary elements, might need adjustment
     },
     error: {
-      main: '#f44336', // Material UI's default error color
-      light: '#e57373', // Material UI's default error color
-      dark: '#d32f2f', // Material UI's default error color
+      main: '#E22134', // Just an example, adjust based on your preference
     },
     text: {
       primary: '#FFFFFF',
-      secondary: '#B3B3B3', //ray for less important text, adjust as needed
+      secondary: '#B3B3B3', // Light gray for less important text, adjust as needed
     },
-  divider: '#424242',
-
   },
-
   typography: {
   fontWeightLight: 300,
   fontWeightRegular: 400,
