@@ -65,11 +65,12 @@ const PieActiveArc: React.FC = () => {
   type PaletteKey = keyof typeof categories;
 
   const [colorScheme, setColorScheme] = useState<PaletteKey>('blueberryTwilight');
-
+  const customColorPalette = ['#FAE1DC',  '#FF4500','#0000F5', '#FF4500', '#51DA4C', '#0000FF', '#FFF639', '#FF45FF', '#FE7600', '#8A2BE2', '#A0522D'];
   return (
     <div style={{ justifyContent: 'center' }}>
       <PieChart
         colors={categories[colorScheme]}
+        // colors={customColorPalette}
         series={[
           {
             data,

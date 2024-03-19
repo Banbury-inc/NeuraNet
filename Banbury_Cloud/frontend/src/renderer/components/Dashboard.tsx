@@ -113,6 +113,20 @@ export default function Dashboard(): JSX.Element {
   []);
 
 
+const colors: { [key: string]: string } = {
+  other: 'lightgray',
+  bio: 'lightgreen',
+  solar: 'yellow',
+  wind: 'lightblue',
+  hydro: 'blue',
+  nuclear: 'orange',
+  oil: 'darkgrey',
+  gas: 'gray',
+  coal: 'black',
+};
+
+
+  const customColorPalette = ['#FF4500', '#51DA4C', '#0000FF', '#FFF639', '#FF45FF', '#FE7600', '#8A2BE2', '#A0522D'];
 
 
 return (
@@ -246,9 +260,11 @@ return (
                     },
                   ]}
                   width={630}
+
                   // height={375}
+                        //
                 />
- 
+
               </CardContent>
             </Card>
           </Grid>
