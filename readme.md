@@ -31,6 +31,10 @@ Banbury Cloud is a subset of Athena which serves as the decentralized file shari
 * Anticipating user requests and pre-fetching or caching content to reduce latency and improve content delivery speed.
 * predicit optimal allocation of files based on the values above
 
+## Artificial Intelligence
+
+Incorporating AI into the app elevates its functionality, offering users intelligent features like content analysis, categorization, search optimization, and personalized recommendations. At the core of this integration, each user's device hosts a lightweight AI model, such as a Language Model, tasked with local data analysis and processing. Leveraging federated learning techniques, these models collaboratively train across multiple devices, ensuring data privacy and security are upheld. Crucially, AI models dynamically evolve through user interactions and feedback, steadily enhancing their performance and relevance over time. This iterative learning process not only refines the app's capabilities but also tailors its responses to better suit individual user needs, ultimately enriching the overall user experience.
+
 ## To Start Developing Athena
 
 Athena is developed by Banbury and by users like you. We welcome both pull requests and issues on Github. Want to get paid to work on openpilot? Banbury is hiring and offers lots of bounties for external contributors. 
