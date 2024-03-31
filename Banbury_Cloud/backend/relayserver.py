@@ -943,7 +943,8 @@ def send_ping():
                     # print(f"{date_time} All connected client users: {ClientHandler.device_username}")
                 
             # time.sleep(900)
-            time.sleep(30)
+            # time.sleep(30)
+            time.sleep(600)
 
 
 def reverse_lookup(dictionary, value):

@@ -7,7 +7,7 @@ import os
 import socket
 from dotenv import load_dotenv
 import shutil
-from sender4 import send_device_info
+from receiver5 import send_device_info
 
 def connect_to_relay_server():
     load_dotenv()
@@ -17,8 +17,6 @@ def connect_to_relay_server():
     sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sender_socket.connect((RELAY_HOST, RELAY_PORT))
     return sender_socket
-
-
 
 
 def upload_file(file_path):
@@ -37,7 +35,11 @@ def upload_file(file_path):
     except Exception as e:
         print(f"Error copying file: {e}")
     try:
-        send_device_info()
+
+        sender_socket = connect_to_relay_server() 
+        send_device_info(sender_socket)
+
+        sender_socket.close()
         print("File uploaded to Cloud")
     except Exception as e:
         print(f"Error uploading to cloud: {e}")
@@ -56,4 +58,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
 

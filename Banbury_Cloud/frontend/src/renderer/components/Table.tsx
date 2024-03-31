@@ -62,7 +62,7 @@ interface FileData {
 const headCells = [
   { id: 'fileName', numeric: false, label: 'Name' },
   { id: 'fileSize', numeric: false, label: 'Size' },
-  { id: 'fileSize', numeric: false, label: 'Location' },
+  { id: 'location', numeric: false, label: 'Location' },
   { id: 'dateUploaded', numeric: true, label: 'Date Uploaded' },
 ];
 
@@ -413,22 +413,27 @@ function formatBytes(bytes: number, decimals: number = 2): string {
     } 
   };
 
+  const [deleteloading, setdeleteLoading] = useState<boolean>(false);
   const handleDeleteClick = async () => {
     try{
 
+      setdeleteLoading(true);
       const scriptPath = 'src/main/delete.py'; // Update this to the path of your Python script
        
       exec(`python "${scriptPath}" "${selectedFileNames}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
+          setdeleteLoading(false);
           return;
         }
         if (stderr) {
           console.error(`Python Script Error: ${stderr}`);
+          setdeleteLoading(false);
           return
         }
         if (stdout) {
           console.log(`Python Script Message: ${stdout}`);
+          setdeleteLoading(false);
           return
         }
         console.log(`Python Script Message: ${stdout}`);
@@ -671,9 +676,16 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
             {/*   </SnackbarProvider> */}
             {/* </Grid> */}
             <Grid item>
-              <Button variant="outlined" onClick={handleDeleteClick} size="small">
-                Delete
-              </Button>
+              <LoadingButton
+                  variant="outlined"
+                  loading={deleteloading} 
+                  loadingPosition="end"
+                  endIcon={<DeleteIcon />}
+                  onClick={handleDeleteClick} size="small">
+                {/* {buttonText} */}
+                {deleteloading ? 'Loading...' : "Delete"}
+              </LoadingButton>
+ 
             </Grid>
           </Grid>
  

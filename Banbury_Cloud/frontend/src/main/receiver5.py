@@ -198,6 +198,21 @@ def run(receiver_socket):
 
         sys.stdout.flush()
 
+def send_device_info(sender_socket):
+    date_time = get_current_date_and_time()
+    print(f"{date_time} Received a ping request")
+    device_info = None
+    device_info = get_device_info()
+    null_string = ""
+    file_header = f"PING_REQUEST_RESPONSE:{null_string}:{null_string}:{null_string}:END_OF_HEADER"
+    sender_socket.send(file_header.encode())
+    device_info_with_stop_signal = f"{device_info}END_OF_JSON"
+    #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+    sender_socket.send(device_info_with_stop_signal.encode())
+
+    date_time = get_current_date_and_time()
+    print(f"{date_time} Ping response has been sent successfully.")
+
 
 
 def get_device_info():
@@ -427,7 +442,7 @@ def get_gpu_usage():
             gpu_total_memory = f"{gpu.memoryTotal}MB"
             gpu_temperature = f"{gpu.temperature} °C"
             list_gpus.append(f"ID: {gpu_id}, Name: {gpu_name}, Load: {gpu_load}, Free Memory: {gpu_free_memory}, Used Memory: {gpu_used_memory}, Total Memory: {gpu_total_memory}, Temperature: {gpu_temperature}")
-        return gpu_load
+            return gpu_load
     except Exception as e:
         gpu_load = 0
         return gpu_load
