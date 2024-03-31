@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { exec } from "child_process";
+import { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -18,6 +21,7 @@ const VisuallyHiddenInput = styled('input')({
 
 const InputFileUploadButton: React.FC = () => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) {
       console.log("No file selected.");
@@ -32,21 +36,26 @@ const InputFileUploadButton: React.FC = () => {
     runPythonScript(file);
   };
 
+  const [loading, setLoading] = useState<boolean>(false);
   const runPythonScript = async (file: File) => {
 
+      setLoading(true);
       const scriptPath = 'src/main/upload.py'; // Update this to the path of your Python script
        
       exec(`python "${scriptPath}" "${file.path}"`, (error, stdout, stderr) => {
       console.log(File)
         if (error) {
+          setLoading(false);
           console.error(`exec error: ${error}`);
           return;
         }
         if (stderr) {
+          setLoading(false);
           console.error(`Python Script Error: ${stderr}`);
           return
         }
         if (stdout) {
+          setLoading(false);
           console.log(`Python Script Message: ${stdout}`);
           return
         }
@@ -59,14 +68,21 @@ const InputFileUploadButton: React.FC = () => {
 
 
   return (
-    <Button component="label" variant="outlined" size="small">
-      Upload file
+    <LoadingButton component="label"
+      variant="outlined"
+      size="small"
+      loading={loading}
+      loadingPosition="end"
+      endIcon={<FileUploadIcon />}
+    >
+      Upload
       <VisuallyHiddenInput
         type="file"
         onChange={handleFileChange}
         // If you want to handle multiple files, you might consider adding the "multiple" attribute
       />
-    </Button>
+    </LoadingButton>
+
   );
 };
 

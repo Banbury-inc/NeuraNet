@@ -5,7 +5,9 @@ import axios from 'axios';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
+import DownloadIcon from '@mui/icons-material/Download';
 import TableBody from '@mui/material/TableBody';
+import LoadingButton from '@mui/lab/LoadingButton';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
@@ -13,6 +15,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Button from '@mui/material/Button';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -319,7 +322,7 @@ function formatBytes(bytes: number, decimals: number = 2): string {
       }
     };
     fetchData();
-  }, 10000); 
+  }, 1000); 
 
   return () => clearInterval(interval);
   },
@@ -378,22 +381,27 @@ function formatBytes(bytes: number, decimals: number = 2): string {
 
   const [buttonText, setButtonText] = useState('Download');
   const [selectedfiles, setSelectedFiles] = useState<readonly number[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const handleDownloadClick = async () => {
     try{
+      setLoading(true);
 
       const scriptPath = 'src/main/download.py'; // Update this to the path of your Python script
        
       exec(`python "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
+          setLoading(false);
           return;
         }
         if (stderr) {
           console.error(`Python Script Error: ${stderr}`);
+          setLoading(false);
           return
         }
         if (stdout) {
           console.log(`Python Script Message: ${stdout}`);
+          setLoading(false);
           return
         }
         console.log(`Python Script Message: ${stdout}`);
@@ -637,29 +645,31 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
 <CardContent>
           <Grid container spacing={2}>
             <Grid item>
-              <InputFileUploadButton />
+              <InputFileUploadButton/>
+
             </Grid>
             <Grid item>
-              <Button variant="outlined" onClick={handleDownloadClick} size="small">
-                old {buttonText}
-              </Button>
+              <LoadingButton variant="outlined" loading={loading} loadingPosition="end" endIcon={<DownloadIcon />} onClick={handleDownloadClick} size="small">
+                {/* {buttonText} */}
+                {loading ? 'Loading...' : buttonText}
+              </LoadingButton>
             </Grid>
-            <Grid item>
+            {/* <Grid item> */}
               {/* <SnackbarProvider maxSnack={3}> */}
-              <SnackbarProvider 
+            {/*   <SnackbarProvider  */}
 
-                  maxSnack={3} 
-                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                  TransitionProps={{
-                    // Customize your transition props here
-                    direction: 'up', // Set the direction of the transition
-                    // timeout: 500, // Set the duration of the transition in milliseconds
-                  }}
-                >
+            {/*       maxSnack={3}  */}
+            {/*       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} */}
+            {/*       TransitionProps={{ */}
+            {/*         // Customize your transition props here */}
+            {/*         direction: 'up', // Set the direction of the transition */}
+            {/*         // timeout: 500, // Set the duration of the transition in milliseconds */}
+            {/*       }} */}
+            {/*     > */}
 
-                <MyApp />
-              </SnackbarProvider>
-            </Grid>
+            {/*     <MyApp /> */}
+            {/*   </SnackbarProvider> */}
+            {/* </Grid> */}
             <Grid item>
               <Button variant="outlined" onClick={handleDeleteClick} size="small">
                 Delete
