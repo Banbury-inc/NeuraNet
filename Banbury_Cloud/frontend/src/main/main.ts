@@ -45,7 +45,7 @@ function createWindow(): void {
 //    runPythonScript(); // Execute the Python script
 //  });
 
-
+require('@electron/remote/main').initialize()
 
   mainWindow.on("closed", () => {
     mainWindow = null;

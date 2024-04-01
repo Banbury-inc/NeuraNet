@@ -12,7 +12,7 @@ import Settings from "./Settings";
 import Profile from "./Profile";
 import TitleBar from 'frameless-titlebar';
 
- 
+
 
 // Define the Platform type
 type Platform = 'win32' | 'linux' | 'darwin';
