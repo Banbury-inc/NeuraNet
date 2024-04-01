@@ -18,6 +18,7 @@ function createWindow(): void {
     height: 768,
     backgroundColor: "#23272a",
     titleBarStyle: 'hidden' || 'customButtonsOnHover',
+    trafficLightPosition: { x: 15, y: 15 },
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
