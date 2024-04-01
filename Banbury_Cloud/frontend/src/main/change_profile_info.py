@@ -7,7 +7,7 @@ import os
 import socket
 from dotenv import load_dotenv
 import shutil
-from receiver5 import small_send_device_info
+from receiver5 import send_profile_info, small_send_device_info
 
 def connect_to_relay_server():
     load_dotenv()
@@ -19,9 +19,9 @@ def connect_to_relay_server():
     return sender_socket
 
 
-def upload_file(file_path):
+def change_first_name(first_name, last_name, username, email, password):
     print("Uploading file")
-    print(file_path)
+    print(first_name)
 
     directory_name = "BCloud"
     directory_path = os.path.expanduser(f"~/{directory_name}")
@@ -30,14 +30,10 @@ def upload_file(file_path):
     # shutil.copy(source, destination) will copy the file to the destination directory
     # If you want to keep the original filename, you can use os.path.basename(file_path)
     try:
-        shutil.copy(file_path, directory_path)
-        print(f"File copied successfully to {directory_path}")
-    except Exception as e:
-        print(f"Error copying file: {e}")
-    try:
 
         sender_socket = connect_to_relay_server() 
-        small_send_device_info(sender_socket)
+
+        send_profile_info(sender_socket, first_name, last_name, username, email, password)
 
         sender_socket.close()
         print("File uploaded to Cloud")
@@ -48,13 +44,22 @@ def upload_file(file_path):
 def main():
 
     if len(sys.argv) > 1:
-        file_path = sys.argv[1]
-        print(f"Argument received: {file_path}")
+        first_name = sys.argv[1]
+        last_name = sys.argv[2]
+        username = sys.argv[3]
+        email = sys.argv[4]
+        password = sys.argv[5]
+        print(f"Argument received: {first_name}")
+        change_first_name(first_name, last_name, username, email, password)
     else:
         print("No argument received.")
-        file_path = "sender3.py"
+        first_name = "Michael"
+        last_name = "Mills"
+        username = "mmills6060"
+        email = "mmills6060@gmail.com"
+        password = "test"
+        change_first_name(first_name, last_name, username, email, password)
 
-    upload_file(file_path)
 
 if __name__ == '__main__':
     main()

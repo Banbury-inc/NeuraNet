@@ -383,34 +383,31 @@ function formatBytes(bytes: number, decimals: number = 2): string {
   const [selectedfiles, setSelectedFiles] = useState<readonly number[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const handleDownloadClick = async () => {
-    try{
+    try {
       setLoading(true);
 
+      if (selectedfiles.length === 0) {
+        setLoading(false);
+        return; // If no files are selected, exit the function
+      }
+
       const scriptPath = 'src/main/download.py'; // Update this to the path of your Python script
-       
+      
       exec(`python "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
-          setLoading(false);
-          return;
         }
         if (stderr) {
           console.error(`Python Script Error: ${stderr}`);
-          setLoading(false);
-          return
         }
         if (stdout) {
           console.log(`Python Script Message: ${stdout}`);
-          setLoading(false);
-          return
         }
-        console.log(`Python Script Message: ${stdout}`);
-
+        setLoading(false);
       });
     } catch (error) {
       console.error('There was an error!', error);
- 
-    } 
+    }
   };
 
   const [deleteloading, setdeleteLoading] = useState<boolean>(false);

@@ -9,6 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -59,6 +60,7 @@ interface UserResponse {
   first_name: string;
   last_name: string;
   email: string;
+  password: string;
   // Include other fields from your API response as needed
 }
 
@@ -115,6 +117,7 @@ const handleApiCall = async () => {
         setFirstname(data.first_name);
         setEmail(data.email);
         setLastname(data.last_name);
+        setPassword(data.password);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -165,12 +168,13 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
         setFirstname(data.first_name);
         setEmail(data.email);
         setLastname(data.last_name);
+        setPassword(data.password);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
     fetchData();
-  }, 10000); // Refresh every 10 seconds 
+  }, 1000); // Refresh every 10 seconds 
 
     return () => clearInterval(interval);
   },
@@ -221,12 +225,23 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   const isSelected = (device_number: number) => selected.indexOf(device_number) !== -1;
 
 
-  const handleDeleteClick = async () => {
+  const [showFirstnameTextField, setShowFirstnameTextField] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const handleFirstnameClick = async () => {
+    try{
+      setShowFirstnameTextField(!showFirstnameTextField);
+    } catch (error) {
+      console.error('There was an error!', error);
+    } 
+  };
+  const handleFirstnameConfirmClick = async () => {
     try{
 
-      const scriptPath = 'src/main/deleteDevice.py'; // Update this to the path of your Python script
+      setShowFirstnameTextField(!showFirstnameTextField);
+
+      const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
        
-      exec(`python "${scriptPath}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
+      exec(`python "${scriptPath}" "${firstName}" "${Lastname}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
@@ -240,7 +255,43 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
           return
         }
         console.log(`Python Script Message: ${stdout}`);
+      });
+    } catch (error) {
+      console.error('There was an error!', error);
+ 
+    } 
+  };
 
+  const [showLastnameTextField, setShowLastnameTextField] = useState(false);
+  const [lastName, setLastName] = useState('');
+  const handleLastnameClick = async () => {
+    try{
+      setShowLastnameTextField(!showLastnameTextField);
+    } catch (error) {
+      console.error('There was an error!', error);
+    } 
+  };
+  const handleLastnameConfirmClick = async () => {
+    try{
+
+      setShowLastnameTextField(!showLastnameTextField);
+
+      const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
+       
+      exec(`python "${scriptPath}" "${Firstname}" "${lastName}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`Python Script Error: ${stderr}`);
+          return
+        }
+        if (stdout) {
+          console.log(`Python Script Message: ${stdout}`);
+          return
+        }
+        console.log(`Python Script Message: ${stdout}`);
       });
     } catch (error) {
       console.error('There was an error!', error);
@@ -249,9 +300,127 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   };
 
 
+
+  const [showUsernameTextField, setShowUsernameTextField] = useState(false);
+  const [new_username, setusername] = useState('');
+  const handleUsernameClick = async () => {
+    try{
+      setShowUsernameTextField(!showUsernameTextField);
+    } catch (error) {
+      console.error('There was an error!', error);
+    } 
+  };
+  const handleUsernameConfirmClick = async () => {
+    try{
+
+      setShowUsernameTextField(!showUsernameTextField);
+
+      const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
+       
+      exec(`python "${scriptPath}" "${Firstname}" "${Lastname}" "${new_username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`Python Script Error: ${stderr}`);
+          return
+        }
+        if (stdout) {
+          console.log(`Python Script Message: ${stdout}`);
+          return
+        }
+        console.log(`Python Script Message: ${stdout}`);
+      });
+    } catch (error) {
+      console.error('There was an error!', error);
+ 
+    } 
+  };
+
+
+  const [showEmailTextField, setShowEmailTextField] = useState(false);
+  const [email, setemail] = useState('');
+  const handleEmailClick = async () => {
+    try{
+      setShowEmailTextField(!showEmailTextField);
+    } catch (error) {
+      console.error('There was an error!', error);
+    } 
+  };
+  const handleEmailConfirmClick = async () => {
+    try{
+
+      setShowEmailTextField(!showEmailTextField);
+
+      const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
+       
+      exec(`python "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${email}" "${Password}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`Python Script Error: ${stderr}`);
+          return
+        }
+        if (stdout) {
+          console.log(`Python Script Message: ${stdout}`);
+          return
+        }
+        console.log(`Python Script Message: ${stdout}`);
+      });
+    } catch (error) {
+      console.error('There was an error!', error);
+ 
+    } 
+  };
+
+
+  const [showPasswordTextField, setShowPasswordTextField] = useState(false);
+  const [password, setpassword] = useState('');
+  const handlePasswordClick = async () => {
+    try{
+      setShowPasswordTextField(!showPasswordTextField);
+    } catch (error) {
+      console.error('There was an error!', error);
+    } 
+  };
+  const handlePasswordConfirmClick = async () => {
+    try{
+
+      setShowPasswordTextField(!showPasswordTextField);
+
+      const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
+       
+      exec(`python "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${Email}" "${password}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`Python Script Error: ${stderr}`);
+          return
+        }
+        if (stdout) {
+          console.log(`Python Script Message: ${stdout}`);
+          return
+        }
+        console.log(`Python Script Message: ${stdout}`);
+      });
+    } catch (error) {
+      console.error('There was an error!', error);
+ 
+    } 
+  };
+
+
+
+
   const [Firstname, setFirstname] = useState<string>('');
   const [Lastname, setLastname] = useState<string>('');
   const [Email, setEmail] = useState<string>('');
+  const [Password, setPassword] = useState<string>('');
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -260,14 +429,17 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
           first_name: string;
           last_name: string;
           email: string;
+          password: string;
         }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username +'/');
 
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;
         const fetchedEmail = response.data.email;
+        const fetchedPassword = response.data.password;
         setEmail(fetchedEmail); 
         setFirstname(fetchedFirstname); 
         setLastname(fetchedLastname); 
+        setPassword(fetchedPassword); 
         console.log(fetchedFirstname);
      } catch (error) {
         console.error('Error fetching data:', error);
@@ -305,69 +477,195 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
         <Typography variant="h4" gutterBottom>Account</Typography>
         <Stack spacing={1}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+
             <Grid item>
         <Typography variant="subtitle1" gutterBottom>First Name</Typography>
-        <Typography variant="body2" gutterBottom>{Firstname}</Typography>
+       {showFirstnameTextField ?  (
+          <TextField
+            id="Firstname"
+            size='small'
+            defaultValue={Firstname}
+            onChange={(event) => setFirstName(event.target.value)}
+          />
+        ) : (
+          <Typography variant="body2" gutterBottom>{Firstname}</Typography>
+        )}
             </Grid>
-            <Grid item>
-              <Button variant="outlined" onClick={handleDeleteClick} size="small">
-                Change
+       {showFirstnameTextField ?  (
+            <Grid item pr={4}>
+              <Stack direction="row" spacing={2}>
+              <Button variant="outlined" onClick={handleFirstnameClick} size="small">
+                {showFirstnameTextField ? 'Cancel' : 'Change'}
+              </Button>
+              <Button variant="contained" color='success'onClick={handleFirstnameConfirmClick} size="small">
+              Submit
+              </Button>
+            </Stack> 
+            </Grid>
+ 
+        ) : (
+            <Grid item pr={4}>
+              <Button variant="outlined" onClick={handleFirstnameClick} size="small">
+                {showFirstnameTextField ? 'Cancel' : 'Change'}
               </Button>
             </Grid>
+        )}
             </Grid>
         <Divider orientation="horizontal" variant="middle" />
-        <Stack spacing={1}>
+
+
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
         <Typography variant="subtitle1" gutterBottom>Last Name</Typography>
-        <Typography variant="body2" gutterBottom>{Lastname}</Typography>
+       {showLastnameTextField ?  (
+          <TextField
+            id="Lastname"
+            size='small'
+            defaultValue={Lastname}
+            onChange={(event) => setLastName(event.target.value)}
+          />
+        ) : (
+          <Typography variant="body2" gutterBottom>{Lastname}</Typography>
+        )}
             </Grid>
-            <Grid item>
-              <Button variant="outlined" onClick={handleDeleteClick} size="small">
-                Change
+       {showLastnameTextField ?  (
+            <Grid item pr={4}>
+              <Stack direction="row" spacing={2}>
+              <Button variant="outlined" onClick={handleLastnameClick} size="small">
+                {showLastnameTextField ? 'Cancel' : 'Change'}
+              </Button>
+              <Button variant="contained" color='success'onClick={handleLastnameConfirmClick} size="small">
+              Submit
+              </Button>
+            </Stack> 
+            </Grid>
+ 
+        ) : (
+            <Grid item pr={4}>
+              <Button variant="outlined" onClick={handleLastnameClick} size="small">
+                {showUsernameTextField ? 'Cancel' : 'Change'}
               </Button>
             </Grid>
+        )}
             </Grid>
-         <Divider orientation="horizontal" variant="middle" />
-        <Stack spacing={1}>
+            <Divider orientation="horizontal" variant="middle" />
+
+
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
         <Typography variant="subtitle1" gutterBottom>Username</Typography>
-        <Typography variant="body2" gutterBottom>{username}</Typography>
+       {showUsernameTextField ?  (
+          <TextField
+            id="Username"
+            size='small'
+            defaultValue={username}
+            onChange={(event) => setusername(event.target.value)}
+          />
+        ) : (
+          <Typography variant="body2" gutterBottom>{username}</Typography>
+        )}
             </Grid>
-            <Grid item>
-              <Button variant="outlined" onClick={handleDeleteClick} size="small">
-                Change
+       {showUsernameTextField ?  (
+            <Grid item pr={4}>
+              <Stack direction="row" spacing={2}>
+              <Button variant="outlined" onClick={handleUsernameClick} size="small">
+                {showUsernameTextField ? 'Cancel' : 'Change'}
+              </Button>
+              <Button variant="contained" color='success'onClick={handleUsernameConfirmClick} size="small">
+              Submit
+              </Button>
+            </Stack> 
+            </Grid>
+ 
+        ) : (
+            <Grid item pr={4}>
+              <Button variant="outlined" onClick={handleUsernameClick} size="small">
+                {showUsernameTextField ? 'Cancel' : 'Change'}
               </Button>
             </Grid>
+        )}
             </Grid>
-          <Divider orientation="horizontal" variant="middle" />
-        <Stack spacing={1}>
+            <Divider orientation="horizontal" variant="middle" />
+
+
+
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
         <Typography variant="subtitle1" gutterBottom>Email</Typography>
-        <Typography variant="body2" gutterBottom>{Email}</Typography>
+       {showEmailTextField ?  (
+          <TextField
+            id="email"
+            size='small'
+            defaultValue={Email}
+            onChange={(event) => setemail(event.target.value)}
+          />
+        ) : (
+          <Typography variant="body2" gutterBottom>{Email}</Typography>
+        )}
             </Grid>
-            <Grid item>
-              <Button variant="outlined" onClick={handleDeleteClick} size="small">
-                Change
+       {showEmailTextField ?  (
+            <Grid item pr={4}>
+              <Stack direction="row" spacing={2}>
+              <Button variant="outlined" onClick={handleEmailClick} size="small">
+                {showEmailTextField ? 'Cancel' : 'Change'}
+              </Button>
+              <Button variant="contained" color='success'onClick={handleEmailConfirmClick} size="small">
+              Submit
+              </Button>
+            </Stack> 
+            </Grid>
+ 
+        ) : (
+            <Grid item pr={4}>
+              <Button variant="outlined" onClick={handleEmailClick} size="small">
+                {showEmailTextField ? 'Cancel' : 'Change'}
               </Button>
             </Grid>
+        )}
             </Grid>
-           <Divider orientation="horizontal" variant="middle" />
-        <Stack spacing={1}>
+            <Divider orientation="horizontal" variant="middle" />
+
+
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
         <Typography variant="subtitle1" gutterBottom>Password</Typography>
-        <Typography variant="body2" gutterBottom>Change your account password.</Typography>
+       {showPasswordTextField ?  (
+          <TextField
+            id="password"
+            size='small'
+            defaultValue=""
+            type="password"
+            onChange={(event) => setpassword(event.target.value)}
+          />
+        ) : (
+          <Typography variant="body2" gutterBottom>Change your account password.</Typography>
+        )}
             </Grid>
-            <Grid item>
-              <Button variant="outlined" onClick={handleDeleteClick} size="small">
-                Change
+       {showPasswordTextField ?  (
+            <Grid item pr={4}>
+              <Stack direction="row" spacing={2}>
+              <Button variant="outlined" onClick={handlePasswordClick} size="small">
+                {showPasswordTextField ? 'Cancel' : 'Change'}
+              </Button>
+              <Button variant="contained" color='success'onClick={handlePasswordConfirmClick} size="small">
+              Submit
+              </Button>
+            </Stack> 
+            </Grid>
+ 
+        ) : (
+            <Grid item pr={4}>
+              <Button variant="outlined" onClick={handlePasswordClick} size="small">
+                {showPasswordTextField ? 'Cancel' : 'Change'}
               </Button>
             </Grid>
+        )}
             </Grid>
             <Divider orientation="horizontal" variant="middle" />
+
+
+
+
         <Stack spacing={1}>
          <Grid container columns={12} justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
@@ -375,17 +673,13 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
         <Typography variant="body2" gutterBottom>Permanently delete your account, licenses, and subscriptions. 
         You will be asked for confirmation before deletion proceeds.</Typography>
             </Grid>
-            <Grid item>
-              <Button variant="outlined" color="error" onClick={handleDeleteClick} size="small">
+            <Grid item pr={4}>
+              <Button variant="outlined" color="error" onClick={handleFirstnameClick} size="small">
                 Delete
               </Button>
             </Grid>
             </Grid>
  
-      </Stack>
-      </Stack>
-      </Stack>
-      </Stack>
       </Stack>
       </Stack>
       </Stack>

@@ -153,6 +153,27 @@ def run(receiver_socket):
             header = None
             file_type = ""
 
+        elif file_type == "SMALL_PING_REQUEST":
+            # It's a regular message; process and broadcast it
+            date_time = get_current_date_and_time()
+            print(f"{date_time} Received a small ping request")
+            device_info = None
+            device_info = small_get_device_info()
+            null_string = ""
+            file_header = f"SMALL_PING_REQUEST_RESPONSE:{null_string}:{null_string}:{null_string}:END_OF_HEADER"
+            receiver_socket.send(file_header.encode())
+            device_info_with_stop_signal = f"{device_info}END_OF_JSON"
+            #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+            receiver_socket.send(device_info_with_stop_signal.encode())
+
+            date_time = get_current_date_and_time()
+            print(f"{date_time} Ping response has been sent successfully.")
+            data = None 
+            buffer = b""
+            header = None
+            file_type = ""
+
+
         elif file_type == "FILE_DELETE_REQUEST":
 
             directory_name = "BCloud"
@@ -198,9 +219,37 @@ def run(receiver_socket):
 
         sys.stdout.flush()
 
+
+def send_profile_info(sender_socket, first_name, last_name, username, email, password):
+    date_time = get_current_date_and_time()
+    profile_info = {
+        'first_name': first_name,
+        'last_name': last_name,
+        'username': username,
+        'email': email,
+        'password': password,
+    }   
+    profile_info_json = json.dumps(profile_info, indent=4)
+
+
+
+
+
+    null_string = ""
+    file_header = f"CHANGE_PROFILE_REQUEST:{null_string}:{null_string}:{null_string}:END_OF_HEADER"
+    sender_socket.send(file_header.encode())
+    profile_info_with_stop_signal = f"{profile_info_json}END_OF_JSON"
+    sender_socket.send(profile_info_with_stop_signal.encode())
+
+    date_time = get_current_date_and_time()
+    print(f"{date_time} Ping response has been sent successfully.")
+
+
+
+
+
 def send_device_info(sender_socket):
     date_time = get_current_date_and_time()
-    print(f"{date_time} Received a ping request")
     device_info = None
     device_info = get_device_info()
     null_string = ""
@@ -212,6 +261,47 @@ def send_device_info(sender_socket):
 
     date_time = get_current_date_and_time()
     print(f"{date_time} Ping response has been sent successfully.")
+
+
+
+
+def small_send_device_info(sender_socket):
+    date_time = get_current_date_and_time()
+    device_info = None
+    device_info = small_get_device_info()
+    null_string = ""
+    file_header = f"SMALL_PING_REQUEST_RESPONSE:{null_string}:{null_string}:{null_string}:END_OF_HEADER"
+    sender_socket.send(file_header.encode())
+    device_info_with_stop_signal = f"{device_info}END_OF_JSON"
+    #receiver_socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+    sender_socket.send(device_info_with_stop_signal.encode())
+
+    date_time = get_current_date_and_time()
+    print(f"{date_time} Ping response has been sent successfully.")
+
+
+
+
+def small_get_device_info():
+
+    device_name = get_device_name()
+    date_and_time = str(get_current_date_and_time())
+    files = get_directory_info()
+    credentials = load_credentials()
+    username = next(iter(credentials))
+ 
+
+    # Add device information to the MongoDB 'devices' array
+    device_info = {
+        'user': username,
+        'device_number': 1,
+        'device_name': device_name,
+        'files': files,
+        'date_added': date_and_time,
+    }
+    device_info_json = json.dumps(device_info, indent=4)
+
+    return device_info_json
 
 
 
