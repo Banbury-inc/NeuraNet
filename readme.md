@@ -39,7 +39,7 @@ Incorporating AI into the app elevates its functionality, offering users intelli
 
 NeuraNet is developed by Banbury and by users like you. We welcome both pull requests and issues on Github. Want to get paid to work on openpilot? Banbury is hiring and offers lots of bounties for external contributors. 
 
-  * Information about [running NeuraCloud](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/getstarted.md)
+  * Information about [running NeuraNet](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/getstarted.md)
   * Read the [bounties](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/bounties.md) page to see how you can get paid!
   * Check out the [project page](https://github.com/orgs/Banbury-inc/projects/2) to see our workflow and timeline
 
