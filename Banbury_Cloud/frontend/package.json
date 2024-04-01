@@ -21,6 +21,7 @@
   "author": "HelloSoftware",
   "license": "MIT",
   "dependencies": {
+    "@electron/remote": "^2.1.2",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mui/icons-material": "^5.15.10",

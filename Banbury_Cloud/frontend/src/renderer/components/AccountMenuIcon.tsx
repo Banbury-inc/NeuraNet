@@ -63,7 +63,7 @@ export default function AccountMenuIcon() {
 
   return (
     <React.Fragment>
-      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+      <Box sx={{ mr: '20px', display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         <Tooltip title="Account">
           <Chip 
             avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} 

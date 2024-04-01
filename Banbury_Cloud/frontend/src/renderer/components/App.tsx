@@ -1,5 +1,5 @@
 import { Box, CssBaseline, ThemeProvider } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import theme from "../theme";
 import PermanentDrawerLeft from "./Drawer";
 import MiniDrawer from "./VariantDrawer";
@@ -12,6 +12,7 @@ import Settings from "./Settings";
 import Profile from "./Profile";
 import TitleBar from 'frameless-titlebar';
 
+ 
 
 // Define the Platform type
 type Platform = 'win32' | 'linux' | 'darwin';
@@ -59,11 +60,15 @@ const linuxTheme: TitleBarTheme = {
   platform: 'linux', // Specify the platform ('win32', 'linux', 'darwin')
   bar: {
     palette: 'dark', // Choose between 'light' or 'dark'
-    height: '28px', // Set the bar height
+    height: '42px', // Set the bar height
     // background: '#212121', // Slightly lighter for elements considered "paper"
-    background: '#24292e', // Slightly lighter for elements considered "paper"
+    // background: '#24292e', // Slightly lighter for elements considered "paper"
+
+    background: '#171717', // Slightly lighter for elements considered "paper"
     color: '#fff', // White text color
-    borderBottom: '2px solid #000', // Slightly darker border at the bottom
+    // borderBottom: '2px solid #000', // Slightly darker border at the bottom
+
+    borderBottom: '2px solid #424242', // Slightly darker border at the bottom
     fontFamily: 'Arial, sans-serif', // Font family for the title bar text
     title: {
       align: 'left', // Align the title text to the left
@@ -79,11 +84,11 @@ const linuxTheme: TitleBarTheme = {
   controls: {
     layout: 'right', // Position the controls on the right
     normal: {
-      default: { background: 'rgba(255,255,255,0.3)', color: '#fff' },
+      default: { background: '#171717', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
     close: {
-      default: { background: 'rgba(255,255,255,0.3)', color: '#fff' },
+      default: { background: '#171717', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
   },
@@ -101,9 +106,6 @@ const linuxTheme: TitleBarTheme = {
   },
 
 };
-
-
-
 
 
 const win32Theme: TitleBarTheme = {
@@ -154,10 +156,6 @@ const win32Theme: TitleBarTheme = {
 };
 
 
-
-
-
-
 function determineCurrentPlatform(): Platform {
   // This example assumes a Node.js or Electron environment; adjust as necessary.
   // For browser-based projects, you might not have access to process.platform
@@ -197,7 +195,7 @@ export default function App(): JSX.Element {
     // https://mui.com/customization/theming/
     //
     <ThemeProvider theme={theme}>
-    <div>
+    <div style={{ position: 'fixed', width: '100%', zIndex: '100' }}>
       <TitleBar
           theme={customTheme}
         />

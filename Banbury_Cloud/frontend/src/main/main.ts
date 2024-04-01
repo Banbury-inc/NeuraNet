@@ -9,6 +9,8 @@ import { useStdout } from './StdoutContext';
 import { resolve } from 'path';
 let mainWindow: BrowserWindow | null;
 
+
+
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1366,
