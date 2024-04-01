@@ -12,11 +12,12 @@ let mainWindow: BrowserWindow | null;
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1366,
-    // frame: false,
+    frame: false,
     // titleBarStyle: "hidden",
-    titleBarOverlay: false,
+    // titleBarOverlay: false,
     height: 768,
     backgroundColor: "#23272a",
+    titleBarStyle: 'hidden' || 'customButtonsOnHover',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,

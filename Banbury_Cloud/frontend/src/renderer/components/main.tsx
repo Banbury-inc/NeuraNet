@@ -68,30 +68,31 @@ export default function PermanentDrawerLeft() {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            marginTop: '42px'
           },
         }}
         variant="permanent"
         anchor="left"
       >
-<Box
-  sx={{
-    display: 'flex',
-    flexDirection: 'column', // Stack children vertically
-    justifyContent: 'center', // Center children vertically in the container
-    alignItems: 'center', // Center children horizontally in the container
-    height: '7vh', // Take full height of the viewport
-  }}
->
+{/* <Box */}
+{/*   sx={{ */}
+{/*     display: 'flex', */}
+{/*     flexDirection: 'column', // Stack children vertically */}
+{/*     justifyContent: 'center', // Center children vertically in the container */}
+{/*     alignItems: 'center', // Center children horizontally in the container */}
+{/*     height: '7vh', // Take full height of the viewport */}
+{/*   }} */}
+{/* > */}
 
-        <Stack direction="row" spacing={1} justifyContent="center">
-          <Typography 
-          variant="h3"
-            >
-            Banbury Cloud
-          </Typography>
-        </Stack>
-</Box>
-        <Divider />
+{/*         <Stack direction="row" spacing={1} justifyContent="center"> */}
+{/*           <Typography  */}
+{/*           variant="h3" */}
+{/*             > */}
+            {/* Banbury NeuraNet */}
+{/*           </Typography> */}
+{/*         </Stack> */}
+{/* </Box> */}
+{/*         <Divider /> */}
 
         <List>
  
