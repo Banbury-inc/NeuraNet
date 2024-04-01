@@ -13,15 +13,15 @@
 </p>
 </p>
 
-Athena combines the concepts of web 3.0 file services and machine learning. The overall goal is to create a service that enables users to train/use/maintain artificial inteligence through a decentralized file sharing network. This could be an incredibly powerful and useful tool, as developing large language models are oftentimes limited to high net worth corporations. Our goal is to eliminate the necessity of cloud computing by empowering individuals with the tools necessary to seamlessly connect all of their devices. By allowing all of our devices to actively participate in the advancement on Artifical Intelligence, we can create tools beyond our imagination.
+NeuraCloud combines the concepts of web 3.0 file services and machine learning. The overall goal is to create a service that enables users to train/use/maintain artificial inteligence through a decentralized file sharing network. This could be an incredibly powerful and useful tool, as developing large language models are oftentimes limited to high net worth corporations. Our goal is to eliminate the necessity of cloud computing by empowering individuals with the tools necessary to seamlessly connect all of their devices. By allowing all of our devices to actively participate in the advancement on Artifical Intelligence, we can create tools beyond our imagination.
 
 ---
 
-## Banbury Cloud
 
-Banbury Cloud is a subset of Athena which serves as the decentralized file sharing network. This tool transforms personal and corporate networks into a decentralized cloud storage system, eliminating reliance on traditional cloud providers and offering unparalleled control over data security, compliance, and sovereignty. Our revolutionary concept aims to transform every household into a personal data center, leveraging the unused potential of existing devices for cloud storage needs. This addresses the common issue of limited storage capacity on individual devices and traditional cloud services. We have just released a beta version of the CLI tool. This serves as a prototype to the file sharing network. From here, you can connect devices, upload files, and download files without the use of a cloud service like Google Drive. Click here for more information on how to get started: https://website2-v3xlkt54dq-uc.a.run.app/
 
-## Banbury Cloud Features
+NeuraCloud serves as the decentralized file sharing network. This tool transforms personal and corporate networks into a decentralized cloud storage system, eliminating reliance on traditional cloud providers and offering unparalleled control over data security, compliance, and sovereignty. Our revolutionary concept aims to transform every household into a personal data center, leveraging the unused potential of existing devices for cloud storage needs. This addresses the common issue of limited storage capacity on individual devices and traditional cloud services. We have just released a beta version of the CLI tool. This serves as a prototype to the file sharing network. From here, you can connect devices, upload files, and download files without the use of a cloud service like Google Drive. Click here for more information on how to get started: https://website2-v3xlkt54dq-uc.a.run.app/
+
+## NeuraCloud Features
 
 * Seamless connectivity of devices, regardless of what network they are on
 * Predict device downtime
@@ -35,23 +35,23 @@ Banbury Cloud is a subset of Athena which serves as the decentralized file shari
 
 Incorporating AI into the app elevates its functionality, offering users intelligent features like content analysis, categorization, search optimization, and personalized recommendations. At the core of this integration, each user's device hosts a lightweight AI model, such as a Language Model, tasked with local data analysis and processing. Leveraging federated learning techniques, these models collaboratively train across multiple devices, ensuring data privacy and security are upheld. Crucially, AI models dynamically evolve through user interactions and feedback, steadily enhancing their performance and relevance over time. This iterative learning process not only refines the app's capabilities but also tailors its responses to better suit individual user needs, ultimately enriching the overall user experience.
 
-## To Start Developing Athena
+## To Start Developing NeuraCloud
 
-Athena is developed by Banbury and by users like you. We welcome both pull requests and issues on Github. Want to get paid to work on openpilot? Banbury is hiring and offers lots of bounties for external contributors. 
+Neura is developed by Banbury and by users like you. We welcome both pull requests and issues on Github. Want to get paid to work on openpilot? Banbury is hiring and offers lots of bounties for external contributors. 
 
-  * Information about [running athena](https://github.com/Banbury-inc/Athena/blob/main/docs/getstarted.md)
-  * Read the [bounties](https://github.com/Banbury-inc/Athena/blob/main/docs/bounties.md) page to see how you can get paid!
+  * Information about [running NeuraCloud](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/getstarted.md)
+  * Read the [bounties](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/bounties.md) page to see how you can get paid!
   * Check out the [project page](https://github.com/orgs/Banbury-inc/projects/2) to see our workflow and timeline
 
 
 ## Table of Contents
-* <a href="https://github.com/Banbury-inc/Athena/blob/main/Artificial_Intelligence/readme.md"> Artificial Intelligence </a>
-* <a href="https://github.com/Banbury-inc/Athena/tree/main/Banbury_Cloud"> Banbury Cloud </a>
-  * <a href="https://github.com/Banbury-inc/Athena/tree/main/Banbury_Cloud/frontend"> Frontend </a>
-  * <a href="https://github.com/Banbury-inc/Athena/blob/main/Banbury_Cloud/backend/readme.md"> Backend </a>
+* <a href="https://github.com/Banbury-inc/NeuraCloud/blob/main/Artificial_Intelligence/readme.md"> Artificial Intelligence </a>
+* <a href="https://github.com/Banbury-inc/NeuraCloud/tree/main/Banbury_Cloud"> Banbury Cloud </a>
+  * <a href="https://github.com/Banbury-inc/NeuraCloud/tree/main/Banbury_Cloud/frontend"> Frontend </a>
+  * <a href="https://github.com/Banbury-inc/NeuraCloud/blob/main/Banbury_Cloud/backend/readme.md"> Backend </a>
 * Getting Started
-  * [Installation](https://github.com/Banbury-inc/Athena/blob/main/docs/getstarted.md)
-  * [Bounties](https://github.com/Banbury-inc/Athena/blob/main/docs/bounties.md) 
+  * [Installation](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/getstarted.md)
+  * [Bounties](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/bounties.md) 
 
   
 
