@@ -13,15 +13,15 @@
 </p>
 </p>
 
-NeuraCloud combines the concepts of web 3.0 file services and machine learning. The overall goal is to create a service that enables users to train/use/maintain artificial inteligence through a decentralized file sharing network. This could be an incredibly powerful and useful tool, as developing large language models are oftentimes limited to high net worth corporations. Our goal is to eliminate the necessity of cloud computing by empowering individuals with the tools necessary to seamlessly connect all of their devices. By allowing all of our devices to actively participate in the advancement on Artifical Intelligence, we can create tools beyond our imagination.
+NeuraNet combines the concepts of web 3.0 file services and machine learning. The overall goal is to create a service that enables users to train/use/maintain artificial inteligence through a decentralized file sharing network. This could be an incredibly powerful and useful tool, as developing large language models are oftentimes limited to high net worth corporations. Our goal is to eliminate the necessity of cloud computing by empowering individuals with the tools necessary to seamlessly connect all of their devices. By allowing all of our devices to actively participate in the advancement on Artifical Intelligence, we can create tools beyond our imagination.
 
 ---
 
 
 
-NeuraCloud serves as the decentralized file sharing network. This tool transforms personal and corporate networks into a decentralized cloud storage system, eliminating reliance on traditional cloud providers and offering unparalleled control over data security, compliance, and sovereignty. Our revolutionary concept aims to transform every household into a personal data center, leveraging the unused potential of existing devices for cloud storage needs. This addresses the common issue of limited storage capacity on individual devices and traditional cloud services. We have just released a beta version of the CLI tool. This serves as a prototype to the file sharing network. From here, you can connect devices, upload files, and download files without the use of a cloud service like Google Drive. Click here for more information on how to get started: https://website2-v3xlkt54dq-uc.a.run.app/
+NeuraNet serves as the decentralized file sharing network. This tool transforms personal and corporate networks into a decentralized cloud storage system, eliminating reliance on traditional cloud providers and offering unparalleled control over data security, compliance, and sovereignty. Our revolutionary concept aims to transform every household into a personal data center, leveraging the unused potential of existing devices for cloud storage needs. This addresses the common issue of limited storage capacity on individual devices and traditional cloud services. We have just released a beta version of the CLI tool. This serves as a prototype to the file sharing network. From here, you can connect devices, upload files, and download files without the use of a cloud service like Google Drive. Click here for more information on how to get started: https://website2-v3xlkt54dq-uc.a.run.app/
 
-## NeuraCloud Features
+## NeuraNet Features
 
 * Seamless connectivity of devices, regardless of what network they are on
 * Predict device downtime
@@ -37,7 +37,7 @@ Incorporating AI into the app elevates its functionality, offering users intelli
 
 ## To Start Developing NeuraCloud
 
-Neura is developed by Banbury and by users like you. We welcome both pull requests and issues on Github. Want to get paid to work on openpilot? Banbury is hiring and offers lots of bounties for external contributors. 
+NeuraNet is developed by Banbury and by users like you. We welcome both pull requests and issues on Github. Want to get paid to work on openpilot? Banbury is hiring and offers lots of bounties for external contributors. 
 
   * Information about [running NeuraCloud](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/getstarted.md)
   * Read the [bounties](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/bounties.md) page to see how you can get paid!
@@ -46,9 +46,9 @@ Neura is developed by Banbury and by users like you. We welcome both pull reques
 
 ## Table of Contents
 * <a href="https://github.com/Banbury-inc/NeuraCloud/blob/main/Artificial_Intelligence/readme.md"> Artificial Intelligence </a>
-* <a href="https://github.com/Banbury-inc/NeuraCloud/tree/main/Banbury_Cloud"> Banbury Cloud </a>
-  * <a href="https://github.com/Banbury-inc/NeuraCloud/tree/main/Banbury_Cloud/frontend"> Frontend </a>
-  * <a href="https://github.com/Banbury-inc/NeuraCloud/blob/main/Banbury_Cloud/backend/readme.md"> Backend </a>
+* <a href="https://github.com/Banbury-inc/NeuraNet/tree/main/Banbury_Cloud"> NeuraNet </a>
+  * <a href="https://github.com/Banbury-inc/NeuraNet/tree/main/Banbury_Cloud/frontend"> Frontend </a>
+  * <a href="https://github.com/Banbury-inc/NeuraNet/blob/main/Banbury_Cloud/backend/readme.md"> Backend </a>
 * Getting Started
   * [Installation](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/getstarted.md)
   * [Bounties](https://github.com/Banbury-inc/NeuraCloud/blob/main/docs/bounties.md) 
