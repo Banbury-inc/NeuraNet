@@ -90,13 +90,12 @@ export default function SignIn() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+          <Avatar sx={{ mt: 10, bgcolor: 'primary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
           {/* <img src="/Users/michaelmills/Documents/Logo.png" alt="Logo" style={{ width: 100, height: 100 }} /> */}
