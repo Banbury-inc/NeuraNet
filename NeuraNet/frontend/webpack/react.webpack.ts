@@ -36,15 +36,18 @@ const config: Configuration = {
   devServer: {
     static: {
       directory: path.resolve(rootPath, "dist/renderer"),
+      // directory: path.resolve(rootPath, "dist"),
       publicPath: "/",
     },
     port: 8081,
+    // port: 4000,
     historyApiFallback: true,
     compress: true,
   },
   output: {
     path: path.resolve(rootPath, "dist/renderer"),
     filename: "js/[name].js",
+    // filename: "js/main.js",
   },
   plugins: [
     new HtmlWebpackPlugin({ template: path.resolve(rootPath, "index.html") }),
@@ -52,3 +55,5 @@ const config: Configuration = {
 };
 
 export default config;
+
+

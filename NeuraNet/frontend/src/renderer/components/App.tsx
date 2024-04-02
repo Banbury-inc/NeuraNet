@@ -232,17 +232,17 @@ export default function App(): JSX.Element {
           }}
         >
           {/* <main> */}
-            {/* This is where your app content should go */}
-            {/* <MiniDrawer /> */}
+          {/*   <Signin /> */}
           {/* </main> */}
 
-
-
+          <main>
+          <Signin />
+          </main>
 
 
           <Routes>
           
-            <Route path="/" element={<Signin />} />
+            {/* <Route path="/" element={<Signin />} /> */}
             {/* <Route path="/" element={<Main />} /> */}
             <Route path="/main" element={<Main />} />
             <Route path="/register" element={<Signup />} />

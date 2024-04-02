@@ -21,19 +21,33 @@ function createWindow(): void {
       nodeIntegration: true,
       contextIsolation: false,
       devTools: process.env.NODE_ENV !== "production",
-      preload: path.join(__dirname, 'preload.ts')
+      // preload: path.join(__dirname, 'preload.ts')
     },
   });
 
-  const startURL = process.env.NODE_ENV === "development"
-    ? "http://localhost:8081"
-    : url.format({
-        pathname: path.join(__dirname, "index.html"),
+  // const startURL = process.env.NODE_ENV === "development"
+  //   ? "http://localhost:8081"
+  //   : url.format({
+  //       pathname: path.join(__dirname, "index.html"),
+  //       protocol: "file:",
+  //       slashes: true,
+  //     });
+
+
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.loadURL("http://localhost:8081");
+  } else {
+    mainWindow.loadURL(
+      url.format({
+        pathname: path.join(__dirname, "renderer/index.html"),
         protocol: "file:",
         slashes: true,
-      });
+      })
+    );
+  }
 
-  mainWindow.loadURL(startURL);
+
+  // mainWindow.loadURL(startURL);
 
   mainWindow.on("closed", () => {
     mainWindow = null;

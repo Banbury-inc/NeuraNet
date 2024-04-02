@@ -4,6 +4,7 @@
   "private": true,
   "description": "A decentralized cloud storage system.",
   "main": "./dist/main.js",
+  "homepage": "./dist/renderer/index.html", 
   "scripts": {
     "dev": "npm-run-all -p dev:react electron:serve",
     "dev:electron": "cross-env NODE_ENV=development webpack --config webpack/electron.webpack.ts --mode=development && npm run start:electron",
@@ -73,7 +74,8 @@
     },
     "files": [
       "package.json",
-      "dist/**"
+      "dist/**",
+      "dist/renderer/**"
     ]
   },
   "engines": {
