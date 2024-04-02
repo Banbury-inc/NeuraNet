@@ -1,8 +1,8 @@
 {
-  "name": "electron-typescript-react-mui",
+  "name": "NeuraNet",
   "version": "1.0.0",
   "private": true,
-  "description": "Lightweight, modern boilerplate built with electron, typescript, and react.",
+  "description": "A decentralized cloud storage system.",
   "main": "./dist/main.js",
   "scripts": {
     "dev": "npm-run-all -p dev:react electron:serve",
@@ -18,7 +18,7 @@
     "package:dist": "electron-builder --dir"
   },
   "keywords": [],
-  "author": "HelloSoftware",
+  "author": "Banbury",
   "license": "MIT",
   "dependencies": {
     "@electron/remote": "^2.1.2",
@@ -64,7 +64,7 @@
   },
   "build": {
     "appId": "com.company.app",
-    "productName": "Banbury Cloud",
+    "productName": "NeuraNet",
     "mac": {
       "category": "public.app-category.video"
     },
