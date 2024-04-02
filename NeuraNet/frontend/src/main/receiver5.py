@@ -636,7 +636,7 @@ def main():
     load_dotenv()
     SERVER_HOST = os.getenv("RELAY_HOST")
     #SERVER_HOST = "0.0.0.0"
-    print("Launching Banbury Cloud")
+    print("Launching NeuraNet")
 
     sys.stdout.flush()
     SERVER_PORT = 8002

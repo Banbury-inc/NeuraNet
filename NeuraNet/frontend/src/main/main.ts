@@ -1,23 +1,19 @@
-import React, { createContext, useContext, useState } from 'react';
+
 import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import * as url from "url";
 import { exec } from "child_process";
 const { spawn } = require("child_process");
 import axios from 'axios'; // Adjusted import for axios
-import { useStdout } from './StdoutContext';
 import { resolve } from 'path';
+
 let mainWindow: BrowserWindow | null;
-
-
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1366,
-    frame: false,
-    // titleBarStyle: "hidden",
-    // titleBarOverlay: false,
     height: 768,
+    frame: false,
     backgroundColor: "#23272a",
     titleBarStyle: 'hidden' || 'customButtonsOnHover',
     trafficLightPosition: { x: 15, y: 15 },
@@ -28,7 +24,7 @@ function createWindow(): void {
       preload: path.join(__dirname, 'preload.ts')
     },
   });
- 
+
   const startURL = process.env.NODE_ENV === "development"
     ? "http://localhost:8081"
     : url.format({
@@ -38,75 +34,41 @@ function createWindow(): void {
       });
 
   mainWindow.loadURL(startURL);
-    // and load the index.html of the app.
-
-//Listen for the 'ready-to-show' event to run the Python script
-//  mainWindow.on("ready-to-show", () => {
-//    runPythonScript(); // Execute the Python script
-//  });
-
-require('@electron/remote/main').initialize()
 
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    // This event is triggered when the main window has finished loading
+    // Now you can safely execute any code that interacts with the mainWindow
+    runPythonScript();
+  });
 }
 
-
-
 function runPythonScript() {
-  const scriptPath = "src/main/receiver5.py"; // Update this to the path of your Python script
+  const scriptPath = "src/main/receiver5.py";
   const python = spawn('python3', [scriptPath]);
 
-  // Listen for data on the stdout stream
   python.stdout.on("data", (data: Buffer) => {
     const result = data.toString();
     console.log(`Python Script Message: ${result}`);
 
-     mainWindow?.webContents.send('python-output', result);
+    // Ensure mainWindow is not null before sending message to its webContents
+    if (mainWindow) {
+      mainWindow.webContents.send('python-output', result);
+    }
   });
 
-  // Listen for errors on the stderr stream
   python.stderr.on("data", (data: Buffer) => {
     const error = data.toString();
     console.error(`Python Script Error: ${error}`);
   });
 
-  // Handle the exit event
   python.on("close", (code: number) => {
     console.log(`Python Script exited with code ${code}`);
   });
-
 }
-
-
-
-
-
-// function runPythonScript() {
-//   const scriptPath = "src/main/receiver5.py"; // Update this to the path of your Python script
-//   exec(`python3 "${scriptPath}"`, (error, stdout, stderr) => {
-
-//     console.log(`Python Script Message: ${stdout}`);
-//     console.log(`Python Script Message: ${stderr}`);
-//     console.log(`Python Script Message: ${error}`);
-//     if (error) {
-//       console.error(`exec error: ${error}`);
-//       return
-//     }
-//     if (stderr) {
-//       console.error(`Python Script Error: ${stderr}`);
-//       return
-//     }
-//     if (stdout) {
-//       console.log(`Python Script Message: ${stdout}`);
-//       return
-//     }
-//     resolve(stdout); 
-//     // Example: Send output to renderer process if needed
-//      // mainWindow?.webContents.send('python-output', stdout);
-//   });
-// }
 
 ipcMain.on('fetch-data', async (event, args) => {
   try {
@@ -117,31 +79,46 @@ ipcMain.on('fetch-data', async (event, args) => {
   }
 });
 
+
+
+
 app.on("ready", () => {
   createWindow();
-  runPythonScript();
-
-
 });
+
+
+ipcMain.on('close-window', () => {
+  if (mainWindow) {
+    mainWindow.close();
+  }
+});
+
+ipcMain.on('minimize-window', () => {
+  if (mainWindow) {
+    mainWindow.minimize();
+  }
+});
+
+ipcMain.on('maximize-window', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  }
+});
+
+
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
 });
-//app.whenReady().then(() => {
-//  runPythonScript();
-//}
-//)
-
-
 
 app.on("activate", () => {
   if (mainWindow === null) {
     createWindow();
   }
 });
-
-
-
-

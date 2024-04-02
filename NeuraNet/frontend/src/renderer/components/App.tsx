@@ -11,7 +11,7 @@ import { AuthProvider } from "../context/AuthContext";
 import Settings from "./Settings";
 import Profile from "./Profile";
 import TitleBar from 'frameless-titlebar';
-
+import { BrowserWindow } from 'electron';
 
 
 // Define the Platform type
@@ -112,11 +112,15 @@ const win32Theme: TitleBarTheme = {
   platform: 'win32', // Specify the platform ('win32', 'linux', 'darwin')
   bar: {
     palette: 'dark', // Choose between 'light' or 'dark'
-    height: '28px', // Set the bar height
+    height: '42px', // Set the bar height
     // background: '#212121', // Slightly lighter for elements considered "paper"
-    background: '#24292e', // Slightly lighter for elements considered "paper"
+    // background: '#24292e', // Slightly lighter for elements considered "paper"
+
+    background: '#171717', // Slightly lighter for elements considered "paper"
     color: '#fff', // White text color
-    borderBottom: '2px solid #000', // Slightly darker border at the bottom
+    // borderBottom: '2px solid #000', // Slightly darker border at the bottom
+
+    borderBottom: '2px solid #424242', // Slightly darker border at the bottom
     fontFamily: 'Arial, sans-serif', // Font family for the title bar text
     title: {
       align: 'left', // Align the title text to the left
@@ -132,11 +136,11 @@ const win32Theme: TitleBarTheme = {
   controls: {
     layout: 'right', // Position the controls on the right
     normal: {
-      default: { background: 'rgba(255,255,255,0.3)', color: '#fff' },
+      default: { background: '#171717', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
     close: {
-      default: { background: 'rgba(255,255,255,0.3)', color: '#fff' },
+      default: { background: '#171717', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
   },
@@ -154,6 +158,7 @@ const win32Theme: TitleBarTheme = {
   },
 
 };
+
 
 
 function determineCurrentPlatform(): Platform {
@@ -179,14 +184,28 @@ switch (currentPlatform) {
     customTheme = DarwinTheme;
     break;
   default:
-    customTheme = DarwinTheme; // Default to Win32 theme if unsure
+    customTheme = win32Theme; // Default to Win32 theme if unsure
 }
 
 
-
 import { TitleBarTheme } from "frameless-titlebar/dist/title-bar/typings";
+import { ipcRenderer } from 'electron';
 
 export default function App(): JSX.Element {
+  
+  const handleClose = () => {
+    // Send IPC message to close window
+    ipcRenderer.send('close-window');
+  };
+
+  const handleMinimize = () => {
+    ipcRenderer.send('minimize-window');
+  }
+
+  const handleMaximize = () => {
+    ipcRenderer.send('maximize-window');
+  }
+
 
 
 
@@ -198,6 +217,9 @@ export default function App(): JSX.Element {
     <div style={{ position: 'fixed', width: '100%', zIndex: '100' }}>
       <TitleBar
           theme={customTheme}
+          onClose={handleClose} // Pass event handlers to the TitleBar component
+          onMinimize={handleMinimize}
+          onMaximize={handleMaximize}
         />
       </div>
 
@@ -220,8 +242,8 @@ export default function App(): JSX.Element {
 
           <Routes>
           
-            {/* <Route path="/" element={<Signin />} /> */}
-            <Route path="/" element={<Main />} />
+            <Route path="/" element={<Signin />} />
+            {/* <Route path="/" element={<Main />} /> */}
             <Route path="/main" element={<Main />} />
             <Route path="/register" element={<Signup />} />
             <Route path="/login" element={<Signin />} />

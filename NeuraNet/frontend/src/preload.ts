@@ -1,6 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { exec } from 'child_process';
 
+
+// const { BrowserWindow } = require('@electron/remote')
+
 // Function to run the Python script and capture its output
 const runPythonScript = (scriptPath: string): Promise<string> => {
     return new Promise((resolve, reject) => {
