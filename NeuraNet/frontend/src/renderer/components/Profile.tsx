@@ -27,7 +27,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import { Email } from '@mui/icons-material';
-
+import * as path from "path";
 
 interface Device {
   device_number: number;
@@ -239,9 +239,23 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
       setShowFirstnameTextField(!showFirstnameTextField);
 
-      const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
+      // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
        
-      exec(`python "${scriptPath}" "${firstName}" "${Lastname}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
+       const env = process.env.NODE_ENV || 'development';
+      let baseDir = '';
+      let devbaseDir = 'python';
+      let prodbaseDir = path.join(process.resourcesPath, 'python');
+      if (env === 'development') {
+        baseDir = devbaseDir;
+      } else if (env === 'production') {
+        baseDir = prodbaseDir;
+      }
+      const scriptPath = path.join(baseDir, 'change_profile_info.py');
+      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+ 
+
+
+      exec(`${pythonCommand} "${scriptPath}" "${firstName}" "${Lastname}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
@@ -275,10 +289,21 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
     try{
 
       setShowLastnameTextField(!showLastnameTextField);
-
-      const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
+       const env = process.env.NODE_ENV || 'development';
+      let baseDir = '';
+      let devbaseDir = 'python';
+      let prodbaseDir = path.join(process.resourcesPath, 'python');
+      if (env === 'development') {
+        baseDir = devbaseDir;
+      } else if (env === 'production') {
+        baseDir = prodbaseDir;
+      }
+      const scriptPath = path.join(baseDir, 'change_profile_info.py');
+      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+ 
+      // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
        
-      exec(`python "${scriptPath}" "${Firstname}" "${lastName}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
+      exec(`${pythonCommand} "${scriptPath}" "${Firstname}" "${lastName}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
@@ -315,9 +340,20 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
       setShowUsernameTextField(!showUsernameTextField);
 
-      const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
+      // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
+        const env = process.env.NODE_ENV || 'development';
+      let baseDir = '';
+      let devbaseDir = 'python';
+      let prodbaseDir = path.join(process.resourcesPath, 'python');
+      if (env === 'development') {
+        baseDir = devbaseDir;
+      } else if (env === 'production') {
+        baseDir = prodbaseDir;
+      }
+      const scriptPath = path.join(baseDir, 'change_profile_info.py');
+      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
        
-      exec(`python "${scriptPath}" "${Firstname}" "${Lastname}" "${new_username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
+      exec(`${pythonCommand} "${scriptPath}" "${Firstname}" "${Lastname}" "${new_username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
@@ -353,9 +389,20 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
       setShowEmailTextField(!showEmailTextField);
 
-      const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
-       
-      exec(`python "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${email}" "${Password}"`, (error, stdout, stderr) => {
+      // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
+         const env = process.env.NODE_ENV || 'development';
+      let baseDir = '';
+      let devbaseDir = 'python';
+      let prodbaseDir = path.join(process.resourcesPath, 'python');
+      if (env === 'development') {
+        baseDir = devbaseDir;
+      } else if (env === 'production') {
+        baseDir = prodbaseDir;
+      }
+      const scriptPath = path.join(baseDir, 'change_profile_info.py');
+      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+      
+      exec(`${pythonCommand} "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${email}" "${Password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
@@ -391,9 +438,20 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
       setShowPasswordTextField(!showPasswordTextField);
 
-      const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
-       
-      exec(`python "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${Email}" "${password}"`, (error, stdout, stderr) => {
+      // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
+              const env = process.env.NODE_ENV || 'development';
+      let baseDir = '';
+      let devbaseDir = 'python';
+      let prodbaseDir = path.join(process.resourcesPath, 'python');
+      if (env === 'development') {
+        baseDir = devbaseDir;
+      } else if (env === 'production') {
+        baseDir = prodbaseDir;
+      }
+      const scriptPath = path.join(baseDir, 'change_profile_info.py');
+      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+ 
+      exec(`${pythonCommand} "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${Email}" "${password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;

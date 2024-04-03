@@ -24,6 +24,10 @@ import AccountMenuIcon from './AccountMenuIcon';
 import { useAuth } from '../context/AuthContext';
 import Card from '@mui/material/Card';
 import { CardContent } from "@mui/material";
+import * as path from "path";
+
+const { spawn } = require("child_process");
+
 
 interface Device {
   device_number: number;
@@ -218,9 +222,20 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   const handleDeleteClick = async () => {
     try{
 
-      const scriptPath = 'src/main/deleteDevice.py'; // Update this to the path of your Python script
+      // const scriptPath = 'src/main/deleteDevice.py'; // Update this to the path of your Python script
+       const env = process.env.NODE_ENV || 'development';
+      let baseDir = '';
+      let devbaseDir = 'python';
+      let prodbaseDir = path.join(process.resourcesPath, 'python');
+      if (env === 'development') {
+        baseDir = devbaseDir;
+      } else if (env === 'production') {
+        baseDir = prodbaseDir;
+      }
+      const scriptPath = path.join(baseDir, 'deleteDevice.py');
+      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
        
-      exec(`python "${scriptPath}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
+      exec(`${pythonCommand} "${scriptPath}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;

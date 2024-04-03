@@ -16,6 +16,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from "../theme";
 import { exec } from "child_process";
 import SignIn from './Login';
+import * as path from "path";
+
+
 
 function Copyright(props: any) {
   return (
@@ -64,7 +67,23 @@ export default function SignUp() {
 
 
     try {
-      const scriptPath = 'src/main/register1.py'; // Update this to the path of your Python script
+      // const scriptPath = 'src/main/register1.py'; // Update this to the path of your Python script
+
+       const env = process.env.NODE_ENV || 'development';
+      let baseDir = '';
+      let devbaseDir = 'python';
+      let prodbaseDir = path.join(process.resourcesPath, 'python');
+      if (env === 'development') {
+        baseDir = devbaseDir;
+      } else if (env === 'production') {
+        baseDir = prodbaseDir;
+      }
+      const scriptPath = path.join(baseDir, 'register1.py');
+      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+ 
+
+
+
       exec(`python "${scriptPath}" "${data.get('username')}" "${data.get('password')}" "${data.get('firstName')}" "${data.get('lasttName')}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);

@@ -14,6 +14,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
+import * as path from "path";
 import Button from '@mui/material/Button';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import Toolbar from '@mui/material/Toolbar';
@@ -391,9 +392,24 @@ function formatBytes(bytes: number, decimals: number = 2): string {
         return; // If no files are selected, exit the function
       }
 
-      const scriptPath = 'src/main/download.py'; // Update this to the path of your Python script
+
+      // const scriptPath = 'src/main/download.py'; // Update this to the path of your Python script
       
-      exec(`python "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
+      const env = process.env.NODE_ENV || 'development';
+      let baseDir = '';
+      let devbaseDir = 'python';
+      let prodbaseDir = path.join(process.resourcesPath, 'python');
+      if (env === 'development') {
+        baseDir = devbaseDir;
+      } else if (env === 'production') {
+        baseDir = prodbaseDir;
+      }
+      const scriptPath = path.join(baseDir, 'download.py');
+      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+ 
+
+
+      exec(`${pythonCommand} "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
         }
@@ -415,9 +431,23 @@ function formatBytes(bytes: number, decimals: number = 2): string {
     try{
 
       setdeleteLoading(true);
-      const scriptPath = 'src/main/delete.py'; // Update this to the path of your Python script
+
+      const env = process.env.NODE_ENV || 'development';
+      let baseDir = '';
+      let devbaseDir = 'python';
+      let prodbaseDir = path.join(process.resourcesPath, 'python');
+      if (env === 'development') {
+        baseDir = devbaseDir;
+      } else if (env === 'production') {
+        baseDir = prodbaseDir;
+      }
+      const scriptPath = path.join(baseDir, 'delete.py');
+      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+ 
+
+      // const scriptPath = 'src/main/delete.py'; // Update this to the path of your Python script
        
-      exec(`python "${scriptPath}" "${selectedFileNames}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
+      exec(`${pythonCommand} "${scriptPath}" "${selectedFileNames}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           setdeleteLoading(false);
@@ -446,9 +476,24 @@ function formatBytes(bytes: number, decimals: number = 2): string {
   const handleUploadClick = async () => {
     try{
 
-      const scriptPath = 'src/main/upload.py'; // Update this to the path of your Python script
+      // const scriptPath = 'src/main/upload.py'; // Update this to the path of your Python script
        
-      exec(`python "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
+      const env = process.env.NODE_ENV || 'development';
+      let baseDir = '';
+      let devbaseDir = 'python';
+      let prodbaseDir = path.join(process.resourcesPath, 'python');
+      if (env === 'development') {
+        baseDir = devbaseDir;
+      } else if (env === 'production') {
+        baseDir = prodbaseDir;
+      }
+      const scriptPath = path.join(baseDir, 'upload.py');
+      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+ 
+
+
+
+      exec(`${pythonCommand} "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
