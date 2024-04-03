@@ -60,37 +60,33 @@ export default function SignIn() {
 
 
 
-
-  const { spawn } = require("child_process");
   const env = process.env.NODE_ENV || 'development';
-  const fs = require("fs");
-  const {promisify} = require("util");
-  const chmod = promisify(fs.chmod);
   let baseDir = '';
   let filename = '';
   let command = '';
   let devbaseDir = 'python';
-  let prodbaseDir = path.join(process.resourcesPath, 'python/dist/prod-signin2');
-  if (env === 'production') {
+  let prodbaseDir = path.join(process.resourcesPath, 'python');
+  if (env === 'development') {
     baseDir = devbaseDir;
-    filename = 'signin2.py';
-    command = process.platform === 'win32' ? 'python' : 'python3';
-  } else if (env === 'development') {
+    filename = 'prod-signin2.py';
+    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+  } else if (env === 'production') {
     baseDir = prodbaseDir;
-    filename = 'prod-signin2';
-    command = process.platform === 'win32' ? '' : './';
-
+    filename = 'prod-signin2.py';
+    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+  
   }
   // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
 
+    const exactcommand  = path.join(baseDir, command);
   const scriptPath = path.join(baseDir, filename);
-
       // const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
   
       // const path_to_python = 'python3'; // Update this to the path of your Python script
       // const scriptPath = 'resources/python/signin2.py'; // Update this to the path of your Python script
 
-      exec(`${command} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
+      exec(`${exactcommand} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
+        console.log(error)
         if (error) {
           console.error(`exec error: ${error}`);
           return;

@@ -84,19 +84,30 @@ function createWindow(): void {
 //   });
 // }
 
+
+
 function runPythonScript() {
   const env = process.env.NODE_ENV || 'development';
   let baseDir = '';
   let devbaseDir = 'python';
+  let filename = '';
+  let command = '';
   let prodbaseDir = path.join(process.resourcesPath, 'python');
   if (env === 'development') {
     baseDir = devbaseDir;
+    filename = 'prod-receiver5.py';
+    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+
   } else if (env === 'production') {
     baseDir = prodbaseDir;
+    filename = 'prod-receiver5.py';
+    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
   }
-  const scriptPath = path.join(baseDir, 'dist/prod-receiver5/prod-receiver5');
-  const command = process.platform === 'win32' ? '' : './';
-  const python = spawn(command, [scriptPath]);
+
+
+    const scriptPath = path.join(baseDir, filename);
+    const python = spawn(command, [scriptPath]);
+
   python.stdout.on("data", (data: Buffer) => {
     const result = data.toString();
     console.log(`Python Script Message: ${result}`);
