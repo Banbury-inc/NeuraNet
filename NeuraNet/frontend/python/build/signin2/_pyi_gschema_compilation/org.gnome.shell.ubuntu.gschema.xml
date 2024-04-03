@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-shell">
+  <enum id="org.gnome.shell.ubuntu.GDesktopColorScheme">
+    <value value="1" nick="default"/>
+    <value value="2" nick="prefer-dark"/>
+    <value value="3" nick="prefer-light"/>
+  </enum>
+  <schema id="org.gnome.shell.ubuntu" path="/org/gnome/shell/ubuntu/">
+    <key name="color-scheme" enum="org.gnome.shell.ubuntu.GDesktopColorScheme">
+      <default>'default'</default>
+      <summary>Color scheme</summary>
+      <description>
+        The preferred color scheme for the shell user interface. Valid values are “default”, “prefer-dark”, “prefer-light”.
+      </description>
+    </key>
+  </schema>
+</schemalist>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.blueman" path="/org/blueman/">
+    <child name="general" schema="org.blueman.general"/>
+    <child name="network" schema="org.blueman.network"/>
+    <child name="gsmsettings" schema="org.blueman.gsmsettings"/>
+    <child name="netusages" schema="org.blueman.plugins.netusages"/>
+    <child name="transfer" schema="org.blueman.transfer"/>
+    <child name="serialmanager" schema="org.blueman.plugins.serialmanager"/>
+    <child name="discvmanager" schema="org.blueman.plugins.discvmanager"/>
+  </schema>
+  <schema id="org.blueman.general" path="/org/blueman/general/">
+    <key type="ai" name="window-properties">
+      <default>[500, 350, 0, 0]</default>
+      <summary>The window position and size, [width, height, x, y]</summary>
+      <description>Stores the manager window's width, height and x, y position on screen</description>
+    </key>
+    <key type="s" name="last-adapter">
+      <default>""</default>
+      <summary>The adapter last selected</summary>
+      <description>This stores the lass adapter device selected in Manager</description>
+    </key>
+    <key type="i" name="services-last-item">
+      <default>0</default>
+      <summary>Last selected tab in Services</summary>
+      <description>Stores the selected tab id number in the Services UI</description>
+    </key>
+    <key type="b" name="show-toolbar">
+      <default>true</default>
+      <summary>Show Manager's ToolBar</summary>
+      <description>Show or hide Manager's ToolBar</description>
+    </key>
+    <key type="b" name="show-statusbar">
+      <default>true</default>
+      <summary>Show Manager's StatusBar</summary>
+       <description>Show or hide the Manager's StatusBar</description>
+    </key>
+    <key type="s" name="sort-by">
+      <choices>
+        <choice value="timestamp"/>
+        <choice value="alias"/>
+      </choices>
+      <default>"timestamp"</default>
+      <summary>Sort device list</summary>
+      <description>Sort the device list by column, possible values are timestamp and alias</description>
+    </key>
+    <key type="s" name="sort-order">
+      <choices>
+        <choice value="ascending"/>
+        <choice value="descending"/>
+      </choices>
+      <default>"ascending"</default>
+      <summary>Sort ascending or descending</summary>
+    </key>
+    <key type="b" name="hide-unnamed">
+      <summary>Hide devices with no name</summary>
+      <default>true</default>
+    </key>
+    <key type="as" name="plugin-list">
+      <default>[]</default>
+      <summary>List of enabled/disabled plugins</summary>
+      <description>Stores which plugins have been disabled/enabled by the user. Note plugins have a default whether it should be loaded or not and this only stores the plugins enabled/disabled by the user</description>
+    </key>
+    <key type="as" name="gsm-list">
+      <default>[]</default>
+      <summary>List of gsm which have apn settings</summary>
+      <description></description>
+    </key>
+    <key type="as" name="netusage-dev-list">
+      <default>[]</default>
+      <summary>List of devices we have netusage data stored.</summary>
+      <description></description>
+    </key>
+    <key type="b" name="notification-daemon">
+      <default>true</default>
+      <summary>Use notification daemon</summary>
+      <description>If this is set to false blueman always uses its internal fallback notification dialog and does not invoke a notification daemon. Otherwise the fallback dialog will only be used if actions need to be displayed and the notification daemon does not report to support them.</description>
+    </key>
+  </schema>
+  <schema id="org.blueman.gsmsettings" path="/org/blueman/gsmsettings/">
+  </schema>
+  <schema id="org.blueman.gsmsetting">
+    <key type="s" name="apn">
+      <default>""</default>
+      <summary>APN</summary>
+      <description>Bluetooth APN</description>
+    </key>
+    <key type="s" name="number">
+      <default>"*99#"</default>
+      <summary>PhoneNumber</summary>
+      <description>Phone Number</description>
+    </key>
+    <key type="s" name="nmdunuuid">
+      <default>""</default>
+      <summary>NM DUN Connection uuid</summary>
+      <description>The uuid of the NM DUN Connection which may not exist anymore</description>
+    </key>
+    <key type="s" name="nmpanuuid">
+      <default>""</default>
+      <summary>NM PANU Connection uuid</summary>
+      <description>The uuid of the NM PANU Connection which may not exist anymore</description>
+    </key>
+  </schema>
+  <schema id="org.blueman.plugins.killswitch" path="/org/blueman/plugins/killswitch/">
+    <key type="b" name="checked">
+      <default>false</default>
+      <summary></summary>
+      <description></description>
+    </key>
+  </schema>
+  <schema id="org.blueman.plugins.netusages" path="/org/blueman/plugins/netusages/">
+  </schema>
+  <schema id="org.blueman.plugins.netusage">
+    <key type="i" name="tx">
+      <default>0</default>
+      <summary>TX</summary>
+       <description>Transmit</description>
+    </key>
+    <key type="i" name="rx">
+      <default>0</default>
+      <summary>RX</summary>
+      <description>Recieve</description>
+    </key>
+    <key type="i" name="time">
+      <default>0</default>
+      <summary>TimeStamp</summary>
+      <description>Current TimeStamp</description>
+    </key>
+  </schema>
+  <schema id="org.blueman.network" path="/org/blueman/network/">
+    <key type="b" name="nap-enable">
+      <default>false</default>
+      <summary></summary>
+      <description></description>
+    </key>
+  </schema>
+  <schema id="org.blueman.plugins.autoconnect" path="/org/blueman/plugins/autoconnect/">
+    <key type="a(ss)" name="services">
+      <default>[]</default>
+      <summary>Services to connect to automatically</summary>
+      <description>A list of services to connect to stored as tuples with the address and the UUID</description>
+    </key>
+  </schema>
+  <schema id="org.blueman.plugins.powermanager" path="/org/blueman/plugins/powermanager/">
+    <key type="mb" name="auto-power-on">
+        <default>nothing</default>
+        <summary>Automatically power on adapters</summary>
+        <description></description>
+    </key>
+  </schema>
+  <schema id="org.blueman.plugins.recentconns" path="/org/blueman/plugins/recentconns/">
+    <key type="i" name="max-items">
+      <default>6</default>
+      <summary>Maximum items</summary>
+      <description>Maximum number of items recent connections menu will display</description>
+    </key>
+    <key type="aa{ss}" name="recent-connections">
+      <default>[]</default>
+      <summary>Recent connected devices data</summary>
+      <description>A list of recently connected devices stored as a dictionary</description>
+    </key>
+  </schema>
+  <schema id="org.blueman.transfer" path="/org/blueman/transfer/">
+    <key type="b" name="opp-accept">
+      <default>false</default>
+      <summary>OPP Accept Connections</summary>
+      <description></description>
+    </key>
+    <key type="s" name="shared-path">
+      <default>""</default>
+      <summary>Path for incoming file transfers</summary>
+      <description></description>
+    </key>
+  </schema>
+  <schema id="org.blueman.plugins.serialmanager" path="/org/blueman/plugins/serialmanager/">
+    <key type="s" name="script">
+    <default>""</default>
+    <summary>Script to execute on connection</summary>
+    <description>The following arguments will be passed: "Address, Name, service name, uuid16s, rfcomm node". For example: "AA:BB:CC:DD:EE:FF, Phone, DUN service, 0x1103, /dev/rfcomm0". uuid16s are returned as a comma seperated list. Upon device disconnection the script will be sent a HUP signal"</description>
+  </key>
+  </schema>
+  <schema id="org.blueman.plugins.discvmanager" path="/org/blueman/plugins/discvmanager/">
+    <key type="i" name="time">
+      <default>60</default>
+      <summary>Adapter discovery timeout</summary>
+      <description>Amount of time in seconds discoverable mode will last</description>
+    </key>
+  </schema>
+</schemalist>

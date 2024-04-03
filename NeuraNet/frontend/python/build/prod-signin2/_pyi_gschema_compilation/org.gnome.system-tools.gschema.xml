@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/org/gnome/system-tools/users/" id="org.gnome.system-tools.users">
+    <key type="b" name="showall">
+      <default>false</default>
+      <summary>Show system users</summary>
+      <description>Whether the users-admin tool should show system users in the users list.</description>
+    </key>
+    <key type="b" name="showroot">
+      <default>false</default>
+      <summary>Show root user</summary>
+      <description>Whether the users-admin tool should show the root user in the users list.</description>
+    </key>
+  </schema>
+</schemalist>

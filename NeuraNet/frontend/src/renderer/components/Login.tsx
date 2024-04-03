@@ -38,11 +38,7 @@ function Copyright(props: any) {
 }
 
 const path = require('path');
-const cp = require("child_process");
-const util = require("util");
-const execFile = util.promisify(cp.execFile);
 
-const fs = require("fs");
 
 
 export default function SignIn() {
@@ -67,24 +63,34 @@ export default function SignIn() {
 
   const { spawn } = require("child_process");
   const env = process.env.NODE_ENV || 'development';
+  const fs = require("fs");
+  const {promisify} = require("util");
+  const chmod = promisify(fs.chmod);
   let baseDir = '';
+  let filename = '';
+  let command = '';
   let devbaseDir = 'python';
-  let prodbaseDir = path.join(process.resourcesPath, 'python');
-  if (env === 'development') {
+  let prodbaseDir = path.join(process.resourcesPath, 'python/dist/prod-signin2');
+  if (env === 'production') {
     baseDir = devbaseDir;
-  } else if (env === 'production') {
+    filename = 'signin2.py';
+    command = process.platform === 'win32' ? 'python' : 'python3';
+  } else if (env === 'development') {
     baseDir = prodbaseDir;
-  }
-  const scriptPath = path.join(baseDir, 'signin2.py');
-  const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+    filename = 'prod-signin2';
+    command = process.platform === 'win32' ? '' : './';
 
+  }
+  // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
+  const scriptPath = path.join(baseDir, filename);
 
       // const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
   
       // const path_to_python = 'python3'; // Update this to the path of your Python script
       // const scriptPath = 'resources/python/signin2.py'; // Update this to the path of your Python script
 
-      exec(`${pythonCommand} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
+      exec(`${command} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;

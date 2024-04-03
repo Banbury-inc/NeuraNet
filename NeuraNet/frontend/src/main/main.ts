@@ -94,9 +94,9 @@ function runPythonScript() {
   } else if (env === 'production') {
     baseDir = prodbaseDir;
   }
-  const scriptPath = path.join(baseDir, 'receiver5.py');
-  const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
-  const python = spawn(pythonCommand, [scriptPath]);
+  const scriptPath = path.join(baseDir, 'dist/prod-receiver5/prod-receiver5');
+  const command = process.platform === 'win32' ? '' : './';
+  const python = spawn(command, [scriptPath]);
   python.stdout.on("data", (data: Buffer) => {
     const result = data.toString();
     console.log(`Python Script Message: ${result}`);
