@@ -13,7 +13,7 @@ function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1366,
     height: 768,
-    frame: false,
+    // frame: false,
     backgroundColor: "#23272a",
     titleBarStyle: 'hidden' || 'customButtonsOnHover',
     trafficLightPosition: { x: 15, y: 15 },
@@ -61,7 +61,7 @@ function createWindow(): void {
 }
 
 function runPythonScript() {
-  const scriptPath = "src/main/receiver5.py";
+  const scriptPath = "resources/python/receiver5.py";
   const python = spawn('python3', [scriptPath]);
 
   python.stdout.on("data", (data: Buffer) => {

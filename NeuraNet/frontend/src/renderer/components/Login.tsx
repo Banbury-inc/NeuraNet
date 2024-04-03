@@ -37,6 +37,12 @@ function Copyright(props: any) {
   );
 }
 
+const path = require('path');
+const cp = require("child_process");
+const util = require("util");
+const execFile = util.promisify(cp.execFile);
+
+const fs = require("fs");
 
 
 export default function SignIn() {
@@ -54,8 +60,12 @@ export default function SignIn() {
     });
 
     try {
-      const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
-      exec(`python3 "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
+      // const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
+  
+      const path_to_python = 'python3'; // Update this to the path of your Python script
+      const scriptPath = 'resources/python/signin2.py'; // Update this to the path of your Python script
+
+      exec(`${path_to_python} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;

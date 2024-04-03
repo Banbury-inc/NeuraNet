@@ -76,6 +76,15 @@
       "package.json",
       "dist/**",
       "dist/renderer/**"
+    ],
+    "extraResources": [
+      {
+        "from": "python",
+        "to": "python",
+        "filter": [
+          "**/*"
+        ]
+      }
     ]
   },
   "engines": {
