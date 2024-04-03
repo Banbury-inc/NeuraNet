@@ -59,13 +59,32 @@ export default function SignIn() {
       password: data.get('password'),
     });
 
+
     try {
+
+
+
+
+  const { spawn } = require("child_process");
+  const env = process.env.NODE_ENV || 'development';
+  let baseDir = '';
+  let devbaseDir = 'python';
+  let prodbaseDir = path.join(process.resourcesPath, 'python');
+  if (env === 'development') {
+    baseDir = devbaseDir;
+  } else if (env === 'production') {
+    baseDir = prodbaseDir;
+  }
+  const scriptPath = path.join(baseDir, 'signin2.py');
+  const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
+
       // const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
   
-      const path_to_python = 'python3'; // Update this to the path of your Python script
-      const scriptPath = 'resources/python/signin2.py'; // Update this to the path of your Python script
+      // const path_to_python = 'python3'; // Update this to the path of your Python script
+      // const scriptPath = 'resources/python/signin2.py'; // Update this to the path of your Python script
 
-      exec(`${path_to_python} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
+      exec(`${pythonCommand} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;

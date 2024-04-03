@@ -60,29 +60,56 @@ function createWindow(): void {
   });
 }
 
-function runPythonScript() {
-  const scriptPath = "resources/python/receiver5.py";
-  const python = spawn('python3', [scriptPath]);
+// function runPythonScript() {
+//   const scriptPath = "resources/python/receiver5.py";
+//   const python = spawn('python3', [scriptPath]);
 
+//   python.stdout.on("data", (data: Buffer) => {
+//     const result = data.toString();
+//     console.log(`Python Script Message: ${result}`);
+
+//     // Ensure mainWindow is not null before sending message to its webContents
+//     if (mainWindow) {
+//       mainWindow.webContents.send('python-output', result);
+//     }
+//   });
+
+//   python.stderr.on("data", (data: Buffer) => {
+//     const error = data.toString();
+//     console.error(`Python Script Error: ${error}`);
+//   });
+
+//   python.on("close", (code: number) => {
+//     console.log(`Python Script exited with code ${code}`);
+//   });
+// }
+
+function runPythonScript() {
+  const env = process.env.NODE_ENV || 'development';
+  let baseDir = '';
+  let devbaseDir = 'python';
+  let prodbaseDir = path.join(process.resourcesPath, 'python');
+  if (env === 'development') {
+    baseDir = devbaseDir;
+  } else if (env === 'production') {
+    baseDir = prodbaseDir;
+  }
+  const scriptPath = path.join(baseDir, 'receiver5.py');
+  const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+  const python = spawn(pythonCommand, [scriptPath]);
   python.stdout.on("data", (data: Buffer) => {
     const result = data.toString();
     console.log(`Python Script Message: ${result}`);
-
-    // Ensure mainWindow is not null before sending message to its webContents
     if (mainWindow) {
       mainWindow.webContents.send('python-output', result);
     }
   });
 
   python.stderr.on("data", (data: Buffer) => {
-    const error = data.toString();
-    console.error(`Python Script Error: ${error}`);
-  });
-
-  python.on("close", (code: number) => {
-    console.log(`Python Script exited with code ${code}`);
+    console.error(`Python Script Error: ${data}`);
   });
 }
+
 
 ipcMain.on('fetch-data', async (event, args) => {
   try {
