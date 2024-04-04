@@ -51,13 +51,10 @@ export default function SignUp() {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-   event.preventDefault();
-  const data = new FormData(event.currentTarget);
-  const email = data.get('email') as string | null; // Cast the value to string
-  const password = data.get('password') as string | null; // Cast the value to string
-  const firstName = data.get('firstName') as string | null; // Cast the value to string
-  const lastName = data.get('lastName') as string | null; // Cast the value to string
- 
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const email = data.get('email') as string | null; // Cast the value to string
+
     console.log({
       firstName: data.get('firstName'),
       lastName: data.get('lastName'),
@@ -65,11 +62,8 @@ export default function SignUp() {
       password: data.get('password'),
     });
 
-
     try {
-      // const scriptPath = 'src/main/register1.py'; // Update this to the path of your Python script
-
-       const env = process.env.NODE_ENV || 'development';
+      const env = process.env.NODE_ENV || 'development';
       let baseDir = '';
       let devbaseDir = 'python';
       let prodbaseDir = path.join(process.resourcesPath, 'python');
@@ -79,12 +73,8 @@ export default function SignUp() {
         baseDir = prodbaseDir;
       }
       const scriptPath = path.join(baseDir, 'register1.py');
-      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
- 
 
-
-
-      exec(`python "${scriptPath}" "${data.get('username')}" "${data.get('password')}" "${data.get('firstName')}" "${data.get('lasttName')}"`, (error, stdout, stderr) => {
+      exec(`python "${scriptPath}" "${data.get('username')}" "${data.get('password')}" "${data.get('firstName')}" "${data.get('lastName')}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           console.log(error)
@@ -107,145 +97,133 @@ export default function SignUp() {
           console.log(stdout)
           setuser_already_exists(true);
         }
- 
-
-
       });
     } catch (error) {
       console.error('There was an error!', error);
     }
   };
 
-  if (registration_success) {
-
-    return <SignIn />;
-
-
-
-  };
-
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  size='small'
-                  autoFocus
-              InputProps={{
-                style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
-              }}
-              InputLabelProps={{
-                style: { fontSize: '1.3rem' }, // Adjusts the label font size
-              }}
- 
-                />
+      {registration_success ? (
+        <SignIn />
+      ) : (
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
+          <Box
+            sx={{
+              marginTop: 8,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign up
+            </Typography>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    autoComplete="given-name"
+                    name="firstName"
+                    required
+                    fullWidth
+                    id="firstName"
+                    label="First Name"
+                    size='small'
+                    autoFocus
+                    InputProps={{
+                      style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+                    }}
+                    InputLabelProps={{
+                      style: { fontSize: '1.3rem' }, // Adjusts the label font size
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="lastName"
+                    label="Last Name"
+                    name="lastName"
+                    size='small'
+                    autoComplete="family-name"
+                    InputProps={{
+                      style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+                    }}
+                    InputLabelProps={{
+                      style: { fontSize: '1.3rem' }, // Adjusts the label font size
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="username"
+                    label="Username"
+                    name="username"
+                    size='small'
+                    autoComplete="username"
+                    InputProps={{
+                      style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+                    }}
+                    InputLabelProps={{
+                      style: { fontSize: '1.3rem' }, // Adjusts the label font size
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    size='small'
+                    id="password"
+                    autoComplete="new-password"
+                    InputProps={{
+                      style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+                    }}
+                    InputLabelProps={{
+                      style: { fontSize: '1.3rem' }, // Adjusts the label font size
+                    }}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  size='small'
-                  autoComplete="family-name"
-              InputProps={{
-                style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
-              }}
-              InputLabelProps={{
-                style: { fontSize: '1.3rem' }, // Adjusts the label font size
-              }}
- 
-                />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign Up
+              </Button>
+              <Grid container justifyContent="flex-end">
+                <Grid item>
+                  <Link href="/login" variant="body2">
+                    Already have an account? Sign in
+                  </Link>
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="username"
-                  label="Username"
-                  name="username"
-                  size='small'
-                  autoComplete="username"
-              InputProps={{
-                style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
-              }}
-              InputLabelProps={{
-                style: { fontSize: '1.3rem' }, // Adjusts the label font size
-              }}
- 
-                />
+              <Grid container justifyContent="center">
+                <Grid item>
+                  <div style={{ color: "#E22134", opacity: user_already_exists ? 1 : 0, transition: 'opacity 0.5s' }}>
+                    <p>{userExistsMessage.content}</p>
+                  </div>
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  size='small'
-                  id="password"
-                  autoComplete="new-password"
-              InputProps={{
-                style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
-              }}
-              InputLabelProps={{
-                style: { fontSize: '1.3rem' }, // Adjusts the label font size
-              }}
- 
-                />
-              </Grid>
-
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign Up
-            </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/login" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid container justifyContent="center">
-             <Grid item>
-                <div style={{ color:"#E22134", opacity: user_already_exists ? 1 : 0, transition: 'opacity 0.5s' }}>
-                  <p>{userExistsMessage.content}</p>
-                </div>
-              </Grid>
-            </Grid>
+            </Box>
           </Box>
-        </Box>
-        <Copyright sx={{ mt: 5 }} />
-      </Container>
+          <Copyright sx={{ mt: 5 }} />
+        </Container>
+      )}
     </ThemeProvider>
   );
 }
