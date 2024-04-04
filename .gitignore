@@ -1,2 +1,6 @@
 node_modules
 .env
+env
+venv
+package-lock.json
+.DS_Store
