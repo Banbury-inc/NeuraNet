@@ -41,7 +41,7 @@ const DarwinTheme: TitleBarTheme = {
       color: '#444', // Color for separators in the menu
     },
   },
- controls: {
+  controls: {
     layout: 'right',
     normal: {
       default: { background: 'transparent', color: 'transparent' },
@@ -192,7 +192,7 @@ import { TitleBarTheme } from "frameless-titlebar/dist/title-bar/typings";
 import { ipcRenderer } from 'electron';
 
 export default function App(): JSX.Element {
-  
+
   const handleClose = () => {
     // Send IPC message to close window
     ipcRenderer.send('close-window');
@@ -206,54 +206,37 @@ export default function App(): JSX.Element {
     ipcRenderer.send('maximize-window');
   }
 
-
-
-
   return (
     // Setup theme and css baseline for the Material-UI app
     // https://mui.com/customization/theming/
     //
     <ThemeProvider theme={theme}>
-    <div style={{ position: 'fixed', width: '100%', zIndex: '100' }}>
       <TitleBar
-          theme={customTheme}
-          onClose={handleClose} // Pass event handlers to the TitleBar component
-          onMinimize={handleMinimize}
-          onMaximize={handleMaximize}
-        />
-      </div>
+        theme={customTheme}
+        onClose={handleClose}
+        onMinimize={handleMinimize}
+        onMaximize={handleMaximize}
+      />
 
       <CssBaseline />
-      <BrowserRouter> {/* Wrap your content with BrowserRouter */}
+      <BrowserRouter>
         <AuthProvider>
-        <Box
-          sx={{
-            backgroundColor: (theme) => theme.palette.background.default,
-          }}
-        >
-          {/* <main> */}
-          {/*   <Signin /> */}
-          {/* </main> */}
-
-          <main>
-          <Signin />
-          </main>
-
-
-          <Routes>
-          
-            {/* <Route path="/" element={<Signin />} /> */}
-            {/* <Route path="/" element={<Main />} /> */}
-            <Route path="/main" element={<Main />} />
-            <Route path="/register" element={<Signup />} />
-            <Route path="/login" element={<Signin />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>  
-
-
-
-        </Box>
+          <Box
+            sx={{
+              backgroundColor: (theme) => theme.palette.background.default,
+            }}
+          >
+            <main style={{ paddingTop: '42px' }}> {/* Adjust the padding-top value to match the height of the title bar */}
+              <Routes>
+                <Route path="/" element={<Signin />} />
+                <Route path="/main" element={<Main />} />
+                <Route path="/register" element={<Signup />} />
+                <Route path="/login" element={<Signin />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/profile" element={<Profile />} />
+              </Routes>
+            </main>
+          </Box>
         </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>
