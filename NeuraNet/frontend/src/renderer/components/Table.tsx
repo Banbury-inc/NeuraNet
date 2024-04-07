@@ -397,19 +397,28 @@ function formatBytes(bytes: number, decimals: number = 2): string {
       
       const env = process.env.NODE_ENV || 'development';
       let baseDir = '';
+      let filename = '';
+      let command = '';
       let devbaseDir = 'python';
       let prodbaseDir = path.join(process.resourcesPath, 'python');
       if (env === 'development') {
         baseDir = devbaseDir;
+        filename = 'python/prod-signin2.py';
+        command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
       } else if (env === 'production') {
         baseDir = prodbaseDir;
+        filename = 'prod-signin2.py';
+        command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
       }
-      const scriptPath = path.join(baseDir, 'download.py');
-      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
  
 
+    const exactcommand  = path.join(baseDir, command);
+  const scriptPath = path.join(baseDir, filename);
 
-      exec(`${pythonCommand} "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
+
+
+
+      exec(`${exactcommand} "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
         }
@@ -432,22 +441,33 @@ function formatBytes(bytes: number, decimals: number = 2): string {
 
       setdeleteLoading(true);
 
-      const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let devbaseDir = 'python';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
-      }
-      const scriptPath = path.join(baseDir, 'delete.py');
-      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
- 
+
+  const env = process.env.NODE_ENV || 'development';
+  let baseDir = '';
+  let filename = '';
+  let command = '';
+  let devbaseDir = '';
+  let prodbaseDir = path.join(process.resourcesPath, 'python');
+  if (env === 'development') {
+    baseDir = devbaseDir;
+    filename = 'python/delete.py';
+    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+  } else if (env === 'production') {
+    baseDir = prodbaseDir;
+    filename = 'delete.py';
+    command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
+  
+  }
+  // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
+    const exactcommand  = path.join(baseDir, command);
+  const scriptPath = path.join(baseDir, filename);
+
+
 
       // const scriptPath = 'src/main/delete.py'; // Update this to the path of your Python script
        
-      exec(`${pythonCommand} "${scriptPath}" "${selectedFileNames}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
+      exec(`${exactcommand} "${scriptPath}" "${selectedFileNames}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           setdeleteLoading(false);
@@ -478,22 +498,35 @@ function formatBytes(bytes: number, decimals: number = 2): string {
 
       // const scriptPath = 'src/main/upload.py'; // Update this to the path of your Python script
        
-      const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let devbaseDir = 'python';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
-      }
-      const scriptPath = path.join(baseDir, 'upload.py');
-      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
- 
 
 
 
-      exec(`${pythonCommand} "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
+  const env = process.env.NODE_ENV || 'development';
+  let baseDir = '';
+  let filename = '';
+  let command = '';
+  let devbaseDir = '';
+  let prodbaseDir = path.join(process.resourcesPath, 'python');
+  if (env === 'development') {
+    baseDir = devbaseDir;
+    filename = 'python/upload.py';
+    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+  } else if (env === 'production') {
+    baseDir = prodbaseDir;
+    filename = 'upload.py';
+    command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
+  
+  }
+  // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
+    const exactcommand  = path.join(baseDir, command);
+  const scriptPath = path.join(baseDir, filename);
+
+
+
+
+
+      exec(`${exactcommand} "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;

@@ -32,7 +32,7 @@ if not os.path.exists(CONFIG_FILE):
 
 def connect_to_relay_server():
     load_dotenv()
-    RELAY_HOST = os.getenv("RELAY_HOST")
+    RELAY_HOST = "34.28.13.79" 
     RELAY_PORT = 8002
 
     sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

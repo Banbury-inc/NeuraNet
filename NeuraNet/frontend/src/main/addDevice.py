@@ -371,7 +371,7 @@ def send_ping_response(receiver_socket):
 
 def main():
     load_dotenv()
-    SERVER_HOST = os.getenv("RELAY_HOST")
+    SERVER_HOST = "34.28.13.79" 
     sys.stdout.flush()
     SERVER_PORT = 8002
     receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
