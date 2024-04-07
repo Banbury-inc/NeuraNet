@@ -44,7 +44,7 @@ const { ipcRenderer } = window.require('electron');
 
 export default function PermanentDrawerLeft() {
   const location = useLocation();
-  const initialActiveTab = location.state?.activeTab || 'Dashboard'; 
+  const initialActiveTab = location.state?.activeTab || 'Files'; 
   const [activeTab, setActiveTab] = React.useState(initialActiveTab);
 
   return (

@@ -12,7 +12,6 @@ import Settings from "./Settings";
 import Profile from "./Profile";
 import TitleBar from 'frameless-titlebar';
 import { BrowserWindow } from 'electron';
-import Dashboard from "./Dashboard";
 
 // Define the Platform type
 type Platform = 'win32' | 'linux' | 'darwin';
@@ -240,8 +239,8 @@ export default function App(): JSX.Element {
 
 
 
-            {/* <Signin /> */}
-            <Main />
+            <Signin />
+            {/* <Main /> */}
 
           </Box>
         </AuthProvider>

@@ -155,7 +155,7 @@ return (
       {/* <Box sx={{ width: '100%', mt: 0, pt: 4, pl:2 }}> */}
 
     {/* <Grid container justifyContent="space-between" alignItems= "center" sx={{pt:4, pl:2}} spacing={2}> */}
-    <Grid container sx={{pl: 2, pr: 2, pt: 4}} justifyContent="space-between" spacing={2}>
+    <Grid container sx={{pl: 0, pr: 2, pt: 2}} justifyContent="space-between" spacing={2}>
 
                 <Stack  spacing={2} direction="row" justifyContent="space-between">
                 <Stack spacing={2}>
@@ -260,9 +260,9 @@ return (
  
           {/* <Grid item style={{ maxHeight: '48.5vh' }}> */}
             <Grid item xs={"auto"} sm={"auto"} md={"auto"}>
-            <Card variant="outlined">
+            <Card variant="outlined" sx={{ width: '100%', height: '100%' }}>
               <CardContent>
-      <Box sx={{ maxHeight: '35vh', overflow: 'clip' }}>
+      <Box sx={{ overflow: 'clip' }}>
                 <Typography variant="body2">
                   Total Number of Files
                   <br />
@@ -284,7 +284,7 @@ return (
               <Card variant="outlined" >
                 <CardContent>
 
-                <Box sx={{ height: '92%', overflow: 'clip' }}>
+                <Box sx={{ height: '92.5%', overflow: 'clip' }}>
                  <Typography variant="body2">
                     Total Device Storage
                     <br />
