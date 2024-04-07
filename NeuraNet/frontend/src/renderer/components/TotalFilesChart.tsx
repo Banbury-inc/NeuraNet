@@ -11,7 +11,10 @@ export default function TotalFilesChart() {
         },
       ]}
       // width={800}
-      height={375}
+      //
+      //
+      //
+      // height={375}
     />
   );
 }

@@ -131,7 +131,7 @@ const colors: { [key: string]: string } = {
 
 return (
 <Container>
-      <Box sx={{ width: '100%', mt: 0, pt: 5 }}>
+      <Box sx={{ width: '100%', mt: 0, pt: 0 }}>
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
@@ -152,26 +152,34 @@ return (
         <Stack spacing={2}>
 
 
-    <Grid container sx={{pt:4, pl:2}} spacing={2}>
+      {/* <Box sx={{ width: '100%', mt: 0, pt: 4, pl:2 }}> */}
+
+    {/* <Grid container justifyContent="space-between" alignItems= "center" sx={{pt:4, pl:2}} spacing={2}> */}
+    <Grid container sx={{pl: 2, pr: 2, pt: 4}} justifyContent="space-between" spacing={2}>
 
                 <Stack  spacing={2} direction="row" justifyContent="space-between">
-          <Stack spacing={2}>
+                <Stack spacing={2}>
                 <Stack  spacing={2} direction="row" justifyContent="space-between">
-            <Grid item xs={4}>
-              <Card variant="outlined"sx={{ width: '100%'}}>
-                <CardContent>
-                  <Typography variant="body2">
-                    Total Number of Devices
-                    <br />
-                  </Typography>
-                  <Typography variant="h4" component="div">
-                    {number_of_devices}
-                  </Typography>
-                </CardContent>
-              </Card>
+
+            {/* <Grid item xs={4}> */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Card variant="outlined" sx={{ width: '100%', height: '100%' }}>
+                  <CardContent>
+                    <Typography variant="body2">
+                      Total Number of Devices
+                      <br />
+                    </Typography>
+                    <Typography variant="h4" component="div">
+                      {number_of_devices}
+                    </Typography>
+                  </CardContent>
+                </Card>
             </Grid>
-            <Grid item xs={4}>
-              <Card variant="outlined" sx={{ width: '100%' }}>
+
+
+         <Grid item xs={12} sm={6} md={4}>
+            <Card variant="outlined" sx={{ width: '100%', height: '100%' }}>
+ 
                 <CardContent>
                   <Typography variant="body2">
                     Devices Online
@@ -183,8 +191,11 @@ return (
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={4}>
-              <Card variant="outlined"sx={{ width: '100%' }}>
+
+
+        <Grid item xs={12} sm={6} md={4}>
+            <Card variant="outlined" sx={{ width: '100%', height: '100%' }}>
+ 
                 <CardContent>
                   <Typography variant="body2">
                     Total Number of Files
@@ -196,11 +207,14 @@ return (
                 </CardContent>
               </Card>
             </Grid>
+
             </Stack>
           <Stack spacing={2} alignItems="stretch">
                 <Stack  spacing={2} direction="row" justifyContent="space-evenly" alignItems="stretch">
-            <Grid item xs={4}>
-              <Card variant="outlined"sx={{ width: '100%' }}>
+
+
+        <Grid item xs={12} sm={6} md={4}>
+            <Card variant="outlined" sx={{ width: '100%', height: '100%' }}>
                 <CardContent>
                   <Typography variant="body2">
                     Average Upload Speed
@@ -212,8 +226,9 @@ return (
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={4}>
-              <Card variant="outlined" sx={{ width: '100%' }}>
+
+        <Grid item xs={12} sm={6} md={4}>
+            <Card variant="outlined" sx={{ width: '100%', height: '100%' }}>
                 <CardContent>
                   <Typography variant="body2">
                     Average Download Speed
@@ -225,8 +240,9 @@ return (
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={4}>
-              <Card variant="outlined" sx={{ width: '100%' }}>
+
+        <Grid item xs={12} sm={6} md={4}>
+            <Card variant="outlined" sx={{ width: '100%', height: '100%' }}>
                 <CardContent>
                   <Typography variant="body2">
                     Total Device Storage
@@ -238,12 +254,15 @@ return (
                 </CardContent>
               </Card>
             </Grid>
+
             </Stack>
             </Stack>
  
-          <Grid item style={{ maxHeight: '48.5vh' }}>
+          {/* <Grid item style={{ maxHeight: '48.5vh' }}> */}
+            <Grid item xs={"auto"} sm={"auto"} md={"auto"}>
             <Card variant="outlined">
               <CardContent>
+      <Box sx={{ maxHeight: '35vh', overflow: 'clip' }}>
                 <Typography variant="body2">
                   Total Number of Files
                   <br />
@@ -251,48 +270,52 @@ return (
                 <Typography variant="h4" component="div">
                   {number_of_files}
                 </Typography>
-                {/* <TotalFilesChart /> */}
-                <LineChart
-                  xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
-                  series={[
-                    {
-                      data: [200, 500, 550, 700, 600, 800],
-                    },
-                  ]}
-                  width={630}
-
-                  // height={375}
-                        //
-                />
-
+                <TotalFilesChart />
+           </Box>  
               </CardContent>
             </Card>
           </Grid>
           </Stack>
 
  
-          <Grid item style={{ minWidth: '400', maxHeight: '76.5vh' }}>
-              <Card variant="outlined">
+          {/* <Grid item> */}
+           <Grid item xs={"auto"} sm={"auto"} md={6}>
+              {/* <Card variant="outlined"> */}
+              <Card variant="outlined" >
                 <CardContent>
-                  <Typography variant="body2">
+
+                <Box sx={{ height: '92%', overflow: 'clip' }}>
+                 <Typography variant="body2">
                     Total Device Storage
                     <br />
                   </Typography>
                   <Typography variant="h4" component="div">
                     {total_device_storage} Gb
                   </Typography>
-                  <PieActiveArc />
+
+
+                    <PieActiveArc />
+
+                </Box>
                 </CardContent>
               </Card>
             </Grid>
 
 
        </Stack>
+
             </Grid>
+
+      {/* </Box> */}
+
        </Stack>
 
       </Box>
   </Container>
 );
+
+
+
+
 }import { LineChart } from "@mui/x-charts";
 

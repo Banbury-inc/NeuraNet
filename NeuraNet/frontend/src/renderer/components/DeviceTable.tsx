@@ -285,7 +285,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   return (
     <Container>
 
-      <Box sx={{ width: '100%', mt: 0, pt: 5 }}>
+      <Box sx={{ width: '100%', mt: 0, pt: 0 }}>
 
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
@@ -320,7 +320,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
         <Box my={2}>
             <TableContainer>
-              <Table sx={{ minWidth: 750 }} size="small">
+              <Table size="small">
                 <TableHead>
                   <TableRow>
                     <TableCell padding="checkbox">
@@ -336,11 +336,11 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
                     <TableCell align='left'>IP Address</TableCell>
                     <TableCell align='left'>Total Storage</TableCell>
                     <TableCell align='left'>Status</TableCell>
-                    <TableCell align='left'>Avg. Upload Speed</TableCell>
-                    <TableCell align='left'>Avg. Download Speed</TableCell>
-                    <TableCell align='left'>Avg. GPU usage</TableCell>
-                    <TableCell align='left'>Avg. CPU usage</TableCell>
-                    <TableCell align='left'>Avg. RAM usage</TableCell>
+                    {/* <TableCell align='left'>Avg. Upload Speed</TableCell> */}
+                    {/* <TableCell align='left'>Avg. Download Speed</TableCell> */}
+                    {/* <TableCell align='left'>Avg. GPU usage</TableCell> */}
+                    {/* <TableCell align='left'>Avg. CPU usage</TableCell> */}
+                    {/* <TableCell align='left'>Avg. RAM usage</TableCell> */}
                     {/* Add more table headers as needed */}
                   </TableRow>
                 </TableHead>
@@ -377,7 +377,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
                           {device.ip_address}
                         </TableCell>
 
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
+                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='left'component="th" id={labelId} scope="row">
                           {device.storage_capacity_GB}
                         </TableCell>
  
@@ -385,26 +385,26 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
                           {device.onlineStatus}
                         </TableCell>
  
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
-                          {device.average_upload_speed}
-                        </TableCell>
- 
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
-                          {device.average_download_speed}
-                        </TableCell>
- 
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
-                          {device.average_gpu_usage}
-                        </TableCell>
- 
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
-                          {device.average_cpu_usage}
-                        </TableCell>
- 
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row">
-                          {device.average_ram_usage}
-                        </TableCell>
-  
+ {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
+ {/*                          {device.average_upload_speed} */}
+ {/*                        </TableCell> */}
+ {/*  */}
+ {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
+ {/*                          {device.average_download_speed} */}
+ {/*                        </TableCell> */}
+ {/*  */}
+ {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
+ {/*                          {device.average_gpu_usage} */}
+ {/*                        </TableCell> */}
+ {/*  */}
+ {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
+ {/*                          {device.average_cpu_usage} */}
+ {/*                        </TableCell> */}
+ {/*  */}
+ {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
+ {/*                          {device.average_ram_usage} */}
+ {/*                        </TableCell> */}
+ {/*   */}
 
                         {/* Render other device details here */}
                       </TableRow>

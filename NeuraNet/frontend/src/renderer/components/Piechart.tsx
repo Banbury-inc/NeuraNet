@@ -67,7 +67,6 @@ const PieActiveArc: React.FC = () => {
   const [colorScheme, setColorScheme] = useState<PaletteKey>('blueberryTwilight');
   const customColorPalette = ['#FAE1DC',  '#FF4500','#0000F5', '#FF4500', '#51DA4C', '#0000FF', '#FFF639', '#FF45FF', '#FE7600', '#8A2BE2', '#A0522D'];
   return (
-    <div style={{ justifyContent: 'center' }}>
       <PieChart
         colors={categories[colorScheme]}
         // colors={customColorPalette}
@@ -81,12 +80,12 @@ const PieActiveArc: React.FC = () => {
         slotProps={{
           legend: {
             direction: 'row',
-            position: { vertical: 'bottom', horizontal: 'middle' },
+            position: { vertical: 'bottom', horizontal: 'left' },
             padding: 0,
           },
         }}
+      sx={{ marginLeft: '100px', marginTop: '-100px'}}
       />
-    </div>
   );
 };
 

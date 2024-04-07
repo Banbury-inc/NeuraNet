@@ -668,7 +668,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
 
   return (
     <Container>
-      <Box sx={{ width: '100%', mt: 0, pt: 5 }}>
+      <Box sx={{ width: '100%', mt: 0, pt: 0 }}>
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
