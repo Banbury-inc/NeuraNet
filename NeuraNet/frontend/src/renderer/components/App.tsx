@@ -227,6 +227,7 @@ export default function App(): JSX.Element {
             }}
           >
             <main style={{ paddingTop: '42px' }}> {/* Adjust the padding-top value to match the height of the title bar */}
+              <Signin />
               <Routes>
                 <Route path="/" element={<Signin />} />
                 <Route path="/main" element={<Main />} />

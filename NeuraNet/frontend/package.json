@@ -4,7 +4,7 @@
   "private": true,
   "description": "A decentralized cloud storage system.",
   "main": "./dist/main.js",
-  "homepage": "./dist/renderer/index.html", 
+  "homepage": "./dist/renderer/index.html",
   "scripts": {
     "dev": "npm-run-all -p dev:react electron:serve",
     "dev:electron": "cross-env NODE_ENV=development webpack --config webpack/electron.webpack.ts --mode=development && npm run start:electron",
@@ -31,6 +31,7 @@
     "@mui/x-charts": "^6.19.4",
     "@mui/x-data-grid": "^6.19.4",
     "@mui/x-tree-view": "^6.17.0",
+    "copy-webpack-plugin": "^12.0.2",
     "frameless-titlebar": "^2.1.4",
     "node-fetch": "^3.3.2",
     "notistack": "^3.0.1",
@@ -77,6 +78,10 @@
       "dist/**",
       "dist/renderer/**"
     ],
+  "linux": {
+    "target": "snap"
+  },
+ 
     "extraResources": [
       {
         "from": "python",
@@ -84,7 +89,15 @@
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "venv",
+        "to": "python",
+        "filter": [
+          "**/*"
+        ]
       }
+ 
     ]
   },
   "engines": {
@@ -92,3 +105,7 @@
     "node": ">=16.13.0"
   }
 }
+
+
+
+

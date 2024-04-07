@@ -2,6 +2,10 @@ import HtmlWebpackPlugin from "html-webpack-plugin";
 import * as path from "path";
 import { Configuration as WebpackConfiguration } from "webpack";
 import { Configuration as WebpackDevServerConfiguration } from "webpack-dev-server";
+import CopyWebpackPlugin from "copy-webpack-plugin";
+
+
+
 
 const rootPath = path.resolve(__dirname, "..");
 
@@ -51,9 +55,13 @@ const config: Configuration = {
   },
   plugins: [
     new HtmlWebpackPlugin({ template: path.resolve(rootPath, "index.html") }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: path.resolve(rootPath, "venv"), to: path.resolve(rootPath, "dist/renderer/venv") }, // Copy venv directory to dist/renderer/venv
+      ],
+    }),
   ],
 };
-
 export default config;
 
 

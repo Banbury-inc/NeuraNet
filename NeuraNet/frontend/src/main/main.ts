@@ -97,16 +97,15 @@ function runPythonScript() {
     baseDir = devbaseDir;
     filename = 'prod-receiver5.py';
     command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
-
   } else if (env === 'production') {
     baseDir = prodbaseDir;
     filename = 'prod-receiver5.py';
-    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+    command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
   }
 
-
     const scriptPath = path.join(baseDir, filename);
-    const python = spawn(command, [scriptPath]);
+    const commandPath = path.join(baseDir, command);
+    const python = spawn(commandPath, [scriptPath]);
 
   python.stdout.on("data", (data: Buffer) => {
     const result = data.toString();
@@ -119,7 +118,7 @@ function runPythonScript() {
   python.stderr.on("data", (data: Buffer) => {
     console.error(`Python Script Error: ${data}`);
   });
-}
+  }
 
 
 ipcMain.on('fetch-data', async (event, args) => {

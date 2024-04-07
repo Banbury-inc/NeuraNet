@@ -39,7 +39,6 @@ import Profile from './Profile';
 
 
 const { ipcRenderer } = window.require('electron');
-const { spawn } = require("child_process");
 
 
 

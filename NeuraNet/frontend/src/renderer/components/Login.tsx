@@ -73,7 +73,7 @@ export default function SignIn() {
   } else if (env === 'production') {
     baseDir = prodbaseDir;
     filename = 'prod-signin2.py';
-    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+    command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
   
   }
   // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
