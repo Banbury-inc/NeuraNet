@@ -226,17 +226,18 @@ export default function App(): JSX.Element {
               backgroundColor: (theme) => theme.palette.background.default,
             }}
           >
-            <main style={{ paddingTop: '42px' }}> {/* Adjust the padding-top value to match the height of the title bar */}
-              <Signin />
-              <Routes>
-                <Route path="/" element={<Signin />} />
-                <Route path="/main" element={<Main />} />
-                <Route path="/register" element={<Signup />} />
-                <Route path="/login" element={<Signin />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/profile" element={<Profile />} />
-              </Routes>
-            </main>
+          {/*   <main>  */}
+              {/* <Signin /> */}
+          {/*     <Routes> */}
+          {/*       <Route path="/" element={<Signin />} /> */}
+          {/*       <Route path="/main" element={<Main />} /> */}
+          {/*       <Route path="/register" element={<Signup />} /> */}
+          {/*       <Route path="/login" element={<Signin />} /> */}
+          {/*       <Route path="/settings" element={<Settings />} /> */}
+          {/*       <Route path="/profile" element={<Profile />} /> */}
+          {/*     </Routes> */}
+          {/*   </main> */}
+            <Signin />
           </Box>
         </AuthProvider>
       </BrowserRouter>

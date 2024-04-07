@@ -13,7 +13,7 @@ function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1366,
     height: 768,
-    // frame: false,
+    frame: false,
     backgroundColor: "#23272a",
     titleBarStyle: 'hidden' || 'customButtonsOnHover',
     trafficLightPosition: { x: 15, y: 15 },
@@ -89,13 +89,13 @@ function createWindow(): void {
 function runPythonScript() {
   const env = process.env.NODE_ENV || 'development';
   let baseDir = '';
-  let devbaseDir = 'python';
+  let devbaseDir = '';
   let filename = '';
   let command = '';
   let prodbaseDir = path.join(process.resourcesPath, 'python');
   if (env === 'development') {
     baseDir = devbaseDir;
-    filename = 'prod-receiver5.py';
+    filename = 'python/prod-receiver5.py';
     command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
   } else if (env === 'production') {
     baseDir = prodbaseDir;

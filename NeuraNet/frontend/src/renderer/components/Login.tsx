@@ -64,11 +64,11 @@ export default function SignIn() {
   let baseDir = '';
   let filename = '';
   let command = '';
-  let devbaseDir = 'python';
+  let devbaseDir = '';
   let prodbaseDir = path.join(process.resourcesPath, 'python');
   if (env === 'development') {
     baseDir = devbaseDir;
-    filename = 'prod-signin2.py';
+    filename = 'python/prod-signin2.py';
     command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
   } else if (env === 'production') {
     baseDir = prodbaseDir;
