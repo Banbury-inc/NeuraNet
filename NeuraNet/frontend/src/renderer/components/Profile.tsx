@@ -243,19 +243,26 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
        
        const env = process.env.NODE_ENV || 'development';
       let baseDir = '';
-      let devbaseDir = 'python';
+      let devbaseDir = '';
+      let filename = '';
+      let command = '';
       let prodbaseDir = path.join(process.resourcesPath, 'python');
       if (env === 'development') {
         baseDir = devbaseDir;
+        filename = 'python/change_profile_info.py';
+        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
       } else if (env === 'production') {
         baseDir = prodbaseDir;
+        filename = 'prod-receiver5.py';
+        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
       }
-      const scriptPath = path.join(baseDir, 'change_profile_info.py');
-      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
+      const scriptPath = path.join(baseDir, filename);
+      const commandPath = path.join(baseDir, command);
  
 
 
-      exec(`${pythonCommand} "${scriptPath}" "${firstName}" "${Lastname}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
+      exec(`${commandPath} "${scriptPath}" "${firstName}" "${Lastname}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
@@ -291,19 +298,28 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
       setShowLastnameTextField(!showLastnameTextField);
        const env = process.env.NODE_ENV || 'development';
       let baseDir = '';
-      let devbaseDir = 'python';
+      let devbaseDir = '';
+      let filename = '';
+      let command = '';
       let prodbaseDir = path.join(process.resourcesPath, 'python');
       if (env === 'development') {
         baseDir = devbaseDir;
+        filename = 'python/change_profile_info.py';
+        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
       } else if (env === 'production') {
         baseDir = prodbaseDir;
+        filename = 'prod-receiver5.py';
+        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
       }
-      const scriptPath = path.join(baseDir, 'change_profile_info.py');
-      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
+      const scriptPath = path.join(baseDir, filename);
+      const commandPath = path.join(baseDir, command);
  
+
+
       // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
        
-      exec(`${pythonCommand} "${scriptPath}" "${Firstname}" "${lastName}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
+      exec(`${commandPath} "${scriptPath}" "${Firstname}" "${lastName}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
@@ -341,19 +357,26 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
       setShowUsernameTextField(!showUsernameTextField);
 
       // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
-        const env = process.env.NODE_ENV || 'development';
+       const env = process.env.NODE_ENV || 'development';
       let baseDir = '';
-      let devbaseDir = 'python';
+      let devbaseDir = '';
+      let filename = '';
+      let command = '';
       let prodbaseDir = path.join(process.resourcesPath, 'python');
       if (env === 'development') {
         baseDir = devbaseDir;
+        filename = 'python/change_profile_info.py';
+        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
       } else if (env === 'production') {
         baseDir = prodbaseDir;
+        filename = 'prod-receiver5.py';
+        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
       }
-      const scriptPath = path.join(baseDir, 'change_profile_info.py');
-      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
+      const scriptPath = path.join(baseDir, filename);
+      const commandPath = path.join(baseDir, command);
        
-      exec(`${pythonCommand} "${scriptPath}" "${Firstname}" "${Lastname}" "${new_username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
+      exec(`${commandPath} "${scriptPath}" "${Firstname}" "${Lastname}" "${new_username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
@@ -390,19 +413,26 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
       setShowEmailTextField(!showEmailTextField);
 
       // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
-         const env = process.env.NODE_ENV || 'development';
+       const env = process.env.NODE_ENV || 'development';
       let baseDir = '';
-      let devbaseDir = 'python';
+      let devbaseDir = '';
+      let filename = '';
+      let command = '';
       let prodbaseDir = path.join(process.resourcesPath, 'python');
       if (env === 'development') {
         baseDir = devbaseDir;
+        filename = 'python/change_profile_info.py';
+        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
       } else if (env === 'production') {
         baseDir = prodbaseDir;
+        filename = 'prod-receiver5.py';
+        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
       }
-      const scriptPath = path.join(baseDir, 'change_profile_info.py');
-      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
+      const scriptPath = path.join(baseDir, filename);
+      const commandPath = path.join(baseDir, command);
       
-      exec(`${pythonCommand} "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${email}" "${Password}"`, (error, stdout, stderr) => {
+      exec(`${commandPath} "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${email}" "${Password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
@@ -438,20 +468,26 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
       setShowPasswordTextField(!showPasswordTextField);
 
-      // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
-              const env = process.env.NODE_ENV || 'development';
+       const env = process.env.NODE_ENV || 'development';
       let baseDir = '';
-      let devbaseDir = 'python';
+      let devbaseDir = '';
+      let filename = '';
+      let command = '';
       let prodbaseDir = path.join(process.resourcesPath, 'python');
       if (env === 'development') {
         baseDir = devbaseDir;
+        filename = 'python/change_profile_info.py';
+        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
       } else if (env === 'production') {
         baseDir = prodbaseDir;
+        filename = 'prod-receiver5.py';
+        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
       }
-      const scriptPath = path.join(baseDir, 'change_profile_info.py');
-      const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
+      const scriptPath = path.join(baseDir, filename);
+      const commandPath = path.join(baseDir, command);
  
-      exec(`${pythonCommand} "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${Email}" "${password}"`, (error, stdout, stderr) => {
+      exec(`${commandPath} "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${Email}" "${password}"`, (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
           return;
@@ -509,7 +545,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
   return (
     <Container>
-      <Box sx={{ width: '100%', mt: 0, pt: 0 }}>
+      <Box sx={{ width: '100%', mt: 0, pt: 5 }}>
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>

@@ -1,7 +1,5 @@
 #!/bin/bash
-
 set -e
-
 display_help() {
     echo ""
     echo "Usage: $0 [--help] [--skip-install] <npm-command>"
@@ -21,27 +19,22 @@ display_help() {
     echo "  --skip-install  - Skip installation of Python and npm dependencies"
     echo ""
 }
-
 if [ "$1" == "--help" ]; then
     display_help
     exit 0
 fi
-
 skip_install=false
 if [ "$1" == "--skip-install" ]; then
     skip_install=true
     shift
 fi
-
 cd NeuraNet/frontend
-
 # Checking if virtualenv is installed
 # if not, it installs it
 if ! command -v virtualenv &> /dev/null; then
     echo "virtualenv is not installed. Installing virtualenv..."
     python3 -m pip install --user virtualenv
 fi
-
 # Creating virtual environment if it doesn't exist
 if [ ! -d "venv" ]; then
     echo "Creating virtual environment..."

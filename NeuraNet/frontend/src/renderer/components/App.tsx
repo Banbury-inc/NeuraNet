@@ -210,12 +210,14 @@ export default function App(): JSX.Element {
     // https://mui.com/customization/theming/
     //
     <ThemeProvider theme={theme}>
-      <TitleBar
-        theme={customTheme}
-        onClose={handleClose}
-        onMinimize={handleMinimize}
-        onMaximize={handleMaximize}
-      />
+      <div style={{ position: 'fixed', width: '100%', zIndex: 1000 }}>
+        <TitleBar
+          theme={customTheme}
+          onClose={handleClose}
+          onMinimize={handleMinimize}
+          onMaximize={handleMaximize}
+        />
+      </div>
 
       <CssBaseline />
       <BrowserRouter>
@@ -238,8 +240,9 @@ export default function App(): JSX.Element {
           {/*   </main> */}
 
 
-
+            <main>
             <Signin />
+            </main>
             {/* <Main /> */}
 
           </Box>

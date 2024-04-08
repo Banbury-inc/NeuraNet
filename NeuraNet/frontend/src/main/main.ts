@@ -96,11 +96,11 @@ function runPythonScript() {
   if (env === 'development') {
     baseDir = devbaseDir;
     filename = 'python/prod-receiver5.py';
-    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
   } else if (env === 'production') {
     baseDir = prodbaseDir;
     filename = 'prod-receiver5.py';
-    command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
+    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
   }
 
     const scriptPath = path.join(baseDir, filename);

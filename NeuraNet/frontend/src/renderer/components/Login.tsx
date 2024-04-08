@@ -68,12 +68,13 @@ export default function SignIn() {
   let prodbaseDir = path.join(process.resourcesPath, 'python');
   if (env === 'development') {
     baseDir = devbaseDir;
-    filename = 'python/prod-signin2.py';
-    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+ //   filename = 'python/prod-signin2.py';
+    filename = path.join("python", "prod-signin2.py")
+    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
   } else if (env === 'production') {
     baseDir = prodbaseDir;
     filename = 'prod-signin2.py';
-    command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
+    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
   
   }
   // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';

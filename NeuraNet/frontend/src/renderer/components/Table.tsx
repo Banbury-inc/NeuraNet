@@ -404,11 +404,11 @@ function formatBytes(bytes: number, decimals: number = 2): string {
       if (env === 'development') {
         baseDir = devbaseDir;
         filename = 'python/prod-signin2.py';
-        command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
       } else if (env === 'production') {
         baseDir = prodbaseDir;
         filename = 'prod-signin2.py';
-        command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
+        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
       }
  
 
@@ -451,11 +451,11 @@ function formatBytes(bytes: number, decimals: number = 2): string {
   if (env === 'development') {
     baseDir = devbaseDir;
     filename = 'python/delete.py';
-    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
   } else if (env === 'production') {
     baseDir = prodbaseDir;
     filename = 'delete.py';
-    command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
+    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
   
   }
   // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
@@ -510,11 +510,11 @@ function formatBytes(bytes: number, decimals: number = 2): string {
   if (env === 'development') {
     baseDir = devbaseDir;
     filename = 'python/upload.py';
-    command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
   } else if (env === 'production') {
     baseDir = prodbaseDir;
     filename = 'upload.py';
-    command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
+    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
   
   }
   // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
@@ -701,7 +701,7 @@ const visibleRows = stableSort(fileRows, getComparator(order, orderBy))
 
   return (
     <Container>
-      <Box sx={{ width: '100%', mt: 0, pt: 0 }}>
+      <Box sx={{ width: '100%', mt: 0, pt: 5 }}>
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>

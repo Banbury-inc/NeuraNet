@@ -232,11 +232,11 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
       if (env === 'development') {
         baseDir = devbaseDir;
         filename = 'python/deleteDevice.py';
-        command = process.platform === 'win32' ? 'venv/bin/python' : 'venv/bin/python3';
+        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
       } else if (env === 'production') {
         baseDir = prodbaseDir;
         filename = 'deleteDevice.py';
-        command = process.platform === 'win32' ? 'bin/python' : 'bin/python3';
+        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
       }
        
 
@@ -295,7 +295,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   return (
     <Container>
 
-      <Box sx={{ width: '100%', mt: 0, pt: 0 }}>
+      <Box sx={{ width: '100%', mt: 0, pt: 5 }}>
 
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
