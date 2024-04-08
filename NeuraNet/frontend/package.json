@@ -82,7 +82,19 @@
     "target": "snap"
   },
    "win": {
-    "target": "msi"
+      "title": "NeuraNet",
+      "version": "1.0.0",
+      noMsi: false,
+      "authors": "Banbury",
+      "target": [
+        {
+          "target": "msi",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
   },
     "mac": {
     "target": "dmg"
