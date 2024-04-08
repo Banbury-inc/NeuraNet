@@ -34,6 +34,8 @@ npm run dev
 
 Run `npm run package` to build and package your electron app.
 
+Run `npm run deploy` to build and package your electron app, along with creating the necessary installers.
+
 ## Common issues
 
 ### xcrun: error: invalid active developer path
