@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { exec } from "child_process";
 import Avatar from '@mui/material/Avatar';
-import NeuraNet_Logo from '/static/NeuraNet_Logo_White_No_Background.png';
+import NeuraNet_Logo from '/static/NeuraNet_Icons/web/icon-512.png';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -131,7 +131,7 @@ export default function SignIn() {
             {/* <LockOutlinedIcon /> */}
           {/* </Avatar> */}
           {/* <img src={NeuraNet_Logo} alt="Logo" style={{ marginTop: 100, marginBottom: 20, width: 157.2, height: 137.2 }} /> */}
-          <img src={NeuraNet_Logo} alt="Logo" style={{ marginTop: 100, marginBottom: 20, width: 78.6, height: 68.6 }} />
+          <img src={NeuraNet_Logo} alt="Logo" style={{ marginTop: 100, marginBottom: 20, width: 50, height: 50 }} />
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>

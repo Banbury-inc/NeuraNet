@@ -81,6 +81,27 @@
       ],
       "icon": "build/icon.png"
     },
+    "mac": {
+      "target": [
+        "dmg",
+        "pkg"
+      ],
+      "icon": "static/NeuraNet_Icons/macos/AppIcon.icns"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "snap",
+        "appImage",
+        "flatpak",
+        "pacman",
+        "rpm",
+        "freebsd",
+        "p5p",
+        "apk"
+      ],
+      "icon": "static/NeuraNet_Icons/macos/AppIcon.icns"
+    },
     "files": [
       "package.json",
       "dist/**",
