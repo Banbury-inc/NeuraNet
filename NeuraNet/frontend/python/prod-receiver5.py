@@ -328,18 +328,40 @@ def get_device_info():
 
     device_name = get_device_name()
     date_and_time = str(get_current_date_and_time())
-    storage_capacity = get_storage_capacity()
+    try:
+        storage_capacity = get_storage_capacity()
+    except Exception as e:
+        print("Failed to retrieve storage capacity. Setting storage capacity to 1")
+        storage_capacity = 1
     try:
         upload_network_speed, download_network_speed = get_wifi_speed()
     except Exception as e:
         print("Failed to retrieve wifi speed. Setting wifi speeds to 1")
         upload_network_speed = 1
         download_network_speed = 1
-    ip_address = get_ip_address()
+    try:
+        ip_address = get_ip_address()
+    except Exception as e:
+        print("Failed to retrieve IP address. Setting IP address to 1")
+        ip_address = 1
     files = get_directory_info()
-    gpu_usage = get_gpu_usage()
-    cpu_usage = get_cpu_usage() 
-    ram_usage = get_ram_usage()
+    try:
+        gpu_usage = get_gpu_usage()
+        if gpu_usage is None:
+            gpu_usage = 1
+    except Exception as e:
+        print("Failed to retrieve GPU usage. Setting GPU usage to 1")
+        gpu_usage = 1
+    try:
+        cpu_usage = get_cpu_usage() 
+    except Exception as e:
+        print("Failed to retrieve CPU usage. Setting CPU usage to 1")
+        cpu_usage = 1
+    try:
+        ram_usage = get_ram_usage()
+    except Exception as e:
+        print("Failed to retrieve RAM usage. Setting RAM usage to 1")
+        ram_usage = 1
     credentials = load_credentials()
     username = next(iter(credentials))
  
@@ -366,7 +388,7 @@ def get_device_info():
         'optimization_status': True
     }
     device_info_json = json.dumps(device_info, indent=4)
-
+    print(device_info_json)
     return device_info_json
 
 # Get the home directory of the user
@@ -520,21 +542,17 @@ def get_gpu_usage():
     It seems like the GPU driver is primarily responsible for returning this value, which means that we will need to implement a bunch of different
     alternatives for all of the different types of GPU's that are out there. 
     """
-    try:
-        gpus = GPUtil.getGPUs()
-        list_gpus = []
-        for gpu in gpus:
-            gpu_id = gpu.id
-            gpu_name = gpu.name
-            gpu_load = gpu.load*100
-            gpu_free_memory = f"{gpu.memoryFree}MB"
-            gpu_used_memory = f"{gpu.memoryUsed}MB"
-            gpu_total_memory = f"{gpu.memoryTotal}MB"
-            gpu_temperature = f"{gpu.temperature} °C"
-            list_gpus.append(f"ID: {gpu_id}, Name: {gpu_name}, Load: {gpu_load}, Free Memory: {gpu_free_memory}, Used Memory: {gpu_used_memory}, Total Memory: {gpu_total_memory}, Temperature: {gpu_temperature}")
-            return gpu_load
-    except Exception as e:
-        gpu_load = 0
+    gpus = GPUtil.getGPUs()
+    list_gpus = []
+    for gpu in gpus:
+        gpu_id = gpu.id
+        gpu_name = gpu.name
+        gpu_load = gpu.load*100
+        gpu_free_memory = f"{gpu.memoryFree}MB"
+        gpu_used_memory = f"{gpu.memoryUsed}MB"
+        gpu_total_memory = f"{gpu.memoryTotal}MB"
+        gpu_temperature = f"{gpu.temperature} °C"
+        list_gpus.append(f"ID: {gpu_id}, Name: {gpu_name}, Load: {gpu_load}, Free Memory: {gpu_free_memory}, Used Memory: {gpu_used_memory}, Total Memory: {gpu_total_memory}, Temperature: {gpu_temperature}")
         return gpu_load
 
 def get_cpu_usage():

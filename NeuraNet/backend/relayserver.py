@@ -1133,8 +1133,7 @@ def send_small_ping():
 
 def send_ping():
         send_small_ping()
-        time.sleep(600)
-
+        time.sleep(10)
         date_time = datetime.now()
         print(f"{date_time} Pinging all devices")
         while True:
