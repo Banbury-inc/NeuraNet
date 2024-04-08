@@ -4,6 +4,7 @@
   "private": true,
   "description": "A decentralized cloud storage system.",
   "main": "./dist/main.js",
+  "icon": "./icon.png",
   "homepage": "./dist/renderer/index.html",
   "scripts": {
     "dev": "npm-run-all -p dev:react electron:serve",
@@ -16,7 +17,9 @@
     "build:electron": "webpack --config webpack/electron.webpack.ts --mode=production",
     "build:react": "webpack --config webpack/react.webpack.ts --mode=production",
     "package": "npm-run-all build package:dist",
-    "package:dist": "electron-builder --dir"
+    "deploy": "npm-run-all build package:dist2",
+    "package:dist": "electron-builder --dir",
+    "package:dist2": "electron-builder"
   },
   "keywords": [],
   "author": "Banbury",
@@ -67,38 +70,22 @@
   "build": {
     "appId": "com.company.app",
     "productName": "NeuraNet",
-    "mac": {
-      "category": "public.app-category.video"
-    },
     "directories": {
-      "output": "packages"
+      "output": "packages",
+      "buildResources": "resources"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "msi"
+      ],
+      "icon": "build/icon.png"
     },
     "files": [
       "package.json",
       "dist/**",
       "dist/renderer/**"
     ],
-  "linux": {
-    "target": "snap"
-  },
-   "win": {
-      "title": "NeuraNet",
-      "version": "1.0.0",
-      noMsi: false,
-      "authors": "Banbury",
-      "target": [
-        {
-          "target": "msi",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
-        }
-      ]
-  },
-    "mac": {
-    "target": "dmg"
-  },
  
     "extraResources": [
       {
