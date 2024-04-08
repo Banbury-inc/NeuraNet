@@ -81,6 +81,12 @@
   "linux": {
     "target": "snap"
   },
+   "win": {
+    "target": "msi"
+  },
+    "mac": {
+    "target": "dmg"
+  },
  
     "extraResources": [
       {

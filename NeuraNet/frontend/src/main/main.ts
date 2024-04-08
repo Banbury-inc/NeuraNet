@@ -46,7 +46,6 @@ function createWindow(): void {
     );
   }
 
-mainWindow.webContents.openDevTools();
 
   // mainWindow.loadURL(startURL);
 
@@ -132,8 +131,11 @@ ipcMain.on('fetch-data', async (event, args) => {
 });
 
 // Enable logging and disable sandbox for all processes:
-app.commandLine.appendSwitch('enable-logging');
-app.commandLine.appendSwitch('no-sandbox');
+//
+//app.commandLine.appendSwitch('enable-logging');
+//app.commandLine.appendSwitch('no-sandbox');
+
+//mainWindow.webContents.openDevTools();
 
 
 app.on("ready", () => {
