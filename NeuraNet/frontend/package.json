@@ -79,7 +79,7 @@
         "nsis",
         "msi"
       ],
-      "icon": "build/icon.png"
+      "icon": "static/NeuraNet_Icons/web/icon-512.png"
     },
     "mac": {
       "target": [
