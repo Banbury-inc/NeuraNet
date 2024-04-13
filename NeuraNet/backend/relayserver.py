@@ -15,7 +15,7 @@ import hashlib
 
 
 SERVER_HOST = '0.0.0.0'  # Server host IP address
-SERVER_PORT = 8002  # Server port
+SERVER_PORT = 443  # Server port
 
 class ClientHandler(threading.Thread):
     client_sockets = []

@@ -55,64 +55,97 @@ export default function SignIn() {
       password: data.get('password'),
     });
 
-
     try {
 
+ //  const env = process.env.NODE_ENV || 'development';
+ //  let baseDir = '';
+ //  let filename = '';
+ //  let command = '';
+ //  let devbaseDir = '';
+ //  let prodbaseDir = path.join(process.resourcesPath, 'python');
+ //  if (env === 'development') {
+ //    baseDir = devbaseDir;
+ // //   filename = 'python/prod-signin2.py';
+ //    filename = path.join("python", "prod-signin2.py")
+ //    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
+ //  } else if (env === 'production') {
+ //    baseDir = prodbaseDir;
+ //    filename = 'prod-signin2.py';
+ //    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
+ //  
+ //  }
+ //    const exactcommand  = path.join(baseDir, command);
+ //    const scriptPath = path.join(baseDir, filename);
 
-
-  const env = process.env.NODE_ENV || 'development';
-  let baseDir = '';
-  let filename = '';
-  let command = '';
-  let devbaseDir = '';
-  let prodbaseDir = path.join(process.resourcesPath, 'python');
-  if (env === 'development') {
+ //      exec(`${exactcommand} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
+ //        console.log(error)
+ //        if (error) {
+ //          console.error(`exec error: ${error}`);
+ //          return;
+ //        }
+ //        if (stderr) {
+ //          console.error(`Python Script Error: ${stderr}`);
+ //          return;
+ //        }
+ //        if (stdout && stdout.trim() === 'Result: success') {
+ //          console.log('Login successful');
+ //          console.log(email)
+ //          setUsername(email); // Set username in context
+ //          setIsAuthenticated(true);
+ //        }
+ //      });
+      //
+      //
+    
+const env = process.env.NODE_ENV || 'development';
+let baseDir = '';
+let filename = '';
+let command = '';
+let devbaseDir = 'python';
+let prodbaseDir = path.join(process.resourcesPath, 'python');
+if (env === 'development') {
     baseDir = devbaseDir;
- //   filename = 'python/prod-signin2.py';
-    filename = path.join("python", "prod-signin2.py")
-    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-  } else if (env === 'production') {
+    filename = 'signin2.ts'; // TypeScript file
+    command = 'npx ts-node'; // Execute TypeScript file using ts-node
+} else if (env === 'production') {
     baseDir = prodbaseDir;
-    filename = 'prod-signin2.py';
-    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-  
-  }
-  // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+    filename = 'signin2.ts'; // TypeScript file
+    command = 'npx ts-node'; // Execute TypeScript file using ts-node
+}
 
-    const exactcommand  = path.join(baseDir, command);
-  const scriptPath = path.join(baseDir, filename);
-      // const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
-  
-      // const path_to_python = 'python3'; // Update this to the path of your Python script
-      // const scriptPath = 'resources/python/signin2.py'; // Update this to the path of your Python script
+const scriptPath = path.join(baseDir, filename);
+const { exec } = require('child_process');
+let output = ""
+console.log("script started")
 
-      exec(`${exactcommand} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
+output = exec(`${command} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error: Error & { code?: number; signal?: NodeJS.Signals } | null, stdout: string, stderr: string) => {
         console.log(error)
-        if (error) {
-          console.error(`exec error: ${error}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          return;
-        }
-        if (stdout && stdout.trim() === 'Result: success') {
-          console.log('Login successful');
-          console.log(email)
-          setUsername(email); // Set username in context
-          setIsAuthenticated(true);
-        }
-      });
+        console.log(stdout)
+        console.log(stderr)
+    if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+    }
+    if (stderr) {
+        console.error(`TypeScript Script Error: ${stderr}`);
+        return;
+    }
+    if (stdout && stdout.trim() === 'Result: success') {
+        console.log('Login successful');
+        console.log(email)
+        setUsername(email); // Set username in context
+        setIsAuthenticated(true);
+    }
+});
+console.log("script ended")
+console.log(output)
+
     } catch (error) {
       console.error('There was an error!', error);
     }
   };
-
   if (isAuthenticated) {
-
     return <Main />;
-
-
   }
 
   return (

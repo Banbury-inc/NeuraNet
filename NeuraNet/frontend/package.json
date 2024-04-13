@@ -34,6 +34,7 @@
     "@mui/x-charts": "^6.19.4",
     "@mui/x-data-grid": "^6.19.4",
     "@mui/x-tree-view": "^6.17.0",
+    "configparser": "^0.3.10",
     "copy-webpack-plugin": "^12.0.2",
     "frameless-titlebar": "^2.1.4",
     "node-fetch": "^3.3.2",
@@ -107,7 +108,6 @@
       "dist/**",
       "dist/renderer/**"
     ],
- 
     "extraResources": [
       {
         "from": "python",
@@ -123,7 +123,6 @@
           "**/*"
         ]
       }
- 
     ]
   },
   "engines": {
@@ -131,7 +130,3 @@
     "node": ">=16.13.0"
   }
 }
-
-
-
-

@@ -639,7 +639,7 @@ def main():
     print("Launching NeuraNet")
 
     sys.stdout.flush()
-    SERVER_PORT = 8002
+    SERVER_PORT =443
     receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     receiver_socket.connect((SERVER_HOST, SERVER_PORT))
     client_sockets = []
