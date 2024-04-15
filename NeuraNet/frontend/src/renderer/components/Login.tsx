@@ -35,7 +35,6 @@ import { Dispatch, SetStateAction } from 'react';
 
 
 
-
 function Copyright(props: any) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -89,62 +88,52 @@ function saveCredentials(credentials: Record<string, string>): void {
 }
 
 
-function connectToRelayServer(username: string, password: string, setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>) {
-    const RELAY_HOST = '34.28.13.79';
-    const RELAY_PORT = 443;
-    const senderSocket = new net.Socket();
-    senderSocket.connect(RELAY_PORT, RELAY_HOST);
-
-    const endOfHeader = Buffer.from('END_OF_HEADER');
-    const fileHeader = `LOGIN_REQUEST::${password}:${username}:`;
-    senderSocket.write(fileHeader);
-    senderSocket.write(endOfHeader);
-
-    senderSocket.on('data', (data) => {
-        const fileType = data.toString();
-        console.log('Received:', fileType)
-        if (fileType == 'LOGIN_SUCCESS:') {
-            const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-            const credentials = loadCredentials();
-            credentials[username] = hashedPassword;
-            saveCredentials(credentials);
-            senderSocket.end();
-            // setUsername(username);
-            setIsAuthenticated(true);
-            console.log('Result: Login successful.');
-            return <Main />;
-        } else if (fileType === 'LOGIN_FAIL') {
-            senderSocket.end();
-            console.log('Result: Login failed.');
-        }
-    });
-
-    senderSocket.on('end', () => {
-        console.log('Connection closed.');
-    });
-
-    senderSocket.on('error', (err) => {
-        console.error('Error during login:', err);
-        senderSocket.end();
-    });
-}
-
 export default function SignIn() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const setUsername = useAuth();
+    const { setUsername } = useAuth(); // Destructure setUsername from useAuth
+
+    // Move the useState hook outside of the handleSubmit function
+    const [showMain, setShowMain] = useState<boolean>(false);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const email = data.get('email') as string | null; // Cast the value to string
-        const password = data.get('password') as string | null; // Cast the value to string
+        const email = data.get('email') as string | null;
+        const password = data.get('password') as string | null;
 
         if (email && password) {
-            connectToRelayServer(email, password, setIsAuthenticated);
+            const RELAY_HOST = '34.28.13.79';
+            const RELAY_PORT = 443;
+            const senderSocket = new net.Socket();
+            senderSocket.connect(RELAY_PORT, RELAY_HOST);
+
+            const endOfHeader = Buffer.from('END_OF_HEADER');
+            const fileHeader = `LOGIN_REQUEST::${password}:${email}:`;
+            senderSocket.write(fileHeader);
+            senderSocket.write(endOfHeader);
+
+            senderSocket.on('data', (data) => {
+                const fileType = data.toString();
+                console.log('Received:', fileType)
+                if (fileType === 'LOGIN_SUCCESS:') {
+                    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+                    const credentials = loadCredentials();
+                    credentials[email] = hashedPassword;
+                    saveCredentials(credentials);
+                    senderSocket.end();
+                    setUsername(email);
+                    setIsAuthenticated(true);
+                    console.log('Result: Login successful.');
+                    setShowMain(true); // Set showMain to true when login is successful
+                } else if (fileType === 'LOGIN_FAIL') {
+                    senderSocket.end();
+                    console.log('Result: Login failed.');
+                }
+            });
         }
     };
 
-    if (isAuthenticated) {
+    if (isAuthenticated || showMain) { // Render Main component if authenticated or showMain is true
         return <Main />;
     }
   return (

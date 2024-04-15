@@ -197,12 +197,7 @@ async function run(receiver_socket: net.Socket): Promise<void> {
                   optimization_status
               };
 
-              console.log("Device Info: ", device_info_json); 
-
-
               sendDeviceInfo(receiver_socket, device_info_json);
-
-
 
             } else if (header.file_type === "SMALL_PING_REQUEST") {
 
@@ -224,13 +219,7 @@ async function run(receiver_socket: net.Socket): Promise<void> {
                   date_added,
               };
 
-              console.log("Device Info: ", device_info_json); 
-              
               sendSmallDeviceInfo(receiver_socket, device_info_json);
-              
-              
-             
-
 
             } else if (header.file_type === "FILE_DELETE_REQUEST") {
                 // Handle file delete request
@@ -293,8 +282,7 @@ async function sendSmallDeviceInfo(sender_socket: net.Socket, device_info: Small
 
     const device_info_with_stop_signal: string = JSON.stringify(device_info) + "END_OF_JSON";
     sender_socket.write(device_info_with_stop_signal);
-    console.log(device_info_with_stop_signal);
-    console.log(`${date_time} Ping response has been sent successfully.`);
+    console.log(`${date_time} Small ping response has been sent successfully.`);
 }
 
 async function get_cpu_info(): Promise<CPUPerformance> {
@@ -493,3 +481,4 @@ async function main(): Promise<void> {
 
 main();
 
+export { get_cpu_info, get_cpu_usage, get_gpu_usage, get_ram_usage, get_storage_capacity, get_ip_address, get_current_date_and_time, get_device_name, loadCredentials, get_directory_info, run, handleFile, sendProfileInfo, sendDeviceInfo, sendSmallDeviceInfo, CPUPerformance, GPUUsage, memUsage, ProfileInfo, DeviceInfo, SmallDeviceInfo, FileInfo, FileHeader, SpeedResult, IPAddress, SpeedTestResult };

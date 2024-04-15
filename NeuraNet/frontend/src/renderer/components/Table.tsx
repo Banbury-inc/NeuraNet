@@ -41,6 +41,8 @@ import CircularProgress, {
   CircularProgressProps,
 } from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
+import delete_file from './scripts/delete'; 
+import upload_file from './scripts/upload';
 
 
 interface Device {
@@ -437,69 +439,13 @@ function formatBytes(bytes: number, decimals: number = 2): string {
 
   const [deleteloading, setdeleteLoading] = useState<boolean>(false);
   const handleDeleteClick = async () => {
-    try{
-
       setdeleteLoading(true);
-
-
-  const env = process.env.NODE_ENV || 'development';
-  let baseDir = '';
-  let filename = '';
-  let command = '';
-  let devbaseDir = '';
-  let prodbaseDir = path.join(process.resourcesPath, 'python');
-  if (env === 'development') {
-    baseDir = devbaseDir;
-    filename = 'python/delete.py';
-    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-  } else if (env === 'production') {
-    baseDir = prodbaseDir;
-    filename = 'delete.py';
-    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-  
+      delete_file(selectedFileNames, selectedDeviceNames);
+      setdeleteLoading(false);
+      return;
   }
-  // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
-
-    const exactcommand  = path.join(baseDir, command);
-  const scriptPath = path.join(baseDir, filename);
-
-
-
-      // const scriptPath = 'src/main/delete.py'; // Update this to the path of your Python script
-       
-      exec(`${exactcommand} "${scriptPath}" "${selectedFileNames}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          setdeleteLoading(false);
-          return;
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          setdeleteLoading(false);
-          return
-        }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-          setdeleteLoading(false);
-          return
-        }
-        console.log(`Python Script Message: ${stdout}`);
-
-      });
-    } catch (error) {
-      console.error('There was an error!', error);
- 
-    } 
-  };
-
-
   const handleUploadClick = async () => {
     try{
-
-      // const scriptPath = 'src/main/upload.py'; // Update this to the path of your Python script
-       
-
-
 
   const env = process.env.NODE_ENV || 'development';
   let baseDir = '';

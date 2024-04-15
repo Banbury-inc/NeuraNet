@@ -8,6 +8,8 @@ import socket
 from dotenv import load_dotenv
 import configparser
 import json
+
+
 home_directory = os.path.expanduser("~")
 # Specify the folder for Banbury Cloud-related files
 BANBURY_FOLDER = os.path.join(home_directory, ".banbury")

@@ -6,7 +6,8 @@ import { exec } from "child_process";
 const { spawn } = require("child_process");
 import axios from 'axios'; // Adjusted import for axios
 import { resolve } from 'path';
-
+import * as receiver5 from './receiver5';
+import net from 'net';
 let mainWindow: BrowserWindow | null;
 
 function createWindow(): void {
@@ -87,40 +88,21 @@ function createWindow(): void {
 
 
 function runPythonScript() {
-  const env = process.env.NODE_ENV || 'development';
-  let baseDir = '';
-  let devbaseDir = '';
-  let filename = '';
-  let command = '';
-  let prodbaseDir = path.join(process.resourcesPath, 'python');
-  if (env === 'development') {
-    baseDir = devbaseDir;
-    filename = 'python/prod-receiver5.py';
-    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-  } else if (env === 'production') {
-    baseDir = prodbaseDir;
-    filename = 'prod-receiver5.py';
-    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-  }
+    const SERVER_HOST = '34.28.13.79'
+    const SERVER_PORT = 443;
+    const receiver_socket = new net.Socket();
 
-    const scriptPath = path.join(baseDir, filename);
-    const commandPath = path.join(baseDir, command);
-    const python = spawn(commandPath, [scriptPath]);
+    receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
+        console.log("Connected to server");
+    });
 
-  python.stdout.on("data", (data: Buffer) => {
-    const result = data.toString();
-    console.log(`Python Script Message: ${result}`);
-    if (mainWindow) {
-      mainWindow.webContents.send('python-output', result);
-    }
-  });
+    receiver_socket.on('error', (err) => {
+        console.error("Error:", err);
+    });
+ 
 
-  python.stderr.on("data", (data: Buffer) => {
-    console.error(`Python Script Error: ${data}`);
-  });
-  }
-
-
+  receiver5.run(receiver_socket); 
+}
 ipcMain.on('fetch-data', async (event, args) => {
   try {
     const response = await axios.get('https://catfact.ninja/fact');

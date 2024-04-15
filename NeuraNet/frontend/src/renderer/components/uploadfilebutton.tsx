@@ -6,6 +6,9 @@ import Button from '@mui/material/Button';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import LoadingButton from '@mui/lab/LoadingButton';
+import uploadFile from './scripts/upload';
+
+
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -40,29 +43,9 @@ const InputFileUploadButton: React.FC = () => {
   const runPythonScript = async (file: File) => {
 
       setLoading(true);
-      const scriptPath = 'src/main/upload.py'; // Update this to the path of your Python script
-       
-      exec(`python "${scriptPath}" "${file.path}"`, (error, stdout, stderr) => {
-      console.log(File)
-        if (error) {
-          setLoading(false);
-          console.error(`exec error: ${error}`);
-          return;
-        }
-        if (stderr) {
-          setLoading(false);
-          console.error(`Python Script Error: ${stderr}`);
-          return
-        }
-        if (stdout) {
-          setLoading(false);
-          console.log(`Python Script Message: ${stdout}`);
-          return
-        }
-        console.log(`Python Script Message: ${stdout}`);
+        uploadFile(file.path);
+         setLoading(false);
 
-      });
- 
     } 
 
 
