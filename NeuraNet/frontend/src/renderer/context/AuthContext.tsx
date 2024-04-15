@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 interface AuthContextType {
   username: string | null;
   setUsername: (username: string | null) => void;
-  isAuthenticated: () => boolean;
+  isAuthenticated: boolean; // Change the type to boolean directly
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,9 +19,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(username);
   };
 
-  const isAuthenticated = (): boolean => {
-    return !!username;
-  };
+  const isAuthenticated = !!username; // Update isAuthenticated to directly return the boolean value
 
   return (
     <AuthContext.Provider value={{ username, setUsername, isAuthenticated }}>

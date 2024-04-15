@@ -61,11 +61,7 @@ function login(username: string, passwordStr: string): string {
     senderSocket.write(endOfHeader);
 
     let jobCompleted = false;
-    while (!jobCompleted) {
-        const data = senderSocket.read();
-        if (!data) {
-            break;
-        }
+    senderSocket.on('data', (data) => {
         buffer = Buffer.concat([buffer, data]);
         let fileType = 'Unknown';
         if (buffer.includes(endOfHeader) && !header) {
@@ -88,25 +84,37 @@ function login(username: string, passwordStr: string): string {
             credentials[username] = hashedPassword;
             saveCredentials(credentials);
             senderSocket.end();
+            console.log('Result: success');
             return result;
         } else if (fileType === 'LOGIN_FAIL') {
             jobCompleted = true;
-            const result = 'fail';
+            const result = 'Result: fail';
             senderSocket.end();
+            console.log('Result: Login failed.');
             return result;
         }
-    }
-    senderSocket.end();
+    });
+
+    senderSocket.on('end', () => {
+        if (!jobCompleted) {
+            console.log('Connection closed before login completion.');
+        }
+    });
+
+    senderSocket.on('error', (err) => {
+        console.error('Error during login:', err);
+        senderSocket.end();
+    });
+
     return '';
 }
+
 
 function main(): void {
     if (process.argv.length > 3) {
         const username = process.argv[2];
         const passwordStr = process.argv[3];
         const result = login(username, passwordStr);
-
-        console.log(`Result: ${result}`);
     } else {
         console.log('No argument received.');
     }
@@ -115,3 +123,5 @@ function main(): void {
 if (require.main === module) {
     main();
 }
+
+

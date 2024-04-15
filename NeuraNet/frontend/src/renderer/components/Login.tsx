@@ -23,6 +23,18 @@ import { BrowserRouter, Route, Routes, Outlet, Navigate } from "react-router-dom
 import Signup from "./signup";
 import Main from "./main";
 import { useAuth } from '../context/AuthContext';
+import fs from 'fs';
+import dotenv from 'dotenv';
+import os from 'os';
+import ConfigParser from 'configparser';
+import net from 'net';
+import useHistory from 'react-router-dom';
+import crypto from 'crypto';
+import { Dispatch, SetStateAction } from 'react';
+
+
+
+
 
 function Copyright(props: any) {
   return (
@@ -40,114 +52,101 @@ function Copyright(props: any) {
 const path = require('path');
 
 
+dotenv.config();
 
-export default function SignIn() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const { setUsername } = useAuth();
+const homeDirectory = os.homedir();
+const BANBURY_FOLDER = path.join(homeDirectory, '.banbury');
+const CONFIG_FILE = path.join(BANBURY_FOLDER, '.banbury_config.ini');
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email') as string | null; // Cast the value to string
-    const password = data.get('password') as string | null; // Cast the value to string
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-
-    try {
-
- //  const env = process.env.NODE_ENV || 'development';
- //  let baseDir = '';
- //  let filename = '';
- //  let command = '';
- //  let devbaseDir = '';
- //  let prodbaseDir = path.join(process.resourcesPath, 'python');
- //  if (env === 'development') {
- //    baseDir = devbaseDir;
- // //   filename = 'python/prod-signin2.py';
- //    filename = path.join("python", "prod-signin2.py")
- //    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
- //  } else if (env === 'production') {
- //    baseDir = prodbaseDir;
- //    filename = 'prod-signin2.py';
- //    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
- //  
- //  }
- //    const exactcommand  = path.join(baseDir, command);
- //    const scriptPath = path.join(baseDir, filename);
-
- //      exec(`${exactcommand} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
- //        console.log(error)
- //        if (error) {
- //          console.error(`exec error: ${error}`);
- //          return;
- //        }
- //        if (stderr) {
- //          console.error(`Python Script Error: ${stderr}`);
- //          return;
- //        }
- //        if (stdout && stdout.trim() === 'Result: success') {
- //          console.log('Login successful');
- //          console.log(email)
- //          setUsername(email); // Set username in context
- //          setIsAuthenticated(true);
- //        }
- //      });
-      //
-      //
-    
-const env = process.env.NODE_ENV || 'development';
-let baseDir = '';
-let filename = '';
-let command = '';
-let devbaseDir = 'python';
-let prodbaseDir = path.join(process.resourcesPath, 'python');
-if (env === 'development') {
-    baseDir = devbaseDir;
-    filename = 'signin2.ts'; // TypeScript file
-    command = 'npx ts-node'; // Execute TypeScript file using ts-node
-} else if (env === 'production') {
-    baseDir = prodbaseDir;
-    filename = 'signin2.ts'; // TypeScript file
-    command = 'npx ts-node'; // Execute TypeScript file using ts-node
+if (!fs.existsSync(BANBURY_FOLDER)) {
+    fs.mkdirSync(BANBURY_FOLDER);
 }
 
-const scriptPath = path.join(baseDir, filename);
-const { exec } = require('child_process');
-let output = ""
-console.log("script started")
+if (!fs.existsSync(CONFIG_FILE)) {
+    const config = new ConfigParser();
+    config.set('banbury_cloud', 'credentials_file', 'credentials.json');
+    fs.writeFileSync(CONFIG_FILE, config.toString());
+}
 
-output = exec(`${command} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error: Error & { code?: number; signal?: NodeJS.Signals } | null, stdout: string, stderr: string) => {
-        console.log(error)
-        console.log(stdout)
-        console.log(stderr)
-    if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-    }
-    if (stderr) {
-        console.error(`TypeScript Script Error: ${stderr}`);
-        return;
-    }
-    if (stdout && stdout.trim() === 'Result: success') {
-        console.log('Login successful');
-        console.log(email)
-        setUsername(email); // Set username in context
-        setIsAuthenticated(true);
-    }
-});
-console.log("script ended")
-console.log(output)
-
+function loadCredentials(): Record<string, string> {
+    try {
+        const config = new ConfigParser();
+        config.read(CONFIG_FILE);
+        const credentialsFile = config.get('banbury_cloud', 'credentials_file') || 'default_filename.json';
+        const credentialsFilePath = path.join(BANBURY_FOLDER, credentialsFile);
+        return JSON.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
     } catch (error) {
-      console.error('There was an error!', error);
+        return {};
     }
-  };
-  if (isAuthenticated) {
-    return <Main />;
-  }
+}
 
+function saveCredentials(credentials: Record<string, string>): void {
+    const config = new ConfigParser();
+    config.read(CONFIG_FILE);
+    const credentialsFile = config.get('banbury_cloud', 'credentials_file') || 'default_filename.json';
+    const credentialsFilePath = path.join(BANBURY_FOLDER, credentialsFile);
+    fs.writeFileSync(credentialsFilePath, JSON.stringify(credentials));
+}
+
+
+function connectToRelayServer(username: string, password: string, setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>) {
+    const RELAY_HOST = '34.28.13.79';
+    const RELAY_PORT = 443;
+    const senderSocket = new net.Socket();
+    senderSocket.connect(RELAY_PORT, RELAY_HOST);
+
+    const endOfHeader = Buffer.from('END_OF_HEADER');
+    const fileHeader = `LOGIN_REQUEST::${password}:${username}:`;
+    senderSocket.write(fileHeader);
+    senderSocket.write(endOfHeader);
+
+    senderSocket.on('data', (data) => {
+        const fileType = data.toString();
+        console.log('Received:', fileType)
+        if (fileType == 'LOGIN_SUCCESS:') {
+            const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+            const credentials = loadCredentials();
+            credentials[username] = hashedPassword;
+            saveCredentials(credentials);
+            senderSocket.end();
+            // setUsername(username);
+            setIsAuthenticated(true);
+            console.log('Result: Login successful.');
+            return <Main />;
+        } else if (fileType === 'LOGIN_FAIL') {
+            senderSocket.end();
+            console.log('Result: Login failed.');
+        }
+    });
+
+    senderSocket.on('end', () => {
+        console.log('Connection closed.');
+    });
+
+    senderSocket.on('error', (err) => {
+        console.error('Error during login:', err);
+        senderSocket.end();
+    });
+}
+
+export default function SignIn() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const setUsername = useAuth();
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const email = data.get('email') as string | null; // Cast the value to string
+        const password = data.get('password') as string | null; // Cast the value to string
+
+        if (email && password) {
+            connectToRelayServer(email, password, setIsAuthenticated);
+        }
+    };
+
+    if (isAuthenticated) {
+        return <Main />;
+    }
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">

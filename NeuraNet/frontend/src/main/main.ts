@@ -13,7 +13,7 @@ function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1366,
     height: 768,
-    frame: false,
+    // frame: false,
     backgroundColor: "#23272a",
     titleBarStyle: 'hidden' || 'customButtonsOnHover',
     trafficLightPosition: { x: 15, y: 15 },
