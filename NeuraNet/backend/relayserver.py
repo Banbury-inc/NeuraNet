@@ -733,7 +733,6 @@ class ClientHandler(threading.Thread):
                                     devices[index]['files'] = files
 
                                     devices[index]['online'] = True
-                                    print("changed online status to true")
                                     device_exists = True
                                     break  # Exit loop after updating
 

@@ -28,6 +28,8 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import { Email } from '@mui/icons-material';
 import * as path from "path";
+import * as change_profile_info from './scripts/change_profile_info'
+
 
 interface Device {
   device_number: number;
@@ -235,52 +237,13 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
     } 
   };
   const handleFirstnameConfirmClick = async () => {
-    try{
 
       setShowFirstnameTextField(!showFirstnameTextField);
 
       // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
        
-       const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let devbaseDir = '';
-      let filename = '';
-      let command = '';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-        filename = 'python/change_profile_info.py';
-        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
-        filename = 'prod-receiver5.py';
-        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-      }
 
-      const scriptPath = path.join(baseDir, filename);
-      const commandPath = path.join(baseDir, command);
- 
-
-
-      exec(`${commandPath} "${scriptPath}" "${firstName}" "${Lastname}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          return
-        }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-          return
-        }
-        console.log(`Python Script Message: ${stdout}`);
-      });
-    } catch (error) {
-      console.error('There was an error!', error);
- 
-    } 
+      change_profile_info.change_profile_info(firstName, Lastname, username, Email, Password);
   };
 
   const [showLastnameTextField, setShowLastnameTextField] = useState(false);

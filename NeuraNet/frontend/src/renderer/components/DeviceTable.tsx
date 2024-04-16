@@ -25,6 +25,7 @@ import { useAuth } from '../context/AuthContext';
 import Card from '@mui/material/Card';
 import { CardContent } from "@mui/material";
 import * as path from "path";
+import deleteDevice from "./scripts/delete_device";
 
 const { spawn } = require("child_process");
 
@@ -220,51 +221,8 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
 
   const handleDeleteClick = async () => {
-    try{
-
-      // const scriptPath = 'src/main/deleteDevice.py'; // Update this to the path of your Python script
-       const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let filename = '';
-      let command = '';
-      let devbaseDir = 'python';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-        filename = 'python/deleteDevice.py';
-        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
-        filename = 'deleteDevice.py';
-        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-      }
-       
-
-    const exactcommand  = path.join(baseDir, command);
-    const scriptPath = path.join(baseDir, filename);
-
-
-      
-      exec(`${exactcommand} "${scriptPath}" "${selectedDeviceNames}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          return
-        }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-          return
-        }
-        console.log(`Python Script Message: ${stdout}`);
-
-      });
-    } catch (error) {
-      console.error('There was an error!', error);
- 
-    } 
+    deleteDevice(selectedDeviceNames);
+    return;
   };
 
 

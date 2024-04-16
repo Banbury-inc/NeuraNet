@@ -5,6 +5,7 @@ import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
+//@ts-ignore
 import * as si from 'systeminformation';
 import axios from 'axios';
 import commander from 'commander';
@@ -149,9 +150,43 @@ async function run(receiver_socket: net.Socket): Promise<void> {
             } else if (header.file_type === "FILE") {
                 await handleFile(header, buffer);
             } else if (header.file_type === "FILE_REQUEST") {
-                // Handle file request
+
+                console.log(`Device is requesting file: ${file_name}`);
+                const directory_name: string = "BCloud";
+                const directory_path: string = path.join(os.homedir(), directory_name);
+                const file_save_path: string = path.join(directory_path, file_name);
+                let request_file_name = path.basename(file_save_path);
+
+                try {
+                    // Attempt to open the file
+                    const file: fs.ReadStream = fs.createReadStream(file_save_path);
+                    const null_string: string = "";
+                    const file_header: string = `FILE_REQUEST_RESPONSE:${request_file_name}:${file_size}:${null_string}:END_OF_HEADER`;
+                    receiver_socket.write(file_header);
+
+                    let total_bytes_sent: number = 0;
+                    file.on('data', (bytes_read: Buffer) => {
+                        console.log("sending file...");
+                        receiver_socket.write(bytes_read);
+                        total_bytes_sent += bytes_read.length;
+                    });
+
+                    file.on('end', () => {
+                        console.log(`${file_name} has been sent successfully.`);
+                        receiver_socket.end();
+                    });
+
+                    file.on('error', (err: NodeJS.ErrnoException) => {
+                        console.error(`Error reading file: ${err}`);
+                        receiver_socket.end();
+                    });
+
+                } catch (error) {
+                    console.error(`Error sending file response: ${error}`);
+                    receiver_socket.end();
+                }
             } else if (header.file_type === "FILE_REQUEST_RESPONSE") {
-                // Handle file request response
+                console.log("Received file request response");
             } else if (header.file_type === "PING_REQUEST") {
 
               console.log("Received a ping request");
@@ -256,10 +291,31 @@ async function handleFile(header: FileHeader, buffer: Buffer): Promise<void> {
 }
 
 
-async function sendProfileInfo(sender_socket: net.Socket, profile_info: ProfileInfo): Promise<void> {
-    const profile_info_with_stop_signal = JSON.stringify(profile_info) + "END_OF_JSON";
-    const file_header = `CHANGE_PROFILE_REQUEST:::${profile_info_with_stop_signal}:END_OF_HEADER`;
+async function send_profile_info(sender_socket: net.Socket, first_name: string, last_name: string, username: string, email: string, password: string): Promise<void> {
+    const get_current_date_and_time = (): string => {
+        // Implement your logic to get current date and time
+        return new Date().toISOString();
+    };
+
+    const date_time: string = get_current_date_and_time();
+    const profile_info: Record<string, string> = {
+        'first_name': first_name,
+        'last_name': last_name,
+        'username': username,
+        'email': email,
+        'password': password,
+    };
+    const profile_info_json: string = JSON.stringify(profile_info, null, 4);
+
+    const null_string: string = "";
+    const file_header: string = `CHANGE_PROFILE_REQUEST:${null_string}:${null_string}:${null_string}:END_OF_HEADER`;
     sender_socket.write(file_header);
+
+    const profile_info_with_stop_signal: string = `${profile_info_json}END_OF_JSON`;
+    sender_socket.write(profile_info_with_stop_signal);
+
+    console.log(`${date_time} Ping response has been sent successfully.`);
+  return;
 }
 
 async function sendDeviceInfo(sender_socket: net.Socket, device_info: DeviceInfo): Promise<void> {
@@ -481,4 +537,4 @@ async function main(): Promise<void> {
 
 main();
 
-export { get_cpu_info, get_cpu_usage, get_gpu_usage, get_ram_usage, get_storage_capacity, get_ip_address, get_current_date_and_time, get_device_name, loadCredentials, get_directory_info, run, handleFile, sendProfileInfo, sendDeviceInfo, sendSmallDeviceInfo, CPUPerformance, GPUUsage, memUsage, ProfileInfo, DeviceInfo, SmallDeviceInfo, FileInfo, FileHeader, SpeedResult, IPAddress, SpeedTestResult };
+export { get_cpu_info, get_cpu_usage, get_gpu_usage, get_ram_usage, get_storage_capacity, get_ip_address, get_current_date_and_time, get_device_name, loadCredentials, get_directory_info, run, handleFile, send_profile_info, sendDeviceInfo, sendSmallDeviceInfo, CPUPerformance, GPUUsage, memUsage, ProfileInfo, DeviceInfo, SmallDeviceInfo, FileInfo, FileHeader, SpeedResult, IPAddress, SpeedTestResult };
