@@ -5,8 +5,7 @@ import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
-//@ts-ignore
-import * as si from 'systeminformation';
+import si from '../../dependency/systeminformation'
 import axios from 'axios';
 import commander from 'commander';
 import speedTest, { ResultEvent } from 'speedtest-net';
@@ -236,7 +235,6 @@ async function run(receiver_socket: net.Socket): Promise<void> {
 
             } else if (header.file_type === "SMALL_PING_REQUEST") {
 
-              console.log("Received small ping request");
 
                 // Handle ping request
               let credentials = loadCredentials();
@@ -338,7 +336,6 @@ async function sendSmallDeviceInfo(sender_socket: net.Socket, device_info: Small
 
     const device_info_with_stop_signal: string = JSON.stringify(device_info) + "END_OF_JSON";
     sender_socket.write(device_info_with_stop_signal);
-    console.log(`${date_time} Small ping response has been sent successfully.`);
 }
 
 async function get_cpu_info(): Promise<CPUPerformance> {
