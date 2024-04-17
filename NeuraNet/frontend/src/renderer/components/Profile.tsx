@@ -83,6 +83,11 @@ export default function Profile() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { username } = useAuth();
+  const [firstname, setFirstname] = useState<string>('');
+  const [lastname, setLastname] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+
   const [deviceRows, setDeviceRows] = useState<Device[]>([]); // State for storing fetched file data
   const getSelectedDeviceNames = () => {
     return selected.map(device_number => {
@@ -210,25 +215,22 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
     }
     setSelected(newSelected);
 
-
     const newSelectedDeviceNames = newSelected.map(device_number => deviceRows.find(device => device.device_number === device_number)?.device_name).filter(name => name !== undefined) as string[];
     setSelectedDeviceNames(newSelectedDeviceNames);
   };
-
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
-
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
   const isSelected = (device_number: number) => selected.indexOf(device_number) !== -1;
 
 
+
   const [showFirstnameTextField, setShowFirstnameTextField] = useState(false);
-  const [firstName, setFirstName] = useState('');
+  const [new_first_name, set_new_first_name] = useState('');
   const handleFirstnameClick = async () => {
     try{
       setShowFirstnameTextField(!showFirstnameTextField);
@@ -240,14 +242,11 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
       setShowFirstnameTextField(!showFirstnameTextField);
 
-      // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
-       
-
-      change_profile_info.change_profile_info(firstName, Lastname, username, Email, Password);
+      change_profile_info.change_profile_info(new_first_name, lastname, username, email, password);
   };
 
   const [showLastnameTextField, setShowLastnameTextField] = useState(false);
-  const [lastName, setLastName] = useState('');
+  const [new_last_name, set_new_last_name] = useState('');
   const handleLastnameClick = async () => {
     try{
       setShowLastnameTextField(!showLastnameTextField);
@@ -257,47 +256,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   };
   const handleLastnameConfirmClick = async () => {
     try{
-
-      setShowLastnameTextField(!showLastnameTextField);
-       const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let devbaseDir = '';
-      let filename = '';
-      let command = '';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-        filename = 'python/change_profile_info.py';
-        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
-        filename = 'prod-receiver5.py';
-        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-      }
-
-      const scriptPath = path.join(baseDir, filename);
-      const commandPath = path.join(baseDir, command);
- 
-
-
-      // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
-       
-      exec(`${commandPath} "${scriptPath}" "${Firstname}" "${lastName}" "${username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          return
-        }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-          return
-        }
-        console.log(`Python Script Message: ${stdout}`);
-      });
-    } catch (error) {
+   } catch (error) {
       console.error('There was an error!', error);
  
     } 
@@ -306,7 +265,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
 
   const [showUsernameTextField, setShowUsernameTextField] = useState(false);
-  const [new_username, setusername] = useState('');
+  const [new_username, set_new_username] = useState('');
   const handleUsernameClick = async () => {
     try{
       setShowUsernameTextField(!showUsernameTextField);
@@ -316,53 +275,14 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   };
   const handleUsernameConfirmClick = async () => {
     try{
-
-      setShowUsernameTextField(!showUsernameTextField);
-
-      // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
-       const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let devbaseDir = '';
-      let filename = '';
-      let command = '';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-        filename = 'python/change_profile_info.py';
-        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
-        filename = 'prod-receiver5.py';
-        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-      }
-
-      const scriptPath = path.join(baseDir, filename);
-      const commandPath = path.join(baseDir, command);
-       
-      exec(`${commandPath} "${scriptPath}" "${Firstname}" "${Lastname}" "${new_username}" "${Email}" "${Password}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          return
-        }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-          return
-        }
-        console.log(`Python Script Message: ${stdout}`);
-      });
     } catch (error) {
       console.error('There was an error!', error);
  
     } 
   };
 
-
   const [showEmailTextField, setShowEmailTextField] = useState(false);
-  const [email, setemail] = useState('');
+  const [new_email, set_new_email] = useState('');
   const handleEmailClick = async () => {
     try{
       setShowEmailTextField(!showEmailTextField);
@@ -372,45 +292,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   };
   const handleEmailConfirmClick = async () => {
     try{
-
-      setShowEmailTextField(!showEmailTextField);
-
-      // const scriptPath = 'src/main/change_profile_info.py'; // Update this to the path of your Python script
-       const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let devbaseDir = '';
-      let filename = '';
-      let command = '';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-        filename = 'python/change_profile_info.py';
-        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
-        filename = 'prod-receiver5.py';
-        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-      }
-
-      const scriptPath = path.join(baseDir, filename);
-      const commandPath = path.join(baseDir, command);
-      
-      exec(`${commandPath} "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${email}" "${Password}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          return
-        }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-          return
-        }
-        console.log(`Python Script Message: ${stdout}`);
-      });
-    } catch (error) {
+   } catch (error) {
       console.error('There was an error!', error);
  
     } 
@@ -418,7 +300,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
 
   const [showPasswordTextField, setShowPasswordTextField] = useState(false);
-  const [password, setpassword] = useState('');
+  const [new_password, set_new_password] = useState('');
   const handlePasswordClick = async () => {
     try{
       setShowPasswordTextField(!showPasswordTextField);
@@ -428,82 +310,11 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   };
   const handlePasswordConfirmClick = async () => {
     try{
-
-      setShowPasswordTextField(!showPasswordTextField);
-
-       const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let devbaseDir = '';
-      let filename = '';
-      let command = '';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-        filename = 'python/change_profile_info.py';
-        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
-        filename = 'prod-receiver5.py';
-        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-      }
-
-      const scriptPath = path.join(baseDir, filename);
-      const commandPath = path.join(baseDir, command);
- 
-      exec(`${commandPath} "${scriptPath}" "${Firstname}" "${Lastname}" "${username}" "${Email}" "${password}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          return
-        }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-          return
-        }
-        console.log(`Python Script Message: ${stdout}`);
-      });
-    } catch (error) {
+   } catch (error) {
       console.error('There was an error!', error);
  
     } 
   };
-
-
-
-
-  const [Firstname, setFirstname] = useState<string>('');
-  const [Lastname, setLastname] = useState<string>('');
-  const [Email, setEmail] = useState<string>('');
-  const [Password, setPassword] = useState<string>('');
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get<{
-          devices: any[] 
-          first_name: string;
-          last_name: string;
-          email: string;
-          password: string;
-        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username +'/');
-
-        const fetchedFirstname = response.data.first_name;
-        const fetchedLastname = response.data.last_name;
-        const fetchedEmail = response.data.email;
-        const fetchedPassword = response.data.password;
-        setEmail(fetchedEmail); 
-        setFirstname(fetchedFirstname); 
-        setLastname(fetchedLastname); 
-        setPassword(fetchedPassword); 
-        console.log(fetchedFirstname);
-     } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-  }, []);
 
 
   return (
@@ -541,11 +352,11 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
           <TextField
             id="Firstname"
             size='small'
-            defaultValue={Firstname}
-            onChange={(event) => setFirstName(event.target.value)}
+            defaultValue={firstname}
+            onChange={(event) => set_new_first_name(event.target.value)}
           />
         ) : (
-          <Typography variant="body2" gutterBottom>{Firstname}</Typography>
+          <Typography variant="body2" gutterBottom>{firstname}</Typography>
         )}
             </Grid>
        {showFirstnameTextField ?  (
@@ -578,11 +389,11 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
           <TextField
             id="Lastname"
             size='small'
-            defaultValue={Lastname}
-            onChange={(event) => setLastName(event.target.value)}
+            defaultValue={lastname}
+            onChange={(event) => set_new_last_name(event.target.value)}
           />
         ) : (
-          <Typography variant="body2" gutterBottom>{Lastname}</Typography>
+          <Typography variant="body2" gutterBottom>{lastname}</Typography>
         )}
             </Grid>
        {showLastnameTextField ?  (
@@ -616,7 +427,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
             id="Username"
             size='small'
             defaultValue={username}
-            onChange={(event) => setusername(event.target.value)}
+            onChange={(event) => set_new_username(event.target.value)}
           />
         ) : (
           <Typography variant="body2" gutterBottom>{username}</Typography>
@@ -654,10 +465,10 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
             id="email"
             size='small'
             defaultValue={Email}
-            onChange={(event) => setemail(event.target.value)}
+            onChange={(event) => set_new_email(event.target.value)}
           />
         ) : (
-          <Typography variant="body2" gutterBottom>{Email}</Typography>
+          <Typography variant="body2" gutterBottom>{email}</Typography>
         )}
             </Grid>
        {showEmailTextField ?  (
@@ -692,7 +503,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
             size='small'
             defaultValue=""
             type="password"
-            onChange={(event) => setpassword(event.target.value)}
+            onChange={(event) => set_new_password(event.target.value)}
           />
         ) : (
           <Typography variant="body2" gutterBottom>Change your account password.</Typography>

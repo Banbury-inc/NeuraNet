@@ -52,7 +52,7 @@ function saveCredentials(credentials: Record<string, string>): void {
     fs.writeFileSync(credentialsFilePath, JSON.stringify(credentials));
 }
 
-function change_profile_info(first_name: string, last_name: string,
+export default function change_profile_info(first_name: string, last_name: string,
                               username: any, 
                               email: string, 
                               password: string)
@@ -64,7 +64,7 @@ function change_profile_info(first_name: string, last_name: string,
     senderSocket.connect(RELAY_PORT, RELAY_HOST);
  
 receiver5.send_profile_info(senderSocket, first_name, last_name, username, email, password);
-      return '';
+      return;
 }
 
 
