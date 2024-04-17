@@ -242,7 +242,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
       setShowFirstnameTextField(!showFirstnameTextField);
 
-      change_profile_info.change_profile_info(new_first_name, lastname, username, email, password);
+      change_profile_info.change_profile_info(new_first_name, lastname, username, email, "undefined");
   };
 
   const [showLastnameTextField, setShowLastnameTextField] = useState(false);
@@ -256,6 +256,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   };
   const handleLastnameConfirmClick = async () => {
     try{
+      change_profile_info.change_profile_info(firstname, new_last_name, username, email, "undefined");
    } catch (error) {
       console.error('There was an error!', error);
  
@@ -275,6 +276,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   };
   const handleUsernameConfirmClick = async () => {
     try{
+      change_profile_info.change_profile_info(firstname, lastname, new_username, email, "undefined");
     } catch (error) {
       console.error('There was an error!', error);
  
@@ -292,6 +294,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   };
   const handleEmailConfirmClick = async () => {
     try{
+      change_profile_info.change_profile_info(firstname, lastname, username, new_email, "undefined");
    } catch (error) {
       console.error('There was an error!', error);
  
@@ -310,6 +313,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   };
   const handlePasswordConfirmClick = async () => {
     try{
+      change_profile_info.change_profile_info(firstname, lastname, username, email, new_password);
    } catch (error) {
       console.error('There was an error!', error);
  
