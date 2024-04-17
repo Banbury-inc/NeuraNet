@@ -22,6 +22,7 @@ import MiniDrawer from "./VariantDrawer";
 import { BrowserRouter, Route, Routes, Outlet, Navigate } from "react-router-dom";
 import Signup from "./signup";
 import Main from "./main";
+import Register from "./signup";
 import { useAuth } from '../context/AuthContext';
 import fs from 'fs';
 import dotenv from 'dotenv';
@@ -87,13 +88,14 @@ function saveCredentials(credentials: Record<string, string>): void {
     fs.writeFileSync(credentialsFilePath, JSON.stringify(credentials));
 }
 
-
 export default function SignIn() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [redirect_to_register, setredirect_to_register] = useState(false);
     const { setUsername } = useAuth(); // Destructure setUsername from useAuth
 
     // Move the useState hook outside of the handleSubmit function
     const [showMain, setShowMain] = useState<boolean>(false);
+    const [showRegister, setShowRegister] = useState<boolean>(false);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -136,6 +138,10 @@ export default function SignIn() {
     if (isAuthenticated || showMain) { // Render Main component if authenticated or showMain is true
         return <Main />;
     }
+    if (redirect_to_register || showRegister) { // Render Main component if authenticated or showMain is true
+        return <Register />;
+    }
+ 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -208,12 +214,19 @@ export default function SignIn() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="/register" variant="body2">
+                {/* <Link href="/register" variant="body2"> */}
+                <Link variant="body2" onClick={() => {
+                setredirect_to_register(true);
+                }}>
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/register" variant="body2">
+                {/* <Link href="/register" variant="body2"> */}
+                <Link variant="body2" onClick={() => {
+                setredirect_to_register(true);
+                }}>
+ 
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

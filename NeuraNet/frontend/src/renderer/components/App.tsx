@@ -241,12 +241,12 @@ export default function App(): JSX.Element {
 
 
             <main>
-            {/* <Signin /> */}
-            <Routes>
-              <Route path="/" element={<Signin />} />
-              <Route path="/login" element={<Signin />} />
-              <Route path="/register" element={<Signup />} />
-            </Routes>
+            <Signin />
+            {/* <Routes> */}
+            {/*   <Route path="/" element={<Signin />} /> */}
+            {/*   <Route path="/login" element={<Signin />} /> */}
+            {/*   <Route path="/register" element={<Signup />} /> */}
+            {/* </Routes> */}
             </main>
             {/* <Main /> */}
 
