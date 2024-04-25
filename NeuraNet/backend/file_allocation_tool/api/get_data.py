@@ -4,18 +4,34 @@ from pymongo import MongoClient
 
 class Get():
     def __init__(self):
-        pass
-    def devices(self):
-
-        # Load environment variables
-        load_dotenv()
+        load_dotenv()  # It's better to load environment variables once in the initializer
         uri = os.getenv("MONGODB_URL")
-        client = MongoClient(uri)
-        db = client['myDatabase']
-        user_collection = db['users']
+        self.client = MongoClient(uri)
+        self.db = self.client['myDatabase']
+        self.user_collection = self.db['users']
+    
+    def devices(self):
         username = "mmills6060"
-        user = user_collection.find_one({'username': username})
-        devices = user.get('devices', [])
+        user = self.user_collection.find_one({'username': username})
+        return user.get('devices', [])
+    
+    def files(self):
+        devices = self.devices()
+        all_files = []
 
-        return devices
+        # Iterate over each device and extract files
+        for device in devices:
+            device_files = device.get('files', [])  # Ensure there's a 'files' key in the device document
+            for file in device_files:
+                # Validate the expected keys in each file dictionary
+                if 'File Name' in file and 'File Size' in file:
+                    all_files.append({
+                        'file_name': file['File Name'],
+                        'priority': "high",
+                        'size': file['File Size']
+                    })
+        
+        return all_files
+
+
 
