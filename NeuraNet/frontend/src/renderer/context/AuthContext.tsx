@@ -4,6 +4,8 @@ interface AuthContextType {
   username: string | null;
   setUsername: (username: string | null) => void;
   isAuthenticated: boolean; // Change the type to boolean directly
+  redirect_to_login: boolean;
+  setredirect_to_login: (redirect_to_login: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -14,15 +16,16 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [username, setUser] = useState<string | null>(null);
+  const [redirect_to_login, setredirect_to_login] = useState<boolean>(false); // Add redirect_to_login state
 
   const setUsername = (username: string | null) => {
     setUser(username);
   };
 
-  const isAuthenticated = !!username; // Update isAuthenticated to directly return the boolean value
+  const isAuthenticated = !!username;
 
   return (
-    <AuthContext.Provider value={{ username, setUsername, isAuthenticated }}>
+    <AuthContext.Provider value={{ username, setUsername, isAuthenticated, redirect_to_login, setredirect_to_login }}>
       {children}
     </AuthContext.Provider>
   );

@@ -51,7 +51,7 @@ class PredictionService:
         plt.tight_layout()
 
     def performance_data(self, devices, show_graph):
-        future_datetime = datetime.strptime('2024-04-30 12:00:00', '%Y-%m-%d %H:%M:%S')
+        future_datetime = datetime.strptime('2024-04-1 12:00:00', '%Y-%m-%d %H:%M:%S')
         performance_data = []
 
 
@@ -69,7 +69,7 @@ class PredictionService:
             scaler = MinMaxScaler(feature_range=(0, 1))
             df_upload_speed['scaled_speed'] = scaler.fit_transform(df_upload_speed[['upload_speed']])
 
-            time_steps = 5  # Length of input sequences
+            time_steps = 50  # Length of input sequences
             X, y = self.create_dataset(df_upload_speed[['scaled_speed']], df_upload_speed['scaled_speed'], time_steps)
             
             if X.size == 0:

@@ -12,7 +12,7 @@ def main():
         device['capacity'] = device.get('storage_capacity_GB', 0)  # Default to 0 if not found
 
 
-    performance_data = predict.performance_data(devices, show_graph=False)
+    performance_data = predict.performance_data(devices, show_graph=True)
     print(performance_data)
 
     score = ScoringService() 

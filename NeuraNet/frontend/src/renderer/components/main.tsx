@@ -33,8 +33,8 @@ import Settings from './Settings';
 import { useAuth } from '../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 import AccountMenuIcon from './AccountMenuIcon';
+import Login from './Login';
 import Profile from './Profile';
-
 
 
 
@@ -46,6 +46,11 @@ export default function PermanentDrawerLeft() {
   const location = useLocation();
   const initialActiveTab = location.state?.activeTab || 'Files'; 
   const [activeTab, setActiveTab] = React.useState(initialActiveTab);
+  const { username, redirect_to_login, setredirect_to_login } = useAuth();
+
+  if (redirect_to_login) {
+    return <Login />;
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
