@@ -91,10 +91,12 @@ class ClientHandler(threading.Thread):
 
                                         file_header = f"LOGIN_SUCCESS:"
                                         socket.send(file_header.encode())
-                                        socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+                                         
 
                                     except Exception as e:
                                         print(f"Error sending to device: {e}")
+
+
 
                         else:
                             print("Login unsuccessful!")
@@ -722,7 +724,7 @@ class ClientHandler(threading.Thread):
                                     device_numbers[index] = max_device_number
 
 
-
+                            device_exists = False
                             for index, device in enumerate(devices):
                                 if device.get('device_name') == device_name:
                                     try:
@@ -735,6 +737,11 @@ class ClientHandler(threading.Thread):
                                     devices[index]['online'] = True
                                     device_exists = True
                                     break  # Exit loop after updating
+
+                            if not device_exists:
+                                # If the device name doesn't match any of the user's devices in the database, send ping
+                                print(f"Device {device_name} not found in database, sending ping request")
+                                send_ping_no_loop()
 
                             # Update the user document with the modified 'devices' array
                             user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
@@ -750,7 +757,7 @@ class ClientHandler(threading.Thread):
                                 # print(f"Error parsing JSON: {e}")
 
 
-
+                            # If the device name doesn't match any of the user's devices in the database, send ping
 
 
                     elif file_type == "PING_REQUEST_RESPONSE":
@@ -922,11 +929,20 @@ class ClientHandler(threading.Thread):
                             else:
 
                                 # set up a new device
-                                upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
-                                download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
-                                gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
-                                cpu_usages = [float(usage) for usage in device.get('cpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
-                                ram_usages = [float(usage) for usage in device.get('ram_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+
+                                print("Device not found, creating new device")
+
+
+                                # upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
+                                # download_speeds = [float(speed) for speed in device.get('download_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
+                                # gpu_usages = [float(usage) for usage in device.get('gpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                                # cpu_usages = [float(usage) for usage in device.get('cpu_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                                # ram_usages = [float(usage) for usage in device.get('ram_usage', []) if isinstance(usage, (int, str, float)) and usage != '']
+                                upload_speeds = [data["upload_network_speed"]]
+                                download_speeds = [data["download_network_speed"]]
+                                gpu_usages = [data["gpu_usage"]]
+                                cpu_usages = [data["cpu_usage"]]
+                                ram_usages = [data["ram_usage"]]
                                 total_upload_speed = sum(upload_speeds) + float(upload_network_speed)
                                 total_download_speed = sum(download_speeds) + float(download_network_speed)
                                 total_gpu_usage = sum(gpu_usages) + float(gpu_usage)
@@ -1027,7 +1043,7 @@ class ClientHandler(threading.Thread):
                             # except Exception as e:
                                 # print(f"Error parsing JSON: {e}")
                     else:
-                        print(f"Unknown data type received from {self.client_address}")
+                            print(f"Unknown data type received from {self.client_address}")
 
 
 
@@ -1129,6 +1145,64 @@ def send_small_ping():
                         ClientHandler.client_sockets.remove(client_sock)
                 
             time.sleep(10)
+
+def send_ping_no_loop():
+        print("sending ping no loop")
+        date_time = datetime.now()
+        print(f"{date_time} Pinging all devices")
+        for client_sock in ClientHandler.client_sockets:
+                perm_sock = client_sock
+                date_time = datetime.now()
+                # print(f"{date_time} Sending ping request to {client_sock}")
+                print(f"{date_time} Sending ping request")
+                try:
+                    null_string = ""
+                    file_header = f"PING_REQUEST:{null_string}:{null_string}:END_OF_HEADER"
+                    client_sock.send(file_header.encode())
+                    #socket.send(b"END_OF_HEADER") # delimiter to notify the server that the header is done
+
+                except BrokenPipeError:
+                    print("Broken pipe, removing socket, setting device to offline, moving on to the next socket.")
+                    load_dotenv()
+                    uri = os.getenv("MONGODB_URL")
+                    client = MongoClient(uri)
+                    db = client['myDatabase']
+                    user_collection = db['users']
+                    # print(ClientHandler.device_websockets)
+                    # print(ClientHandler.device_username)
+                    device_name = reverse_lookup(ClientHandler.device_websockets, perm_sock)
+                    # print(f"Device name: {device_name}")
+                    username = reverse_lookup(ClientHandler.device_username, perm_sock)
+                    # print(f"Username: {username}")
+                    if username == None:
+                        print("username is none trying another function")
+                        username = reverse_lookup_list(ClientHandler.device_username, perm_sock)
+                    if username and device_name:
+                        print("passed first if")
+                        user = user_collection.find_one({'username': username})
+                        if user:
+                            print("passed second if")
+                            devices = user.get('devices', [])
+                            for device in devices:
+                                print("passed third if")
+                                if device.get('device_name') == device_name:
+                                    print("passed fourth if")
+                                    device['online'] = False
+                                    # break
+                            user_collection.update_one({'_id': user['_id']}, {'$set': {'devices': devices}})
+                            print(f"Set {device_name} of {username} to offline")
+                    elif device_name:
+                        print("only have device name, looking up user")
+
+                    # Remove the socket from the mappings
+                    ClientHandler.device_websockets.pop(device_name, None)
+                    ClientHandler.device_username.pop(username, None)
+                    # ClientHandler.client_addresses.remove(client_socket) 
+                    ClientHandler.client_sockets.remove(client_sock)
+                # print(f"{date_time} All connected client addresses: {ClientHandler.client_addresses}")
+                # print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
+                # print(f"{date_time} All connected client users: {ClientHandler.device_username}")
+            
 
 
 def send_ping():

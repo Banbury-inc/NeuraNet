@@ -6,10 +6,12 @@ import { exec } from "child_process";
 const { spawn } = require("child_process");
 import axios from 'axios'; // Adjusted import for axios
 import { resolve } from 'path';
-import * as receiver5 from './receiver5';
 import net from 'net';
-let mainWindow: BrowserWindow | null;
+import { useAuth } from '../renderer/context/AuthContext';
+import { useEffect } from 'react';
+import * as receiver5 from './receiver5';
 
+let mainWindow: BrowserWindow | null;
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1366,
@@ -57,7 +59,7 @@ function createWindow(): void {
   mainWindow.webContents.on('did-finish-load', () => {
     // This event is triggered when the main window has finished loading
     // Now you can safely execute any code that interacts with the mainWindow
-    runPythonScript();
+    // initialize_receiver();
   });
 }
 
@@ -87,22 +89,21 @@ function createWindow(): void {
 
 
 
-function runPythonScript() {
-    const SERVER_HOST = '34.28.13.79'
-    const SERVER_PORT = 443;
-    const receiver_socket = new net.Socket();
+// function initialize_receiver() {
+//     const SERVER_HOST = '34.28.13.79'
+//     const SERVER_PORT = 443;
+//     const receiver_socket = new net.Socket();
 
-    receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
-        console.log("Connected to server");
-    });
+//     receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
+//         console.log("Connected to server");
+//     });
 
-    receiver_socket.on('error', (err) => {
-        console.error("Error:", err);
-    });
- 
+//     receiver_socket.on('error', (err) => {
+//         console.error("Error:", err);
+//     });
+//     receiver5.run(receiver_socket);
+//   }
 
-  receiver5.run(receiver_socket); 
-}
 ipcMain.on('fetch-data', async (event, args) => {
   try {
     const response = await axios.get('https://catfact.ninja/fact');
@@ -111,6 +112,14 @@ ipcMain.on('fetch-data', async (event, args) => {
     console.error('Error fetching data:', error);
   }
 });
+
+ipcMain.on('update-username', (event, username) => {
+
+  let GlobalUsername: string | null = null;
+  GlobalUsername = username;
+  console.log('Updated username:', GlobalUsername);
+});
+
 
 // Enable logging and disable sandbox for all processes:
 //

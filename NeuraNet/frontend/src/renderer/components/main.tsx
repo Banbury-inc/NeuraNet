@@ -35,11 +35,26 @@ import { useLocation } from 'react-router-dom';
 import AccountMenuIcon from './AccountMenuIcon';
 import Login from './Login';
 import Profile from './Profile';
-
+import net from 'net';
+import * as receiver5 from '../../main/receiver5';
 
 
 const { ipcRenderer } = window.require('electron');
 
+
+function initialize_receiver(username: any) {
+    const SERVER_HOST = '34.28.13.79'
+    const SERVER_PORT = 443;
+    const receiver_socket = new net.Socket();
+    receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
+        console.log("Connected to server");
+    });
+
+    receiver_socket.on('error', (err) => {
+        console.error("Error:", err);
+    });
+    receiver5.run(receiver_socket, username);
+  }
 
 
 export default function PermanentDrawerLeft() {
@@ -47,6 +62,10 @@ export default function PermanentDrawerLeft() {
   const initialActiveTab = location.state?.activeTab || 'Files'; 
   const [activeTab, setActiveTab] = React.useState(initialActiveTab);
   const { username, redirect_to_login, setredirect_to_login } = useAuth();
+
+  useEffect(() => {
+    initialize_receiver(username);
+  }, []);
 
   if (redirect_to_login) {
     return <Login />;

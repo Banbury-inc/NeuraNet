@@ -6,13 +6,18 @@ import * as dotenv from 'dotenv';
 import * as net from 'net';
 import * as crypto from 'crypto';
 import ConfigParser from 'configparser';
+import { useState } from 'react';
+import * as receiver from './receiver5';
+import { ipcRenderer } from 'electron';
+
+
+
 
 dotenv.config();
 
 const homeDirectory = os.homedir();
 const BANBURY_FOLDER = path.join(homeDirectory, '.banbury');
 const CONFIG_FILE = path.join(BANBURY_FOLDER, '.banbury_config.ini');
-
 if (!fs.existsSync(BANBURY_FOLDER)) {
     fs.mkdirSync(BANBURY_FOLDER);
 }
@@ -43,12 +48,41 @@ function loadCredentials(): Record<string, string> {
     }
 }
 
+/**
+ * Saves the credentials for a specific user, replacing any existing credentials in the file.
+ *
+ * @param {string} username - The username of the user logging in.
+ * @param {string} passwordHash - The hashed password for the user.
+ */
 function saveCredentials(credentials: Record<string, string>): void {
     const config = new ConfigParser();
     config.read(CONFIG_FILE);
     const credentialsFile = config.get('banbury_cloud', 'credentials_file') || 'default_filename.json';
     const credentialsFilePath = path.join(BANBURY_FOLDER, credentialsFile);
-    fs.writeFileSync(credentialsFilePath, JSON.stringify(credentials));
+
+    // Overwrite the existing credentials file with the new data
+    fs.writeFileSync(credentialsFilePath, JSON.stringify(credentials, null, 4)); // Using null, 4 for pretty-printing
+}
+
+function deleteCredentialsFile(): void {
+    const config = new ConfigParser();
+    config.read(CONFIG_FILE);
+    const credentialsFile = config.get('banbury_cloud', 'credentials_file') || 'default_filename.json';
+    const credentialsFilePath = path.join(BANBURY_FOLDER, credentialsFile);
+
+    fs.access(credentialsFilePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.log('Credentials file does not exist:', credentialsFilePath);
+        } else {
+            fs.unlink(credentialsFilePath, (err) => {
+                if (err) {
+                    console.error('Failed to delete credentials file:', err);
+                } else {
+                    console.log('Credentials file successfully deleted:', credentialsFilePath);
+                }
+            });
+        }
+    });
 }
 
 function login(username: string, passwordStr: string): string {
@@ -84,10 +118,16 @@ function login(username: string, passwordStr: string): string {
             jobCompleted = true;
             const result = 'success';
             const hashedPassword = crypto.createHash('sha256').update(passwordStr).digest('hex');
-            const credentials = loadCredentials();
-            credentials[username] = hashedPassword;
+            deleteCredentialsFile();
+            // Create a new credentials object with only the current user's information
+            const credentials = {
+                username: hashedPassword
+            };
+            // Save the new credentials, replacing any existing ones
             saveCredentials(credentials);
+            ipcRenderer.send('update-username', username);
             senderSocket.end();
+            
             return result;
         } else if (fileType === 'LOGIN_FAIL') {
             jobCompleted = true;

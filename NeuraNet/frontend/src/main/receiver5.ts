@@ -11,7 +11,7 @@ import commander from 'commander';
 import speedTest, { ResultEvent } from 'speedtest-net';
 import { DateTime } from 'luxon';
 import ConfigParser from 'configparser';
-
+import { useAuth} from '../renderer/context/AuthContext';
 
 dotenvConfig();
 
@@ -50,6 +50,7 @@ interface DeviceInfo {
     device_priority: number;
     sync_status: boolean;
     optimization_status: boolean;
+    online: boolean;
 }
 
 interface SmallDeviceInfo {
@@ -116,14 +117,16 @@ interface SpeedTestResult {
   };
 }
 
-
-async function run(receiver_socket: net.Socket): Promise<void> {
+async function run(receiver_socket: net.Socket, global_username: any): Promise<void> {
+    console.log("receiver running")
     const end_of_header = Buffer.from("END_OF_HEADER");
+
     let buffer: Buffer = Buffer.alloc(0);
     let header: FileHeader | null = null;
 
     receiver_socket.on('data', async (data: Buffer) => {
         buffer = Buffer.concat([buffer, data]);
+        console.log(buffer)
         let index = buffer.indexOf(end_of_header);
         while (index !== -1) {
             const headerPart = buffer.slice(0, index);
@@ -186,12 +189,18 @@ async function run(receiver_socket: net.Socket): Promise<void> {
                 }
             } else if (header.file_type === "FILE_REQUEST_RESPONSE") {
                 console.log("Received file request response");
+
             } else if (header.file_type === "PING_REQUEST") {
+
 
               console.log("Received a ping request");
                 // Handle ping request
               let credentials = loadCredentials();
-              let user = Object.keys(credentials)[0];
+
+              // let user = Object.keys(credentials)[0];
+
+              let user = global_username;
+              // let user = username;
               let device_number = 0
               let device_name = get_device_name();
               let files = get_directory_info();
@@ -209,6 +218,7 @@ async function run(receiver_socket: net.Socket): Promise<void> {
               let device_priority = 1;
               let sync_status = true;
               let optimization_status = true;
+              let online = true;
               
               const device_info_json: DeviceInfo = {
                   user,
@@ -228,17 +238,19 @@ async function run(receiver_socket: net.Socket): Promise<void> {
                   average_time_online,
                   device_priority,
                   sync_status,
-                  optimization_status
+                  optimization_status,
+                  online
               };
 
               sendDeviceInfo(receiver_socket, device_info_json);
 
             } else if (header.file_type === "SMALL_PING_REQUEST") {
 
-
+              console.log("received small ping request")
                 // Handle ping request
               let credentials = loadCredentials();
-              let user = Object.keys(credentials)[0];
+              let user = global_username;
+              // let user = Object.keys(credentials)[0];
               let device_number = 0
               let device_name = get_device_name();
               let files = get_directory_info();
@@ -253,6 +265,8 @@ async function run(receiver_socket: net.Socket): Promise<void> {
               };
 
               sendSmallDeviceInfo(receiver_socket, device_info_json);
+
+              console.log("completed smal ping request")
 
             } else if (header.file_type === "FILE_DELETE_REQUEST") {
                 // Handle file delete request
@@ -450,6 +464,12 @@ function get_device_name(): string {
     return os.hostname();
 }
 
+function get_username(): string | null {
+  const { username } = useAuth();
+  return username;
+}
+
+
 
 function loadCredentials(): Record<string, string> {
     try {
@@ -517,21 +537,21 @@ function get_directory_info() {
 }
 
 
-async function main(): Promise<void> {
-    const SERVER_HOST = '34.28.13.79'
-    const SERVER_PORT = 443;
-    const receiver_socket = new net.Socket();
+// async function main(): Promise<void> {
+//     const SERVER_HOST = '34.28.13.79'
+//     const SERVER_PORT = 443;
+//     const receiver_socket = new net.Socket();
 
-    receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
-        console.log("Connected to server");
-    });
+//     receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
+//         console.log("Connected to server");
+//     });
 
-    receiver_socket.on('error', (err) => {
-        console.error("Error:", err);
-    });
-    run(receiver_socket);
-}
+//     receiver_socket.on('error', (err) => {
+//         console.error("Error:", err);
+//     });
+//     run(receiver_socket);
+// }
 
-main();
+// main();
 
 export { get_cpu_info, get_cpu_usage, get_gpu_usage, get_ram_usage, get_storage_capacity, get_ip_address, get_current_date_and_time, get_device_name, loadCredentials, get_directory_info, run, handleFile, send_profile_info, sendDeviceInfo, sendSmallDeviceInfo, CPUPerformance, GPUUsage, memUsage, ProfileInfo, DeviceInfo, SmallDeviceInfo, FileInfo, FileHeader, SpeedResult, IPAddress, SpeedTestResult };

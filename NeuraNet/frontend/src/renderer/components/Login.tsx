@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { exec } from "child_process";
 import Avatar from '@mui/material/Avatar';
 import NeuraNet_Logo from '/static/NeuraNet_Icons/web/icon-512.png';
@@ -32,8 +32,6 @@ import net from 'net';
 import useHistory from 'react-router-dom';
 import crypto from 'crypto';
 import { Dispatch, SetStateAction } from 'react';
-
-
 
 
 function Copyright(props: any) {
@@ -92,6 +90,9 @@ export default function SignIn() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [redirect_to_register, setredirect_to_register] = useState(false);
     const { setUsername } = useAuth(); // Destructure setUsername from useAuth
+    const [run_receiver, setrun_receiver] = useState<boolean>(false);
+
+
 
     // Move the useState hook outside of the handleSubmit function
     const [showMain, setShowMain] = useState<boolean>(false);
@@ -127,6 +128,8 @@ export default function SignIn() {
                     setIsAuthenticated(true);
                     console.log('Result: Login successful.');
                     setShowMain(true); // Set showMain to true when login is successful
+                    setrun_receiver(true);
+
                 } else if (fileType === 'LOGIN_FAIL') {
                     senderSocket.end();
                     console.log('Result: Login failed.');
