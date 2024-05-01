@@ -636,10 +636,10 @@ def main():
     load_dotenv()
     SERVER_HOST = os.getenv("RELAY_HOST")
     #SERVER_HOST = "0.0.0.0"
-    print("Launching NeuraNet")
+    print("Launching Banbury Cloud")
 
     sys.stdout.flush()
-    SERVER_PORT = 8002
+    SERVER_PORT = 443
     receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     receiver_socket.connect((SERVER_HOST, SERVER_PORT))
     client_sockets = []

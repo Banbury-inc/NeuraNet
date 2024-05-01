@@ -229,19 +229,24 @@ export default function App(): JSX.Element {
           >
           {/*   <main>  */}
               {/* <Signin /> */}
-          {/*     <Routes> */}
-          {/*       <Route path="/" element={<Signin />} /> */}
-          {/*       <Route path="/main" element={<Main />} /> */}
-          {/*       <Route path="/register" element={<Signup />} /> */}
-          {/*       <Route path="/login" element={<Signin />} /> */}
-          {/*       <Route path="/settings" element={<Settings />} /> */}
-          {/*       <Route path="/profile" element={<Profile />} /> */}
-          {/*     </Routes> */}
-          {/*   </main> */}
+            {/*   <Routes> */}
+            {/*     <Route path="/" element={<Signin />} /> */}
+            {/*     <Route path="/main" element={<Main />} /> */}
+            {/*     <Route path="/register" element={<Signup />} /> */}
+            {/*     <Route path="/login" element={<Signin />} /> */}
+            {/*     <Route path="/settings" element={<Settings />} /> */}
+            {/*     <Route path="/profile" element={<Profile />} /> */}
+            {/*   </Routes> */}
+            {/* </main> */}
 
 
             <main>
             <Signin />
+            {/* <Routes> */}
+            {/*   <Route path="/" element={<Signin />} /> */}
+            {/*   <Route path="/login" element={<Signin />} /> */}
+            {/*   <Route path="/register" element={<Signup />} /> */}
+            {/* </Routes> */}
             </main>
             {/* <Main /> */}
 

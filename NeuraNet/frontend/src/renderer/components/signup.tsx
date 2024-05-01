@@ -17,8 +17,9 @@ import theme from "../theme";
 import { exec } from "child_process";
 import SignIn from './Login';
 import * as path from "path";
-
-
+import NeuraNet_Logo from '../../../static/NeuraNet_Icons/web/icon-512.png';
+import { register } from './scripts/register'
+import { main } from './scripts/register'
 
 function Copyright(props: any) {
   return (
@@ -49,12 +50,10 @@ export default function SignUp() {
     type: 'error',
     content: 'User already exists. Please choose a different username.',
   };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const email = data.get('email') as string | null; // Cast the value to string
-
+    const email = data.get('email') as string; // Cast the value to string
     console.log({
       firstName: data.get('firstName'),
       lastName: data.get('lastName'),
@@ -63,41 +62,21 @@ export default function SignUp() {
     });
 
     try {
-      const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let devbaseDir = 'python';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
+      let result = await register(
+        data.get('firstName') as string,
+        data.get('lastName') as string,
+        data.get('username') as string,
+        data.get('password') as string
+      );
+      console.log (result);
+      if (result === 'success') {
+        setregistration_success(true)
       }
-      const scriptPath = path.join(baseDir, 'register1.py');
+      if (result === 'exists') {
+        setuser_already_exists(true)
+      }
 
-      exec(`python "${scriptPath}" "${data.get('username')}" "${data.get('password')}" "${data.get('firstName')}" "${data.get('lastName')}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          console.log(error)
-          return;
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          console.log(stderr)
-          return;
-        }
-        if (stdout && stdout.trim() === 'Result: success') {
-          console.log('registration successful');
-          console.log(email)
-          console.log(stdout)
-          setregistration_success(true);
-        }
-        if (stdout && stdout.trim() === 'Result: fail-user already exists') {
-          console.log('registration successful');
-          console.log(email)
-          console.log(stdout)
-          setuser_already_exists(true);
-        }
-      });
+
     } catch (error) {
       console.error('There was an error!', error);
     }
@@ -112,15 +91,13 @@ export default function SignUp() {
           <CssBaseline />
           <Box
             sx={{
-              marginTop: 8,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <LockOutlinedIcon />
-            </Avatar>
+
+          <img src={NeuraNet_Logo} alt="Logo" style={{ marginTop: 100, marginBottom: 20, width: 50, height: 50 }} />
             <Typography component="h1" variant="h5">
               Sign up
             </Typography>
@@ -207,7 +184,11 @@ export default function SignUp() {
               </Button>
               <Grid container justifyContent="flex-end">
                 <Grid item>
-                  <Link href="/login" variant="body2">
+                  {/* <Link href="/login" variant="body2"> */}
+                <Link variant="body2" onClick={() => {
+                setregistration_success(true);
+                }}>
+ 
                     Already have an account? Sign in
                   </Link>
                 </Grid>

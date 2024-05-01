@@ -16,11 +16,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-
+import Login from './Login';
+import isAuthenticated from './Login';
+import setshowMain from './Login';
 export default function AccountMenuIcon() {
   const [Firstname, setFirstname] = useState<string>('');
   const [Lastname, setLastname] = useState<string>('');
-  const { username } = useAuth();
+  const { username, redirect_to_login, setredirect_to_login } = useAuth();
+  const [showLogin, setShowLogin] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,9 +53,9 @@ export default function AccountMenuIcon() {
   };
 
   const handleLogout = () => {
-    // Perform logout logic here
-    // After logout, navigate to the login page
-    navigate('/login');
+    setredirect_to_login(true);
+
+    
   };
 
   const handleSettingsClick = () => {
@@ -61,6 +64,7 @@ export default function AccountMenuIcon() {
     handleClose(); // Close the menu after clicking on settings
   };
 
+ 
   return (
     <React.Fragment>
       <Box sx={{ mr: '20px', display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -126,7 +130,7 @@ export default function AccountMenuIcon() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={handleLogout}>
+        <MenuItem onClick={() => {setredirect_to_login(true)}}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>
@@ -136,3 +140,5 @@ export default function AccountMenuIcon() {
     </React.Fragment>
   );
 }
+
+

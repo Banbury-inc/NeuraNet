@@ -6,6 +6,9 @@ const rootPath = path.resolve(__dirname, "..");
 const config: Configuration = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      'osx-temperature-sensor': false // Set the alias to false to ignore the missing module
+    }
   },
   devtool: "source-map",
   entry: path.resolve(rootPath, "src/main", "main.ts"),

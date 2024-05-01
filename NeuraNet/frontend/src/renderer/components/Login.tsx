@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { exec } from "child_process";
 import Avatar from '@mui/material/Avatar';
 import NeuraNet_Logo from '/static/NeuraNet_Icons/web/icon-512.png';
@@ -22,7 +22,37 @@ import MiniDrawer from "./VariantDrawer";
 import { BrowserRouter, Route, Routes, Outlet, Navigate } from "react-router-dom";
 import Signup from "./signup";
 import Main from "./main";
+import Register from "./signup";
 import { useAuth } from '../context/AuthContext';
+import fs from 'fs';
+import dotenv from 'dotenv';
+import os from 'os';
+import ConfigParser from 'configparser';
+import net from 'net';
+import useHistory from 'react-router-dom';
+import crypto from 'crypto';
+import { Dispatch, SetStateAction } from 'react';
+
+
+interface Message {
+  type: string;
+  content: string;
+}
+
+
+process.on('uncaughtException', (err: Error & { code?: string }) => {
+    switch (err.code) {
+        case 'ECONNREFUSED':
+            console.error('Connection refused. The server is unreachable.');
+            break;
+        case 'ETIMEDOUT':
+            console.error('Connection timed out.');
+            break;
+        default:
+            console.error('Uncaught error:', err);
+            break;
+    }
+});
 
 function Copyright(props: any) {
   return (
@@ -40,81 +70,131 @@ function Copyright(props: any) {
 const path = require('path');
 
 
+dotenv.config();
+
+const homeDirectory = os.homedir();
+const BANBURY_FOLDER = path.join(homeDirectory, '.banbury');
+const CONFIG_FILE = path.join(BANBURY_FOLDER, '.banbury_config.ini');
+
+if (!fs.existsSync(BANBURY_FOLDER)) {
+    fs.mkdirSync(BANBURY_FOLDER);
+}
+
+if (!fs.existsSync(CONFIG_FILE)) {
+    const config = new ConfigParser();
+    config.set('banbury_cloud', 'credentials_file', 'credentials.json');
+    fs.writeFileSync(CONFIG_FILE, config.toString());
+}
+
+function loadCredentials(): Record<string, string> {
+    try {
+        const config = new ConfigParser();
+        config.read(CONFIG_FILE);
+        const credentialsFile = config.get('banbury_cloud', 'credentials_file') || 'default_filename.json';
+        const credentialsFilePath = path.join(BANBURY_FOLDER, credentialsFile);
+        return JSON.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
+    } catch (error) {
+        return {};
+    }
+}
+
+function saveCredentials(credentials: Record<string, string>): void {
+    const config = new ConfigParser();
+    config.read(CONFIG_FILE);
+    const credentialsFile = config.get('banbury_cloud', 'credentials_file') || 'default_filename.json';
+    const credentialsFilePath = path.join(BANBURY_FOLDER, credentialsFile);
+    fs.writeFileSync(credentialsFilePath, JSON.stringify(credentials));
+}
 
 export default function SignIn() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const { setUsername } = useAuth();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [redirect_to_register, setredirect_to_register] = useState(false);
+    const { setUsername } = useAuth(); // Destructure setUsername from useAuth
+    const [run_receiver, setrun_receiver] = useState<boolean>(false);
+    const [incorrect_login, setincorrect_login] = useState(false);
+    const [server_offline, setserver_offline] = useState(false);
+    const incorrect_login_message: Message = {
+      type: 'error',
+      content: 'Incorrect username or password',
+    };
+     const server_offline_message: Message = {
+      type: 'error',
+      content: 'Server is offline. Please try again later.',
+    };
+ 
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email') as string | null; // Cast the value to string
-    const password = data.get('password') as string | null; // Cast the value to string
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
 
+    // Move the useState hook outside of the handleSubmit function
+    const [showMain, setShowMain] = useState<boolean>(false);
+    const [showRegister, setShowRegister] = useState<boolean>(false);
 
-    try {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const email = data.get('email') as string | null;
+        const password = data.get('password') as string | null;
 
+        if (email && password) {
+            const RELAY_HOST = '34.28.13.79';
+            const RELAY_PORT = 443;
+            const senderSocket = new net.Socket();
+            // senderSocket.connect(RELAY_PORT, RELAY_HOST);
+            senderSocket.connect(RELAY_PORT, RELAY_HOST, () => {
+                // Connection established
+            }).on('error', (err: NodeJS.ErrnoException) => {
+                if (err.code === 'ECONNREFUSED') {
+                    console.error('Connection refused. The server is unreachable.');
+                    setserver_offline(true);
+                } else {
+                    console.error('Network error:', err);
+                }
+            });
+            const endOfHeader = Buffer.from('END_OF_HEADER');
+            const fileHeader = `LOGIN_REQUEST::${password}:${email}:`;
+            senderSocket.write(fileHeader);
+            senderSocket.write(endOfHeader);
 
+            senderSocket.on('data', (data) => {
+                const fileType = data.toString();
+                console.log('Received:', fileType)
+                try {
+                if (fileType === 'LOGIN_SUCCESS:') {
+                    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+                    const credentials = loadCredentials();
+                    credentials[email] = hashedPassword;
+                    saveCredentials(credentials);
+                    senderSocket.end();
+                    setUsername(email);
+                    setIsAuthenticated(true);
+                    console.log('Result: Login successful.');
+                    setShowMain(true); // Set showMain to true when login is successful
+                    setrun_receiver(true);
 
-  const env = process.env.NODE_ENV || 'development';
-  let baseDir = '';
-  let filename = '';
-  let command = '';
-  let devbaseDir = '';
-  let prodbaseDir = path.join(process.resourcesPath, 'python');
-  if (env === 'development') {
-    baseDir = devbaseDir;
- //   filename = 'python/prod-signin2.py';
-    filename = path.join("python", "prod-signin2.py")
-    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-  } else if (env === 'production') {
-    baseDir = prodbaseDir;
-    filename = 'prod-signin2.py';
-    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-  
-  }
-  // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
-
-    const exactcommand  = path.join(baseDir, command);
-  const scriptPath = path.join(baseDir, filename);
-      // const scriptPath = 'src/main/signin2.py'; // Update this to the path of your Python script
-  
-      // const path_to_python = 'python3'; // Update this to the path of your Python script
-      // const scriptPath = 'resources/python/signin2.py'; // Update this to the path of your Python script
-
-      exec(`${exactcommand} "${scriptPath}" "${data.get('email')}" "${data.get('password')}"`, (error, stdout, stderr) => {
-        console.log(error)
-        if (error) {
-          console.error(`exec error: ${error}`);
-          return;
+                } else if (fileType === 'LOGIN_FAIL:') {
+                    senderSocket.end();
+                    console.log('Result: Login failed.');
+                    setincorrect_login(true);
+                }
+        } catch (error: any) {
+                    console.error('Error:', error);
+                    if (error.code === 'ECONNREFUSED') {
+                        console.error('Connection refused. Is the server running?');
+                    }
+                    else {
+                        console.error('Error:', error);
+                    }
+                }
+            });
         }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          return;
-        }
-        if (stdout && stdout.trim() === 'Result: success') {
-          console.log('Login successful');
-          console.log(email)
-          setUsername(email); // Set username in context
-          setIsAuthenticated(true);
-        }
-      });
-    } catch (error) {
-      console.error('There was an error!', error);
+    };
+
+    if (isAuthenticated || showMain) { // Render Main component if authenticated or showMain is true
+        return <Main />;
     }
-  };
-
-  if (isAuthenticated) {
-
-    return <Main />;
-
-
-  }
-
+    if (redirect_to_register || showRegister) { // Render Main component if authenticated or showMain is true
+        return <Register />;
+    }
+ 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -187,15 +267,37 @@ export default function SignIn() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="/register" variant="body2">
+                {/* <Link href="/register" variant="body2"> */}
+                <Link variant="body2" onClick={() => {
+                setredirect_to_register(true);
+                }}>
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/register" variant="body2">
+                {/* <Link href="/register" variant="body2"> */}
+                <Link variant="body2" onClick={() => {
+                setredirect_to_register(true);
+                }}>
+ 
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
+              <Grid container justifyContent="center">
+                <Grid item>
+                  <div style={{ color: "#E22134", opacity: incorrect_login ? 1 : 0, transition: 'opacity 0.5s' }}>
+                    <p>{incorrect_login_message.content}</p>
+                  </div>
+                </Grid>
+              </Grid>
+               <Grid container justifyContent="center">
+                <Grid item>
+                  <div style={{ color: "#E22134", opacity: server_offline ? 1 : 0, transition: 'opacity 0.5s' }}>
+                    <p>{server_offline_message.content}</p>
+                  </div>
+                </Grid>
+              </Grid>
+ 
             </Grid>
           </Box>
         </Box>

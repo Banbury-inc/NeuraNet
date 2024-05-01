@@ -1,8 +1,8 @@
-# Banbury Cloud
+# NeuraNet
 
 ## Introduction
 
-This is a repository of all things Banbury Cloud. This will serve as a way for computers to talk to each other. This can be incredibly important, especially in the realm of AI. I would love to see this project go in a few different directions. This could be a modern solution for cloud services for both Retail and Enterprise level users. Of course, I also see this as an opportunity in AI. Potentially developing this into a platform that allows training and inference across all of your devices in the network. This could potentially limit the cost of spinning up a VM instance on AWS or Google Cloud in order to train machine learning models, by utilizing the power of all of your devices at the same time. 
+This is a repository of all things NeuraNet. This will serve as a way for computers to talk to each other. This can be incredibly important, especially in the realm of AI. I would love to see this project go in a few different directions. This could be a modern solution for cloud services for both Retail and Enterprise level users. Of course, I also see this as an opportunity in AI. Potentially developing this into a platform that allows training and inference across all of your devices in the network. This could potentially limit the cost of spinning up a VM instance on AWS or Google Cloud in order to train machine learning models, by utilizing the power of all of your devices at the same time. 
 
 ## Structure
 

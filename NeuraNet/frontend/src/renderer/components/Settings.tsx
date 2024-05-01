@@ -302,7 +302,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
         <Typography variant="subtitle1" gutterBottom>Current version</Typography>
-        <Typography variant="body2" gutterBottom>v1.0.0 beta</Typography>
+        <Typography variant="body2" gutterBottom>v1.0.1 beta</Typography>
             </Grid>
            </Grid>
         <Divider orientation="horizontal" variant="middle" />

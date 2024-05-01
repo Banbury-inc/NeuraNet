@@ -11,8 +11,6 @@ import configparser
 import json
 
 
-
-
 # Get the home directory of the user
 home_directory = os.path.expanduser("~")
 # Specify the folder for Banbury Cloud-related files
