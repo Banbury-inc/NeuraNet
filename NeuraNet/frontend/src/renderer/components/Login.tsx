@@ -34,6 +34,26 @@ import crypto from 'crypto';
 import { Dispatch, SetStateAction } from 'react';
 
 
+interface Message {
+  type: string;
+  content: string;
+}
+
+
+process.on('uncaughtException', (err: Error & { code?: string }) => {
+    switch (err.code) {
+        case 'ECONNREFUSED':
+            console.error('Connection refused. The server is unreachable.');
+            break;
+        case 'ETIMEDOUT':
+            console.error('Connection timed out.');
+            break;
+        default:
+            console.error('Uncaught error:', err);
+            break;
+    }
+});
+
 function Copyright(props: any) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -91,7 +111,17 @@ export default function SignIn() {
     const [redirect_to_register, setredirect_to_register] = useState(false);
     const { setUsername } = useAuth(); // Destructure setUsername from useAuth
     const [run_receiver, setrun_receiver] = useState<boolean>(false);
-
+    const [incorrect_login, setincorrect_login] = useState(false);
+    const [server_offline, setserver_offline] = useState(false);
+    const incorrect_login_message: Message = {
+      type: 'error',
+      content: 'Incorrect username or password',
+    };
+     const server_offline_message: Message = {
+      type: 'error',
+      content: 'Server is offline. Please try again later.',
+    };
+ 
 
 
     // Move the useState hook outside of the handleSubmit function
@@ -108,8 +138,17 @@ export default function SignIn() {
             const RELAY_HOST = '34.28.13.79';
             const RELAY_PORT = 443;
             const senderSocket = new net.Socket();
-            senderSocket.connect(RELAY_PORT, RELAY_HOST);
-
+            // senderSocket.connect(RELAY_PORT, RELAY_HOST);
+            senderSocket.connect(RELAY_PORT, RELAY_HOST, () => {
+                // Connection established
+            }).on('error', (err: NodeJS.ErrnoException) => {
+                if (err.code === 'ECONNREFUSED') {
+                    console.error('Connection refused. The server is unreachable.');
+                    setserver_offline(true);
+                } else {
+                    console.error('Network error:', err);
+                }
+            });
             const endOfHeader = Buffer.from('END_OF_HEADER');
             const fileHeader = `LOGIN_REQUEST::${password}:${email}:`;
             senderSocket.write(fileHeader);
@@ -118,6 +157,7 @@ export default function SignIn() {
             senderSocket.on('data', (data) => {
                 const fileType = data.toString();
                 console.log('Received:', fileType)
+                try {
                 if (fileType === 'LOGIN_SUCCESS:') {
                     const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
                     const credentials = loadCredentials();
@@ -130,9 +170,19 @@ export default function SignIn() {
                     setShowMain(true); // Set showMain to true when login is successful
                     setrun_receiver(true);
 
-                } else if (fileType === 'LOGIN_FAIL') {
+                } else if (fileType === 'LOGIN_FAIL:') {
                     senderSocket.end();
                     console.log('Result: Login failed.');
+                    setincorrect_login(true);
+                }
+        } catch (error: any) {
+                    console.error('Error:', error);
+                    if (error.code === 'ECONNREFUSED') {
+                        console.error('Connection refused. Is the server running?');
+                    }
+                    else {
+                        console.error('Error:', error);
+                    }
                 }
             });
         }
@@ -233,6 +283,21 @@ export default function SignIn() {
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
+              <Grid container justifyContent="center">
+                <Grid item>
+                  <div style={{ color: "#E22134", opacity: incorrect_login ? 1 : 0, transition: 'opacity 0.5s' }}>
+                    <p>{incorrect_login_message.content}</p>
+                  </div>
+                </Grid>
+              </Grid>
+               <Grid container justifyContent="center">
+                <Grid item>
+                  <div style={{ color: "#E22134", opacity: server_offline ? 1 : 0, transition: 'opacity 0.5s' }}>
+                    <p>{server_offline_message.content}</p>
+                  </div>
+                </Grid>
+              </Grid>
+ 
             </Grid>
           </Box>
         </Box>
