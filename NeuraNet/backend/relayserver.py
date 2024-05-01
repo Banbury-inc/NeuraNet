@@ -160,8 +160,8 @@ class ClientHandler(threading.Thread):
                             new_user = {
                                 "username": username,
                                 "password": hashed_password,
-                                "first_name": "",
-                                "last_name": "",
+                                "first_name": firstName,
+                                "last_name": lastName,
                                 "phone_number": None,
                                 "email": None,
                                 "devices": [],
