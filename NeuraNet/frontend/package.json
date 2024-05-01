@@ -103,13 +103,7 @@
       "target": [
         "deb",
         "snap",
-        "appImage",
-        "flatpak",
-        "pacman",
-        "rpm",
-        "freebsd",
-        "p5p",
-        "apk"
+        "appImage"
       ],
       "icon": "static/NeuraNet_Icons/macos/AppIcon.icns"
     },
