@@ -22,7 +22,7 @@
     "package:dist2": "electron-builder"
   },
   "keywords": [],
-  "author": "Banbury",
+  "author": "Banbury <mmills6060@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@electron/remote": "^2.1.2",
