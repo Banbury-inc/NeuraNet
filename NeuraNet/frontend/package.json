@@ -1,6 +1,6 @@
 {
   "name": "NeuraNet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "A decentralized cloud storage system.",
   "main": "./dist/main.js",
