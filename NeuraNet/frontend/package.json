@@ -26,13 +26,14 @@
   "license": "MIT",
   "dependencies": {
     "@electron/remote": "^2.1.2",
-    "@emotion/react": "^11.9.3",
-    "@emotion/styled": "^11.9.3",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.10",
     "@mui/lab": "^5.0.0-alpha.169",
-    "@mui/material": "^5.9.1",
+    "@mui/material": "^5.15.16",
+    "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "@mui/x-charts": "^6.19.4",
-    "@mui/x-data-grid": "^6.19.4",
+    "@mui/x-data-grid": "^6.19.11",
     "@mui/x-tree-view": "^6.17.0",
     "@types/luxon": "^3.4.2",
     "configparser": "^0.3.10",
@@ -50,7 +51,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.2",
     "speed-test": "^3.0.0",
-    "speedtest-net": "^2.2.0"
+    "speedtest-net": "^2.2.0",
+    "styled-components": "^6.1.9"
   },
   "devDependencies": {
     "@types/node": "^16.11.45",
@@ -78,6 +80,11 @@
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.9.3"
   },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0"
+  },
+ 
   "build": {
     "appId": "com.company.app",
     "productName": "NeuraNet",
