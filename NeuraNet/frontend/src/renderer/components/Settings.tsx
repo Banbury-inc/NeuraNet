@@ -278,8 +278,7 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
 
 
   return (
-    <Container>
-      <Box sx={{ width: '100%', mt: 0, pt: 5 }}>
+      <Box sx={{ width: '100%',pl: 4, pr: 4, mt: 0, pt: 5 }}>
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
@@ -373,7 +372,6 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
     </Grid>
 </Grid>
         </Box>
-    </Container>
   );
 }
 
