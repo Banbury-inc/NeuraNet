@@ -29,7 +29,7 @@ import Dashboard from './Dashboard';
 import Devices from "./Devices" 
 import DifferentLength from "./LineChart" 
 import { Stack } from '@mui/material';
-const drawerWidth = 240;
+const drawerWidth = 200;
 import { Chip } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
