@@ -29,7 +29,8 @@ if (!fs.existsSync(CONFIG_FILE)) {
 }
 
 function connectToRelayServer(): net.Socket {
-    const RELAY_HOST = '34.28.13.79';
+    // const RELAY_HOST = '34.28.13.79';
+    const RELAY_HOST = '0.0.0.0';
     const RELAY_PORT = 443;
     const senderSocket = new net.Socket();
     senderSocket.connect(RELAY_PORT, RELAY_HOST);

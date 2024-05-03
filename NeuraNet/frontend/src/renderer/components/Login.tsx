@@ -135,7 +135,8 @@ export default function SignIn() {
         const password = data.get('password') as string | null;
 
         if (email && password) {
-            const RELAY_HOST = '34.28.13.79';
+            // const RELAY_HOST = '34.28.13.79';
+            const RELAY_HOST = '0.0.0.0';
             const RELAY_PORT = 443;
             const senderSocket = new net.Socket();
             // senderSocket.connect(RELAY_PORT, RELAY_HOST);

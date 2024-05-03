@@ -43,7 +43,8 @@ const { ipcRenderer } = window.require('electron');
 
 
 function initialize_receiver(username: any) {
-    const SERVER_HOST = '34.28.13.79'
+    // const SERVER_HOST = '34.28.13.79'
+    const SERVER_HOST = '0.0.0.0'
     const SERVER_PORT = 443;
     const receiver_socket = new net.Socket();
     receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
