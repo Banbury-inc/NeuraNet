@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
+import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MuiDrawer from '@mui/material/Drawer';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -42,6 +47,28 @@ import * as receiver5 from '../../main/receiver5';
 const { ipcRenderer } = window.require('electron');
 
 
+const openedMixin = (theme: Theme): CSSObject => ({
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
+
+const closedMixin = (theme: Theme): CSSObject => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
+
 function initialize_receiver(username: any) {
     // const SERVER_HOST = '34.28.13.79'
     const SERVER_HOST = '0.0.0.0'
@@ -57,12 +84,75 @@ function initialize_receiver(username: any) {
     receiver5.run(receiver_socket, username);
   }
 
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+}));
+
+interface AppBarProps extends MuiAppBarProps {
+  open?: boolean;
+}
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})<AppBarProps>(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    ...(open && {
+      ...openedMixin(theme),
+      '& .MuiDrawer-paper': openedMixin(theme),
+    }),
+    ...(!open && {
+      ...closedMixin(theme),
+      '& .MuiDrawer-paper': closedMixin(theme),
+    }),
+  }),
+);
 
 export default function PermanentDrawerLeft() {
   const location = useLocation();
+  const theme = useTheme();
   const initialActiveTab = location.state?.activeTab || 'Files'; 
   const [activeTab, setActiveTab] = React.useState(initialActiveTab);
   const { username, redirect_to_login, setredirect_to_login } = useAuth();
+  const [open, setOpen] = React.useState(false);
+
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+const toggleDrawer = () => {
+  setOpen(!open); // This will set 'open' to the opposite of its current value
+};
 
   useEffect(() => {
     initialize_receiver(username);
@@ -75,78 +165,85 @@ export default function PermanentDrawerLeft() {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
-      >
-      {/*   <Toolbar> */}
-      {/*     <Typography variant="h6" noWrap component="div"> */}
-      {/*       Permanent drawer */}
-      {/*     </Typography> */}
-      {/*   </Toolbar> */}
-      </AppBar>
-      <Drawer
+      {/* <AppBar */}
+      {/*   position="fixed" */}
+      {/*   sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }} */}
+      {/* > */}
+      {/* </AppBar> */}
+     <Drawer
         sx={{
-          width: drawerWidth,
-          flexShrink: 0,
           '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
             marginTop: '42px'
           },
         }}
-        variant="permanent"
+        variant="permanent" open={open}
         anchor="left"
       >
-{/* <Box */}
-{/*   sx={{ */}
-{/*     display: 'flex', */}
-{/*     flexDirection: 'column', // Stack children vertically */}
-{/*     justifyContent: 'center', // Center children vertically in the container */}
-{/*     alignItems: 'center', // Center children horizontally in the container */}
-{/*     height: '7vh', // Take full height of the viewport */}
-{/*   }} */}
-{/* > */}
-
-{/*         <Stack direction="row" spacing={1} justifyContent="center"> */}
-{/*           <Typography  */}
-{/*           variant="h3" */}
-{/*             > */}
-            {/* Banbury NeuraNet */}
-{/*           </Typography> */}
-{/*         </Stack> */}
-{/* </Box> */}
-{/*         <Divider /> */}
+        <DrawerHeader>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={toggleDrawer}
+            edge="start"
+            sx={{
+              marginRight: 0,
+              ...(open && { }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+ 
+          {/* <IconButton onClick={toggleDrawer}> */}
+            {/* {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />} */}
+          {/* </IconButton> */}
+        </DrawerHeader>
 
         <List>
  
           {['Dashboard', 'Files', 'Devices', 'Profile'].map((text, index) => (
             <ListItem key={text} disablePadding>
-                <ListItemButton onClick={() => setActiveTab(text)}>
-              <ListItemIcon
+                <ListItemButton
                 sx={{
-                  minWidth: 0,
-                  mr: 3,
-                  justifyContent: 'center',
+                  minHeight: 48,
+                  justifyContent: open ? 'initial' : 'center',
+                  flexDirection: open ? 'row' : 'column',  // Change here
+                  px: 2.5,
                 }}
-              >
+                onClick={() => setActiveTab(text)}>
+
+              <ListItemIcon
+                  color='inherit'
+                  aria-label='open drawer'
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : 'auto',
+                    justifyContent: 'center',
+                  }}  
+
+
+
+                >
                 {(() => {
                   switch (index % 4) {
                     case 0:
-                      return <DashboardIcon fontSize='inherit' />;
+                      return <DashboardIcon />;
                     case 1:
-                      return <FolderIcon fontSize='inherit'/>;
+                      return <FolderIcon/>;
                     case 2:
-                      return <DevicesIcon fontSize='inherit'/>;
+                      return <DevicesIcon/>;
                     case 3:
-                      return <AccountBoxIcon fontSize='inherit'/>;
+                      return <AccountBoxIcon/>;
                     default:
                       return null; // Just in case
                   }
                 })()}
               </ListItemIcon>
-                <ListItemText primary={text}
-                />
+                {/* <ListItemText primary={text} */}
+                <ListItemText secondary={text} sx={{ 
+                  opacity: open ? 1 : 1, 
+                  display: open ? 'block' : 'block', // Always display block
+                  textAlign: 'center',  // Center text
+                }} />
               </ListItemButton>
             </ListItem>
 
@@ -157,19 +254,29 @@ export default function PermanentDrawerLeft() {
         <List>
           {['Settings'].map((text, index) => (
             <ListItem key={text} disablePadding>
-                <ListItemButton onClick={() => setActiveTab(text)}>
-                <ListItemIcon
+                <ListItemButton 
                 sx={{
-                  minWidth: 0,
-                  mr: 3,
-                  justifyContent: 'center',
+                  minHeight: 48,
+                  justifyContent: open ? 'initial' : 'center',
+                  px: 2.5,
                 }}
  
+                onClick={() => setActiveTab(text)}>
+                <ListItemIcon
+                  color='inherit'
+                  aria-label='open drawer'
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : 'auto',
+                    justifyContent: 'center',
+                  }}  
+
+
                 >
 
-                  {index % 2 === 0 ? <SettingsIcon fontSize='inherit'/> : <SettingsIcon fontSize='inherit'/>}
+                  {index % 2 === 0 ? <SettingsIcon/> : <SettingsIcon/>}
                 </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
           ))}

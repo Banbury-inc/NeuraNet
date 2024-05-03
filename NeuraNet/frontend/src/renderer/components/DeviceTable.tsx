@@ -10,6 +10,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
+import TaskBadge from './TaskBadge';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -265,7 +266,11 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
             </Grid>
             <Grid item>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+              <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
+                <TaskBadge />
                 <AccountMenuIcon />
+                </Stack>
+ 
       </Box>
  
             </Grid>

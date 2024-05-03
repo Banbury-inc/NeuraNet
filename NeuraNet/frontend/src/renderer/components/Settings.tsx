@@ -12,6 +12,8 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+
+import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { Container, Typography, Grid, Button } from "@mui/material";
@@ -268,6 +270,12 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
     fetchData();
   }, []);
 
+  const [checked, setChecked] = React.useState(true);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };
+
 
   return (
     <Container>
@@ -301,30 +309,62 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
         <Stack spacing={1}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
-        <Typography variant="subtitle1" gutterBottom>Current version</Typography>
-        <Typography variant="body2" gutterBottom>v1.0.1 beta</Typography>
+              <Typography variant="subtitle1" gutterBottom>Current version</Typography>
+              <Typography variant="body2" gutterBottom>v1.0.1 beta</Typography>
             </Grid>
-           </Grid>
+         </Grid>
         <Divider orientation="horizontal" variant="middle" />
-        <Stack spacing={1}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
-        <Typography variant="subtitle1" gutterBottom>Help</Typography>
-        <Typography variant="body2" gutterBottom>Learn how to use Banbury Cloud
-            </Typography>
+              <Typography variant="subtitle1" gutterBottom>Automatic Updates</Typography>
+              <Typography variant="body2" gutterBottom>Turn this off to prevent the app from checking for updates.
+              </Typography>
             </Grid>
-            <Grid item>
-              <Button variant="outlined" onClick={handleDeleteClick} size="small">
-                Open
-              </Button>
+            <Grid item pr={4}>
+              <Switch checked={checked} onChange={handleChange} inputProps={{ 'aria-label': 'controlled' }}/>
             </Grid>
- 
-            </Grid>
+         </Grid>
         <Divider orientation="horizontal" variant="middle" />
 
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+              <Typography variant="subtitle1" gutterBottom>Sync Devices</Typography>
+              <Typography variant="body2" gutterBottom>Allow files to sync with all other devices, when the space is available.
+              </Typography>
+            </Grid>
+            <Grid item pr={4}>
+              <Switch checked={checked} onChange={handleChange} inputProps={{ 'aria-label': 'controlled' }}/>
+            </Grid>
+         </Grid>
+        <Divider orientation="horizontal" variant="middle" />
+ 
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+              <Typography variant="subtitle1" gutterBottom>Keep Original Files</Typography>
+              <Typography variant="body2" gutterBottom>When sync is turned on, ensure that the devices keep all of their original files.
+              </Typography>
+            </Grid>
+            <Grid item pr={4}>
+              <Switch checked={checked} onChange={handleChange} inputProps={{ 'aria-label': 'controlled' }}/>
+            </Grid>
+         </Grid>
+        <Divider orientation="horizontal" variant="middle" />
+ 
 
-      </Stack>
-      </Stack>
+
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+           <Grid item>
+                <Typography variant="subtitle1" gutterBottom>Help</Typography>
+                <Typography variant="body2" gutterBottom>Learn how to use Banbury Cloud
+                </Typography>
+            </Grid>
+            <Grid item pr={4}>
+                <Button variant="outlined" onClick={handleDeleteClick} size="small">
+                  Open
+                </Button>
+            </Grid>
+          </Grid>
+        </Stack>
       </Stack>
       </Box>
     </CardContent>
