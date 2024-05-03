@@ -10,6 +10,7 @@ import TableBody from '@mui/material/TableBody';
 import LoadingButton from '@mui/lab/LoadingButton';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
+import { Skeleton } from '@mui/material';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -64,6 +65,7 @@ import upload_file from './scripts/upload';
 import DataManagementCard from './TreeView';
 import CustomizedTreeView from './TreeView';
 import { NavigateBefore } from '@mui/icons-material';
+import TaskBadge from './TaskBadge';
 
 
 interface Device {
@@ -255,6 +257,7 @@ export default function EnhancedTable() {
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [selectedFileNames, setSelectedFileNames] = useState<string[]>([]);
   const [selectedDeviceNames, setSelectedDeviceNames] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [dense, setDense] = useState(false);
@@ -383,6 +386,9 @@ function formatBytes(bytes: number, decimals: number = 2): string {
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+    finally {
+    setIsLoading(false); // Set loading to false once data is fetched or in case of an error
+    }
     };
     fetchData();
   }, 1000); 
@@ -845,10 +851,14 @@ const top100Films = [
             </Grid>
 
            <Grid item>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+              <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
+                <TaskBadge />
                 <AccountMenuIcon />
-      </Box>
+                </Stack>
+            </Box>
             </Grid>
+
             </Grid>
  
           <Grid container spacing={2}>
@@ -984,13 +994,34 @@ const top100Films = [
                 rowCount={fileRows.length}
               />
               <TableBody>
-                {stableSort(fileRows, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => {
-                    const isItemSelected = isSelected(row.id);
-                    const labelId = `enhanced-table-checkbox-${index}`;
+         {isLoading ? (
+            Array.from(new Array(rowsPerPage)).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell padding="checkbox">
+                  <Skeleton variant="rectangular" width={24} height={24} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton variant="text" width="100%" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton variant="text" width="100%" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton variant="text" width="100%" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton variant="text" width="100%" />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            stableSort(fileRows, getComparator(order, orderBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => {
+                const isItemSelected = isSelected(row.id);
+                const labelId = `enhanced-table-checkbox-${index}`; 
 
-                    return (
+              return (
                       <TableRow
                         hover
                         onClick={(event) => handleClick(event, row.id)}
@@ -1024,8 +1055,8 @@ const top100Films = [
                         <TableCell align="right" sx={{ borderBottomColor: "#424242" }} >{row.dateUploaded}</TableCell>
                       </TableRow>
                     );
-                  })}
-                {/* Handle empty rows if necessary */}
+                  })
+                )}
               </TableBody>
             </Table>
           </TableContainer>
