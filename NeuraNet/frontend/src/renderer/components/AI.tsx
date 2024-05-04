@@ -20,6 +20,7 @@ import WhatshotIcon from '@mui/icons-material/Whatshot';
 import GrainIcon from '@mui/icons-material/Grain';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
+import SendIcon from '@mui/icons-material/Send';
 import * as path from "path";
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -840,7 +841,19 @@ const top100Films = [
 
 
   return (
-      <Box sx={{ width: '100%',pl: 4, pr: 4, mt: 0, pt: 5 }}>
+      // <Box sx={{ width: '100%', height: '100%', flexGrow: 1 , pl: 4, pr: 4, mt: 0, pt: 5 }}>
+      <Box sx={{ 
+      width: '100%', 
+      height: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      justifyContent: 'space-between',
+      pl: 4,
+      pr: 4,
+      mt: 0,
+      pt: 5,
+
+    }}>
         <Stack spacing={2}>
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
             <Grid item>
@@ -850,97 +863,32 @@ const top100Films = [
             </Grid>
 
            <Grid item>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-              <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
-                <TaskBadge />
-                <AccountMenuIcon />
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+                <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
+                  <TaskBadge />
+                  <AccountMenuIcon />
                 </Stack>
-            </Box>
+              </Box>
             </Grid>
-
-            </Grid>
+          </Grid>
  
-          <Grid container spacing={2}>
-            </Grid>
+
+
+
+
+
 
        </Stack>
-<Card variant='outlined' sx={{ flexGrow: 0 }}>
-<CardContent>
-          <Grid container spacing={2}>
-           <Grid item>
-              <LoadingButton
-                  variant="outlined"
-                  loading={deleteloading} 
-                  loadingPosition="end"
-                  // endIcon={<NavigateBeforeOutlinedIcon />}
-                  onClick={handleDeleteClick} size="small">
-                {/* {buttonText} */}
-                {deleteloading ? '' : "<"}
-              </LoadingButton>
-            </Grid>
- 
-           <Grid item>
-              <LoadingButton
-                  variant="outlined"
-                  loading={deleteloading} 
-                  loadingPosition="end"
-                  // endIcon={<NavigateNextOutlinedIcon />}
-                  onClick={handleDeleteClick} size="small">
-                {/* {buttonText} */}
-                {deleteloading ? '' : ">"}
-              </LoadingButton>
-            </Grid>
- 
-           <Grid item>
-              <LoadingButton
-                  variant="outlined"
-                  loading={deleteloading} 
-                  loadingPosition="end"
-                  endIcon={<AddIcon />}
-                  onClick={handleDeleteClick} size="small">
-                {/* {buttonText} */}
-                {deleteloading ? 'Loading...' : "Folder"}
-              </LoadingButton>
-            </Grid>
- 
-            <Grid item>
-              <InputFileUploadButton/>
+<Stack direction="row" spacing={0} sx={{ width: '100%' }}>
 
-            </Grid>
-            <Grid item>
-              <LoadingButton variant="outlined" loading={loading} loadingPosition="end" endIcon={<DownloadIcon />} onClick={handleDownloadClick} size="small">
-                {/* {buttonText} */}
-                {loading ? 'Loading...' : buttonText}
-              </LoadingButton>
-            </Grid>
-           <Grid item>
-              <LoadingButton
-                  variant="outlined"
-                  loading={deleteloading} 
-                  loadingPosition="end"
-                  endIcon={<DeleteIcon />}
-                  onClick={handleDeleteClick} size="small">
-                {/* {buttonText} */}
-                {deleteloading ? 'Loading...' : "Delete"}
-              </LoadingButton>
-            </Grid>
-           <Grid item>
-      <Stack spacing={2} sx={{ width: 300 }}>  
-     <Autocomplete
-        freeSolo
-        fullWidth
-        id="free-solo-2-demo"
-        disableClearable
-        options={top100Films.map((option: any) => option.title)}
+       </Stack>
 
-        renderInput={(params: any) => (
-          <TextField
-            {...params}
+    <Grid container alignItems={"flex-end"} sx={{mb: 4, pl: 20, pr: 20}}>
+         <TextField
             fullWidth
-            label="Search input"
+            label="Message Athena"
             size='small'
             InputProps={{
-              ...params.InputProps,
               type: 'search',
               endAdornment: (
                 <InputAdornment position="end">
@@ -948,7 +896,7 @@ const top100Films = [
                     onClick={() => console.log('Search icon clicked')}
                     edge="end"
                   >
-                    <SearchIcon />
+                    <SendIcon />
                   </IconButton>
                 </InputAdornment>
               ),
@@ -956,122 +904,7 @@ const top100Films = [
 
 
           />
-        )}
-      />
-      </Stack>
-            </Grid>
- 
-          </Grid>
- 
-       </CardContent>
-        </Card>
-<Stack direction="row" spacing={0} sx={{ width: '100%' }}>
-<Card variant='outlined' sx={{ flexGrow: 0 }}>
-<CardContent>
-          <Grid container spacing={4}>
-            <Grid item>
-            <CustomizedTreeView /> 
-            </Grid>
-         </Grid>
- 
-       </CardContent>
-        </Card>
- 
-<Card variant='outlined' sx={{ flexGrow: 1 }}>
-<CardContent>
-
-        <Box my={0}>
-          {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
-          <TableContainer>
-            <Table aria-labelledby="tableTitle" size="small">
-              <EnhancedTableHead
-                numSelected={selected.length}
-                order={order}
-                orderBy={orderBy}
-                onSelectAllClick={handleSelectAllClick}
-                onRequestSort={handleRequestSort}
-                rowCount={fileRows.length}
-              />
-              <TableBody>
-         {isLoading ? (
-            Array.from(new Array(rowsPerPage)).map((_, index) => (
-              <TableRow key={index}>
-                <TableCell padding="checkbox">
-                  <Skeleton variant="rectangular" width={24} height={24} />
-                </TableCell>
-                <TableCell>
-                  <Skeleton variant="text" width="100%" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton variant="text" width="100%" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton variant="text" width="100%" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton variant="text" width="100%" />
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            stableSort(fileRows, getComparator(order, orderBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => {
-                const isItemSelected = isSelected(row.id);
-                const labelId = `enhanced-table-checkbox-${index}`; 
-
-              return (
-                      <TableRow
-                        hover
-                        onClick={(event) => handleClick(event, row.id)}
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={row.id}
-                        selected={isItemSelected}
-                      onMouseEnter={() => setHoveredRowId(row.id)} // Track hover state
-                      onMouseLeave={() => setHoveredRowId(null)} // Clear hover state                onMouseEnter={() => setHoveredRowId(row.id)} // Track hover state
-                        sx={{
-                          '&:hover .checkbox': {
-                            opacity: 1, // Show the checkbox on hover
-                          }
-                        }}
-                      >
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} padding="checkbox">
-                          {hoveredRowId === row.id ? ( // Only render Checkbox if row is hovered
-                          <Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{ 'aria-labelledby': labelId }}
-                          />
-                          ) : null}
-                        </TableCell>
-                        <TableCell component="th"  sx={{ borderBottomColor: "#424242" }} id={labelId} scope="row" padding="none">
-                          {row.fileName}
-                        </TableCell>
-                        <TableCell align="left" sx={{ borderBottomColor: "#424242" }}>{row.fileSize}</TableCell>
-                        <TableCell align="left"  sx={{ borderBottomColor: "#424242" }} >{row.deviceName}</TableCell>
-                        <TableCell align="right" sx={{ borderBottomColor: "#424242" }} >{row.dateUploaded}</TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={fileRows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Box>
-        </CardContent>
-        </Card>
-        </Stack>
+      </Grid>
       </Box>
 
   );

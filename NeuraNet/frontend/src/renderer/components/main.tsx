@@ -12,6 +12,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Divider from '@mui/material/Divider';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import AI from './AI';
@@ -137,7 +138,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function PermanentDrawerLeft() {
   const location = useLocation();
   const theme = useTheme();
-  const initialActiveTab = location.state?.activeTab || 'Files'; 
+  const initialActiveTab = location.state?.activeTab || 'AI'; 
   const [activeTab, setActiveTab] = React.useState(initialActiveTab);
   const { username, redirect_to_login, setredirect_to_login } = useAuth();
   const [open, setOpen] = React.useState(false);
@@ -201,7 +202,7 @@ const toggleDrawer = () => {
 
         <List>
  
-          {['Dashboard', 'Files', 'Devices', 'Profile'].map((text, index) => (
+          {['Dashboard', 'Files', 'Devices', 'AI', 'Profile'].map((text, index) => (
             <ListItem key={text} disablePadding>
                 <ListItemButton
                 sx={{
@@ -225,7 +226,7 @@ const toggleDrawer = () => {
 
                 >
                 {(() => {
-                  switch (index % 4) {
+                  switch (index % 5) {
                     case 0:
                       return <DashboardIcon />;
                     case 1:
@@ -233,7 +234,10 @@ const toggleDrawer = () => {
                     case 2:
                       return <DevicesIcon/>;
                     case 3:
+                      return <AutoAwesomeIcon/>;
+                    case 4:
                       return <AccountBoxIcon/>;
+ 
                     default:
                       return null; // Just in case
                   }

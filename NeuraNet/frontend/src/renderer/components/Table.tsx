@@ -8,6 +8,7 @@ import Table from '@mui/material/Table';
 import DownloadIcon from '@mui/icons-material/Download';
 import TableBody from '@mui/material/TableBody';
 import LoadingButton from '@mui/lab/LoadingButton';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import { Skeleton } from '@mui/material';
@@ -913,6 +914,20 @@ const top100Films = [
                 {loading ? 'Loading...' : buttonText}
               </LoadingButton>
             </Grid>
+
+
+           <Grid item>
+              <LoadingButton
+                  variant="outlined"
+                  loading={deleteloading} 
+                  loadingPosition="end"
+                  endIcon={<PersonAddAlt1Icon />}
+                  onClick={handleDeleteClick} size="small">
+                {/* {buttonText} */}
+                {deleteloading ? 'Loading...' : "Share"}
+              </LoadingButton>
+            </Grid>
+
            <Grid item>
               <LoadingButton
                   variant="outlined"
@@ -924,6 +939,9 @@ const top100Films = [
                 {deleteloading ? 'Loading...' : "Delete"}
               </LoadingButton>
             </Grid>
+
+
+
            <Grid item>
       <Stack spacing={2} sx={{ width: 300 }}>  
      <Autocomplete
