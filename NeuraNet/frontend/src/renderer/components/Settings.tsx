@@ -349,7 +349,19 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
          </Grid>
         <Divider orientation="horizontal" variant="middle" />
  
-
+         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+            <Grid item>
+              <Typography variant="subtitle1" gutterBottom>Contribute to NeuraNet</Typography>
+              <Typography variant="body2" gutterBottom>Allow others to use your device resources when needed This includes things like storage space, GPU, CPU,
+                            RAM. In return, you will receive the recources of the NeuraNet when you need them.
+              </Typography>
+            </Grid>
+            <Grid item pr={4}>
+              <Switch checked={checked} onChange={handleChange} inputProps={{ 'aria-label': 'controlled' }}/>
+            </Grid>
+         </Grid>
+        <Divider orientation="horizontal" variant="middle" />
+ 
 
          <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
            <Grid item>

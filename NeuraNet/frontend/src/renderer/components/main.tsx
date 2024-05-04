@@ -14,6 +14,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
+import AI from './AI';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
@@ -258,6 +259,7 @@ const toggleDrawer = () => {
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
+                  flexDirection: open ? 'row' : 'column',  // Change here
                   px: 2.5,
                 }}
  
@@ -276,7 +278,13 @@ const toggleDrawer = () => {
 
                   {index % 2 === 0 ? <SettingsIcon/> : <SettingsIcon/>}
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText secondary={text} sx={{ 
+                  opacity: open ? 1 : 1, 
+                  display: open ? 'block' : 'block', // Always display block
+                  textAlign: 'center',  // Center text
+ 
+
+                }} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -295,6 +303,8 @@ const toggleDrawer = () => {
         return <Files />;
       case 'Devices':
         return <DevicesTable  />;
+      case 'AI':
+        return <AI />;
       case 'Profile':
         return <Profile  />;
       case 'Settings':
