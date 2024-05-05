@@ -10,6 +10,59 @@ class FileHandler:
     def __init__(self, client_socket):
         self.client_socket = client_socket
 
+
+    def process_file_sync(self, buffer, username, password, file_name, device_name, file_size):
+        date_time = datetime.now()
+        print(f"{date_time} Processing file sync logic for {self.client_address}: {self.client_socket}")
+        directory_name = "BCloud"
+        directory_path = os.path.expanduser(f"~/{directory_name}")
+        file_save_path = os.path.join(directory_path, file_name)
+
+
+        # Check if the directory exists, create if it does not and create a welcome text file
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path, exist_ok=True)
+            welcome_file_path = os.path.join(directory_path, "welcome.txt")
+            with open(welcome_file_path, 'w') as welcome_file:
+                welcome_file.write("Welcome to Banbury Cloud! This is the directory that will contain all of the files "
+                                   "that you would like to have in the cloud and streamed throughout all of your devices. "
+                                   "You may place as many files in here as you would like, and they will appear on all of "
+                                   "your other devices.")
+
+        # Load Database
+        load_dotenv()
+        uri = os.getenv("MONGODB_URL")
+
+        client = MongoClient(uri)
+        db = client['myDatabase']
+        user_collection = db['users']
+        user = user_collection.find_one({'username': username})
+
+           
+        for socket in ClientHandler.client_sockets:
+            if socket != self.client_socket:
+
+                try:
+                    # Search each device object in database for a file object that is equal to file_save_path
+                    devices = user.get('devices', [])
+
+                    # if the current device has sync set to true
+                        # for index, device in enumerate(devices):
+                            # if the device is online
+                                # if the device has sync status set to true
+                                    # for each file in the device
+                                        # send a file request ping to that device
+                                            # process the file (send download request to device)
+                    pass
+                except BrokenPipeError:
+                    print(f"Broken pipe, removing socket, moving on to the next socket.")
+                    # remove the current socket from the list of client sockets
+                    ClientHandler.client_sockets.remove(socket)
+                    continue  # This skips the rest of the current iteration and moves to the next socket
+                except Exception as e:
+                    print(f"Error sending to device: {e}")
+
+
     def process_file(self, buffer, username, password, file_name, device_name, file_size):
 
         # It's a file; process the file header to get file info
