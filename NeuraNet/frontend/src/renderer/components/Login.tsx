@@ -125,7 +125,7 @@ export default function SignIn() {
 
 
     // Move the useState hook outside of the handleSubmit function
-    const [showMain, setShowMain] = useState<boolean>(true);
+    const [showMain, setShowMain] = useState<boolean>(false);
     const [showRegister, setShowRegister] = useState<boolean>(false);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

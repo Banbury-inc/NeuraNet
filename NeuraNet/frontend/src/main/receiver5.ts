@@ -37,6 +37,7 @@ interface DeviceInfo {
     device_name: string;
     files: FileInfo[];
     storage_capacity_GB: number;
+    max_storage_capacity_GB: number;
     date_added: string;
     ip_address: string;
     average_network_speed: number;
@@ -45,8 +46,15 @@ interface DeviceInfo {
     gpu_usage: number;
     cpu_usage: number;
     ram_usage: number;
+    predicted_upload_network_speed: number;
+    predicted_download_network_speed: number;
+    predicted_gpu_usage: number;
+    predicted_cpu_usage: number;
+    predicted_ram_usage: number;
+    predicted_performance_score: number;
     network_reliability: number;
     average_time_online: number;
+    tasks: number;
     device_priority: number;
     sync_status: boolean;
     optimization_status: boolean;
@@ -66,6 +74,8 @@ interface FileInfo {
     File_Name: string;
     Date_Uploaded: string;
     File_Size: number;
+    File_Priority: number;
+    Original_Device: string;
 }
 
 
@@ -205,6 +215,7 @@ async function run(receiver_socket: net.Socket, global_username: any): Promise<v
               let device_name = get_device_name();
               let files = get_directory_info();
               let storage_capacity_GB = await get_storage_capacity();
+              let max_storage_capacity_GB = 50 
               let date_added = get_current_date_and_time();
               let ip_address = await get_ip_address();
               let average_network_speed = 0 
@@ -213,8 +224,15 @@ async function run(receiver_socket: net.Socket, global_username: any): Promise<v
               let gpu_usage = await get_gpu_usage();
               let cpu_usage = await get_cpu_usage(); 
               let ram_usage = await get_ram_usage();
+              let predicted_upload_network_speed = 0
+              let predicted_download_network_speed = 0 
+              let predicted_gpu_usage = 0 
+              let predicted_cpu_usage = 0 
+              let predicted_ram_usage = 0 
+              let predicted_performance_score = 0 
               let network_reliability = 0;
               let average_time_online = 0;
+              let tasks = 0;
               let device_priority = 1;
               let sync_status = true;
               let optimization_status = true;
@@ -226,6 +244,7 @@ async function run(receiver_socket: net.Socket, global_username: any): Promise<v
                   device_name,
                   files,
                   storage_capacity_GB,
+                  max_storage_capacity_GB,
                   date_added,
                   ip_address,
                   average_network_speed,
@@ -234,8 +253,15 @@ async function run(receiver_socket: net.Socket, global_username: any): Promise<v
                   gpu_usage,
                   cpu_usage,
                   ram_usage,
+                  predicted_upload_network_speed,
+                  predicted_download_network_speed,
+                  predicted_gpu_usage,
+                  predicted_cpu_usage,
+                  predicted_ram_usage,
+                  predicted_performance_score,
                   network_reliability,
                   average_time_online,
+                  tasks,
                   device_priority,
                   sync_status,
                   optimization_status,
@@ -527,7 +553,9 @@ function get_directory_info() {
             const fileInfo = {
                 "File Name": filename,
                 "Date Uploaded": DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
-                "File Size": stats.size
+                "File Size": stats.size,
+                "File Priority": 5,
+                "Original_Device": filename,
             };
             filesInfo.push(fileInfo);
         }

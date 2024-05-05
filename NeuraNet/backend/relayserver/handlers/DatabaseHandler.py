@@ -12,7 +12,7 @@ class DatabaseHandler:
     def initialize(self):
         load_dotenv()
         uri = os.getenv("MONGODB_URL")
-        client = MongoClient(uri)
+        client = MongoClient(uri, tlsAllowInvalidCertificates=True)
         db = client['myDatabase']
         user_collection = db['users']
         for user in user_collection.find():
@@ -24,7 +24,7 @@ class DatabaseHandler:
 
     def get_devices(self, username):
         uri = os.getenv("MONGODB_URL")
-        client = MongoClient(uri)
+        client = MongoClient(uri, tlsAllowInvalidCertificates=True)
         db = client['myDatabase']
         user_collection = db['users']
         user = user_collection.find_one({'username': username})
@@ -33,7 +33,7 @@ class DatabaseHandler:
 
     def get_user(self, username):
         uri = os.getenv("MONGODB_URL")
-        client = MongoClient(uri)
+        client = MongoClient(uri, tlsAllowInvalidCertificates=True)
         db = client['myDatabase']
         user_collection = db['users']
         user = user_collection.find_one({'username': username})
@@ -41,7 +41,7 @@ class DatabaseHandler:
 
     def update_devices(self, username, devices):
         uri = os.getenv("MONGODB_URL")
-        client = MongoClient(uri)
+        client = MongoClient(uri, tlsAllowInvalidCertificates=True)
         db = client['myDatabase']
         user_collection = db['users']
         user = user_collection.find_one({'username': username})
@@ -108,7 +108,32 @@ class DatabaseHandler:
             device_exists = True
         return devices
 
-    def add_new_device(self, data, devices, device_number, device_name, upload_network_speed, download_network_speed, gpu_usage, cpu_usage, ram_usage, files, storage_capacity_GB, date_added, ip_address, network_reliability, average_time_online, device_priority, sync_status, optimization_status):
+    def add_new_device(self, data, 
+                       devices, 
+                       device_number, 
+                       device_name, 
+                       upload_network_speed, 
+                       download_network_speed, 
+                       gpu_usage, 
+                       cpu_usage, 
+                       ram_usage, 
+                       predicted_upload_network_speed, 
+                       predicted_download_network_speed, 
+                       predicted_gpu_usage, 
+                       predicted_cpu_usage, 
+                       predicted_ram_usage, 
+                       predicted_performance_score,
+                       files, 
+                       storage_capacity_GB, 
+                       max_storage_capacity_GB, 
+                       date_added, 
+                       ip_address, 
+                       network_reliability, 
+                       average_time_online, 
+                       tasks,
+                       device_priority, 
+                       sync_status, 
+                       optimization_status):
 
         upload_speeds = [data["upload_network_speed"]]
         download_speeds = [data["download_network_speed"]]
@@ -130,6 +155,7 @@ class DatabaseHandler:
         average_gpu_usage = total_gpu_usage / gpu_usage_count if gpu_usage_count else 0
         average_cpu_usage = total_cpu_usage / cpu_usage_count if cpu_usage_count else 0
         average_ram_usage = total_ram_usage / ram_usage_count if ram_usage_count else 0
+ 
         # ClientHandler.device_websockets[username].append(self.client_socket)
 
         # Create a new device object
@@ -138,6 +164,7 @@ class DatabaseHandler:
             'device_name': device_name,
             'files': files,  # Assuming files is already a list
             'storage_capacity_GB': storage_capacity_GB,
+            'max_storage_capacity_GB': max_storage_capacity_GB,
             'date_added': [date_added], 
             'ip_address': ip_address,
             'online': True,
@@ -151,8 +178,15 @@ class DatabaseHandler:
             'gpu_usage': [float(gpu_usage)],
             'cpu_usage': [float(cpu_usage)],
             'ram_usage': [float(ram_usage)],
+            'predicted_upload_network_speed': [float(predicted_upload_network_speed)],
+            'predicted_download_network_speed': [float(predicted_download_network_speed)],
+            'predicted_gpu_usage': [float(predicted_gpu_usage)],
+            'predicted_cpu_usage': [float(predicted_cpu_usage)],
+            'predicted_ram_usage': [float(predicted_ram_usage)],
+            'predicted_performance_score': [float(predicted_performance_score)],
             'network_reliability': network_reliability,
             'average_time_online': average_time_online,
+            'tasks': [float(tasks)],
             'device_priority': device_priority,
             'sync_status': sync_status,
             'optimization_status': optimization_status,
@@ -164,7 +198,7 @@ class DatabaseHandler:
     def update_user_metrics(self, devices, user, date_added, username):
 
         uri = os.getenv("MONGODB_URL")
-        client = MongoClient(uri)
+        client = MongoClient(uri, tlsAllowInvalidCertificates=True)
         db = client['myDatabase']
         user_collection = db['users']
         user = user_collection.find_one({'username': username})

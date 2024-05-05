@@ -116,6 +116,7 @@ class PingHandler:
             files = data["files"]
             number_of_files = str(len(files))
             storage_capacity_GB = data["storage_capacity_GB"]
+            max_storage_capacity_GB = data["max_storage_capacity_GB"]
             date_added = data["date_added"]
             ip_address = data["ip_address"]
             average_network_speed = data["average_network_speed"]
@@ -124,8 +125,15 @@ class PingHandler:
             gpu_usage = data["gpu_usage"]
             cpu_usage = data["cpu_usage"]
             ram_usage = data["ram_usage"]
+            predicted_upload_network_speed = data["predicted_upload_network_speed"]
+            predicted_download_network_speed = data["predicted_download_network_speed"]
+            predicted_gpu_usage = data["predicted_gpu_usage"]
+            predicted_cpu_usage = data["predicted_cpu_usage"]
+            predicted_ram_usage = data["predicted_ram_usage"]
+            predicted_performance_score = data["predicted_performance_score"]
             network_reliability = data["network_reliability"]
             average_time_online = data["average_time_online"]
+            tasks = data["tasks"]
             device_priority = data["device_priority"]
             sync_status = data["sync_status"]
             optimization_status = data["optimization_status"]
@@ -170,12 +178,47 @@ class PingHandler:
             database.update_device_numbers(devices)
             for index, device in enumerate(devices):
                 if device.get('device_name') == device_name:
-                    devices = database.append_device_info(index, device, devices, device_name, upload_network_speed, download_network_speed, gpu_usage, cpu_usage, ram_usage, files, date_added)
+                    devices = database.append_device_info(index, 
+                                                          device, 
+                                                          devices, 
+                                                          device_name, 
+                                                          upload_network_speed, 
+                                                          download_network_speed, 
+                                                          gpu_usage, 
+                                                          cpu_usage, 
+                                                          ram_usage, 
+                                                          files, 
+                                                          date_added)
                     break
             else:
                 print("Device not found, creating new device")
 
-                devices = database.add_new_device(data, devices, device_number, device_name, upload_network_speed, download_network_speed, gpu_usage, cpu_usage, ram_usage, files, storage_capacity_GB, date_added, ip_address, network_reliability, average_time_online, device_priority, sync_status, optimization_status)
+                devices = database.add_new_device(data, 
+                       devices, 
+                       device_number, 
+                       device_name, 
+                       upload_network_speed, 
+                       download_network_speed, 
+                       gpu_usage, 
+                       cpu_usage, 
+                       ram_usage, 
+                       predicted_upload_network_speed, 
+                       predicted_download_network_speed, 
+                       predicted_gpu_usage, 
+                       predicted_cpu_usage, 
+                       predicted_ram_usage, 
+                       predicted_performance_score,
+                       files, 
+                       storage_capacity_GB, 
+                       max_storage_capacity_GB, 
+                       date_added, 
+                       ip_address, 
+                       network_reliability, 
+                       average_time_online, 
+                       tasks, 
+                       device_priority, 
+                       sync_status, 
+                       optimization_status)
             # Update the user document with the modified 'devices' array
             database.update_devices(username, devices)
             database.update_user_metrics(devices, user, date_added, username)
