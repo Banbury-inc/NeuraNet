@@ -187,7 +187,14 @@ class PingHandler:
                                                           gpu_usage, 
                                                           cpu_usage, 
                                                           ram_usage, 
+                                                          predicted_upload_network_speed, 
+                                                          predicted_download_network_speed, 
+                                                          predicted_gpu_usage, 
+                                                          predicted_cpu_usage, 
+                                                          predicted_ram_usage, 
+                                                          predicted_performance_score, 
                                                           files, 
+                                                          tasks,
                                                           date_added)
                     break
             else:

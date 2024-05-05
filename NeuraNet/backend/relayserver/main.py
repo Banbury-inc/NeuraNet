@@ -27,6 +27,7 @@ def send_small_ping():
         date_time = datetime.now()
         print(f"{date_time} Pinging all devices")
         while True:
+            print(f"{date_time} Sending small ping to all devices")
             for client_sock in ClientHandler.client_sockets:
                     perm_sock = client_sock
                     date_time = datetime.now()
@@ -140,16 +141,17 @@ def send_ping_no_loop():
 
 
 def send_ping():
-        send_small_ping()
+        # send_small_ping()
+        threading.Thread(target=send_small_ping, daemon=True).start()
         time.sleep(10)
         date_time = datetime.now()
         print(f"{date_time} Pinging all devices")
         while True:
+            print(f"{date_time} Sending ping to all devices")
             for client_sock in ClientHandler.client_sockets:
                     perm_sock = client_sock
                     date_time = datetime.now()
                     # print(f"{date_time} Sending ping request to {client_sock}")
-                    print(f"{date_time} Sending ping request")
                     try:
                         null_string = ""
                         file_header = f"PING_REQUEST:{null_string}:{null_string}:END_OF_HEADER"
@@ -198,9 +200,8 @@ def send_ping():
                     # print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
                     # print(f"{date_time} All connected client users: {ClientHandler.device_username}")
                 
-            # time.sleep(900)
-            # time.sleep(30)
-            time.sleep(600)
+            time.sleep(10)
+            # time.sleep(600)
 
 
 

@@ -63,7 +63,26 @@ class DatabaseHandler:
                 # Update the device_numbers list for further checks
                 device_numbers[index] = max_device_number
         return devices
-    def append_device_info(self,index, device, devices, device_name, upload_network_speed, download_network_speed, gpu_usage, cpu_usage, ram_usage, files, date_added):
+    def append_device_info(self,
+                               index, 
+                              device, 
+                              devices, 
+                              device_name, 
+                              upload_network_speed, 
+                              download_network_speed, 
+                              gpu_usage, 
+                              cpu_usage, 
+                              ram_usage, 
+                              predicted_upload_network_speed, 
+                              predicted_download_network_speed, 
+                              predicted_gpu_usage, 
+                              predicted_cpu_usage, 
+                              predicted_ram_usage, 
+                              predicted_performance_score, 
+                              files, 
+                              tasks,
+                              date_added
+                           ):
 
         if device.get('device_name') == device_name:
             upload_speeds = [float(speed) for speed in device.get('upload_network_speed', []) if isinstance(speed, (int, str, float)) and speed != '']
@@ -91,21 +110,56 @@ class DatabaseHandler:
             except Exception as e:
                 print("online attribute doesn't exist, skipping")
 
-            # Update existing device in the list
-            devices[index]['upload_network_speed'].append(float(upload_network_speed))
-            devices[index]['download_network_speed'].append(float(download_network_speed))
-            devices[index]['date_added'].append(date_added)
-            devices[index]['gpu_usage'].append(float(gpu_usage))
-            devices[index]['cpu_usage'].append(float(cpu_usage))
-            devices[index]['ram_usage'].append(float(ram_usage))
-            devices[index]['files'] = files
-            devices[index]['average_upload_speed'] = average_upload_speed
-            devices[index]['average_download_speed'] = average_download_speed
-            devices[index]['average_gpu_usage'] = average_gpu_usage
-            devices[index]['average_cpu_usage'] = average_cpu_usage
-            devices[index]['average_ram_usage'] = average_ram_usage
-            devices[index]['online'] = True
-            device_exists = True
+
+            def safe_append(device_dict, key, value):
+                """
+                Safely append a value to a list in the dictionary. If the key doesn't exist,
+                it initializes a new list. If the value conversion fails, it logs the error.
+                """
+                try:
+                    if key not in device_dict:
+                        device_dict[key] = []
+                    device_dict[key].append(value)
+                except ValueError as e:
+                    print(f"Error converting {value} for {key}: {str(e)}")
+                except Exception as e:
+                    print(f"Unexpected error when updating {key} with {value}: {str(e)}")
+
+
+            try:
+                device_dict = devices[index]
+                # Safely append data
+                safe_append(device_dict, 'upload_network_speed', float(upload_network_speed))
+                safe_append(device_dict, 'download_network_speed', float(download_network_speed))
+                safe_append(device_dict, 'date_added', date_added)  # Assuming date_added is already correct format
+                safe_append(device_dict, 'gpu_usage', float(gpu_usage))
+                safe_append(device_dict, 'cpu_usage', float(cpu_usage))
+                safe_append(device_dict, 'ram_usage', float(ram_usage))
+                safe_append(device_dict, 'predicted_upload_network_speed', float(predicted_upload_network_speed))
+                safe_append(device_dict, 'predicted_download_network_speed', float(predicted_download_network_speed))
+                safe_append(device_dict, 'predicted_gpu_usage', float(predicted_gpu_usage))
+                safe_append(device_dict, 'predicted_cpu_usage', float(predicted_cpu_usage))
+                safe_append(device_dict, 'predicted_ram_usage', float(predicted_ram_usage))
+                safe_append(device_dict, 'predicted_performance_score', float(predicted_performance_score))
+                # Non-appending assignments can simply check for KeyError or TypeError
+                device_dict['files'] = files
+                device_dict['tasks'] = tasks
+                device_dict['average_upload_speed'] = average_upload_speed
+                device_dict['average_download_speed'] = average_download_speed
+                device_dict['average_gpu_usage'] = average_gpu_usage
+                device_dict['average_cpu_usage'] = average_cpu_usage
+                device_dict['average_ram_usage'] = average_ram_usage
+                device_dict['online'] = True
+                device_exists = True
+            except KeyError as e:
+                print(f"Missing required field: {str(e)}")
+            except Exception as e:
+                print(f"An error occurred updating the device: {str(e)}")
+
+
+
+
+
         return devices
 
     def add_new_device(self, data, 

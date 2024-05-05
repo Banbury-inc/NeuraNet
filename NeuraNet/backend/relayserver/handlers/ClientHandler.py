@@ -199,7 +199,7 @@ def send_small_ping():
         time.sleep(10)
 
         date_time = datetime.now()
-        print(f"{date_time} Pinging all devices")
+        print(f"{date_time} Sending small ping to all devices")
         while True:
             for client_sock in ClientHandler.client_sockets:
                     perm_sock = client_sock
@@ -372,9 +372,10 @@ def send_ping():
                     # print(f"{date_time} All connected client devices: {ClientHandler.device_websockets}")
                     # print(f"{date_time} All connected client users: {ClientHandler.device_username}")
                 
-            # time.sleep(900)
-            # time.sleep(30)
-            time.sleep(600)
+            time.sleep(10)
+
+
+            # time.sleep(600)
 
 
 def reverse_lookup(dictionary, value):
