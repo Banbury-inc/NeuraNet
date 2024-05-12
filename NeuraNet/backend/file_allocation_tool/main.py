@@ -2,6 +2,8 @@ from api.get_data import Get
 from services.prediction_service import PredictionService
 from services.scoring_service import ScoringService
 from services.allocation_service import AllocationService
+
+
 def main():
     get = Get()
     predict = PredictionService()
@@ -11,9 +13,9 @@ def main():
     for device in devices:
         device['capacity'] = device.get('storage_capacity_GB', 0)  # Default to 0 if not found
 
-
-    performance_data = predict.performance_data(devices, show_graph=True)
-    print(performance_data)
+        date = f'2024-05-5 19:25:50.473372'
+        performance_data = predict.performance_data(devices, date, show_graph=False)
+        print(performance_data)
 
     score = ScoringService() 
     scored_devices = score.devices(performance_data)

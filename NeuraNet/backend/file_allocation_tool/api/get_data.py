@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
-
+import certifi
 class Get():
     def __init__(self):
         load_dotenv()  # It's better to load environment variables once in the initializer
         uri = os.getenv("MONGODB_URL")
-        self.client = MongoClient(uri)
+        # self.client = MongoClient(uri)
+        self.client = MongoClient(uri, tlsCAFile=certifi.where())
         self.db = self.client['myDatabase']
         self.user_collection = self.db['users']
     
