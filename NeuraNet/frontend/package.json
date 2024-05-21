@@ -120,21 +120,7 @@
       "dist/renderer/**"
     ],
     "extraResources": [
-      {
-        "from": "python",
-        "to": "python",
-        "filter": [
-          "**/*"
-        ]
-      },
-      {
-        "from": "venv",
-        "to": "python",
-        "filter": [
-          "**/*"
-        ]
-      }
-    ]
+   ]
   },
   "engines": {
     "npm": ">=7.0.0",
