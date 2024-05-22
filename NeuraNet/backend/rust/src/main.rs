@@ -1,18 +1,15 @@
-use std::{
-    fs,
-    io::{prelude::*, BufReader},
-    net::{TcpListener, TcpStream},
-    thread,
-    time::Duration,
-};
+use std::net::TcpListener;
+use std::{fs, thread, time::Duration};
+use tungstenite::accept;
+extern crate tungstenite;
 
-fn handle_connection(mut stream: TcpStream) {
-    let buf_reader = BufReader::new(&mut stream);
-    let request_line = buf_reader.lines().next().unwrap().unwrap();
+fn handle_connection(mut websocket: tungstenite::protocol::WebSocket<std::net::TcpStream>) {
+    let msg = websocket.read_message().expect("Error reading message");
+    let request_line = msg.to_text().unwrap();
 
-    let (status_line, filename) = match &request_line[..] {
-        "GET / HTTP/1.1" => ("HTTP/1.1 200 OK", "hello.html"),
-        "GET /sleep HTTP/1.1" => {
+    let (status_line, filename) = match request_line {
+        "GET /" => ("HTTP/1.1 200 OK", "hello.html"),
+        "GET /sleep" => {
             thread::sleep(Duration::from_secs(5));
             ("HTTP/1.1 200 OK", "hello.html")
         }
@@ -27,7 +24,9 @@ fn handle_connection(mut stream: TcpStream) {
         contents
     );
 
-    stream.write_all(response.as_bytes()).unwrap();
+    websocket
+        .write_message(tungstenite::Message::Text(response))
+        .unwrap();
 }
 
 fn main() {
@@ -39,7 +38,8 @@ fn main() {
         let stream = stream.unwrap();
 
         thread::spawn(|| {
-            handle_connection(stream);
+            let websocket = accept(stream).expect("Failed to accept connection");
+            handle_connection(websocket);
         });
     }
 }
