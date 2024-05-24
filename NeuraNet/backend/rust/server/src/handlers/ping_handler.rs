@@ -51,17 +51,23 @@ pub fn process_small_ping_request_response(
             .unwrap_or_default();
         let device_name = json_value
             .get("device_name")
-            .and_then(Value::as_i64)
-            .unwrap_or_default();
-        let files = json_value
-            .get("files")
             .and_then(Value::as_str)
             .unwrap_or_default();
-
+        let device_number = json_value
+            .get("device_number")
+            .and_then(Value::as_i64)
+            .unwrap_or_default();
+        let files = json_value.get("files").and_then(Value::as_array);
+        let date_added = json_value
+            .get("date_added")
+            .and_then(Value::as_str)
+            .unwrap_or_default();
         // Print extracted values
         println!("User: {}", username);
-        println!("Device Number: {}", device_name);
-        println!("File Path: {}", files);
+        println!("Device Name: {}", device_name);
+        println!("Device Number: {}", device_number);
+        println!("Files: {:?}", files);
+        println!("Date Added: {}", date_added);
     }
 }
 
