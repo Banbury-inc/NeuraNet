@@ -16,9 +16,18 @@ fn main() {
         println!("* {}: {:?}", header, header_value);
     }
 
+    let file_name = "test.txt";
+    let file_size = "1000";
+    let password = "password";
+    let username = "user_name";
+    let end_of_header = "END_OF_HEADER";
+    let content = "Hello, relay server!";
+    let message = format!(
+        "MSG:{}:{}:{}:{}:{}:{}",
+        file_name, file_size, password, username, end_of_header, content
+    );
     // Send a message to the server
-    socket.write_message(Message::Text("GET /".into())).unwrap();
-    println!("Sent message to the server");
+    socket.write_message(Message::Text(message)).unwrap();
 
     // Loop to keep the connection open and continuously read messages
     loop {

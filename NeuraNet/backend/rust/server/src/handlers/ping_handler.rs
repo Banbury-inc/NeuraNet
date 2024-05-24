@@ -19,3 +19,30 @@ pub fn send_message(websocket: &mut WebSocket<std::net::TcpStream>, message: &st
         println!("Error sending message: {:?}", e);
     }
 }
+
+pub fn process_small_ping_request_response(
+    buffer: &str,
+    username: &str,
+    password: &str,
+    file_name: &str,
+    device_name: &str,
+    file_size: &str,
+) {
+    println!("Received small ping request response");
+    println!("Buffer: {}", buffer);
+    println!("Username: {}", username);
+    println!("Password: {}", password);
+}
+pub fn process_ping_request_response(
+    buffer: &str,
+    username: &str,
+    password: &str,
+    file_name: &str,
+    device_name: &str,
+    file_size: &str,
+) {
+    println!("Received ping request response");
+    println!("Buffer: {}", buffer);
+    println!("Username: {}", username);
+    println!("Password: {}", password);
+}

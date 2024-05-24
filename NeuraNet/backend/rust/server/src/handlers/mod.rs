@@ -1,3 +1,9 @@
 pub mod client_handler;
 pub mod database_handler;
+pub mod device_handler;
+pub mod file_handler;
+pub mod login_handler;
+pub mod message_handler;
 pub mod ping_handler;
+pub mod profile_handler;
+pub mod registration_handler;
