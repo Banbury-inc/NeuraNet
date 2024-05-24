@@ -33,17 +33,7 @@ fn main() {
         let clients = Arc::clone(&clients);
 
         thread::spawn(move || {
-            let callback = |req: &Request, mut response: Response| {
-                // println!("Received request: {:?}", req); // Use {:?} to print debug info
-                // Add an additional header to the response
-                response
-                    .headers_mut()
-                    .append("X-Custom-Header", "BanburyNeuraNet".parse().unwrap());
-                Ok(response)
-            };
-            let websocket = accept_hdr(stream, callback).expect("Failed to accept connection");
-
-            handle_connection(websocket, clients);
+            handle_connection(stream, clients);
         });
     }
 }

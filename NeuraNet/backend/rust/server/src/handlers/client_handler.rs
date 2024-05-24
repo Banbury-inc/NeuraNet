@@ -9,192 +9,159 @@ use super::message_handler;
 use super::ping_handler;
 use super::profile_handler;
 use super::registration_handler;
+use std::io::{Read, Write};
+use std::net::TcpStream;
 use std::sync::{Arc, Mutex};
-use tungstenite::protocol::WebSocket;
-use tungstenite::Message;
-pub fn handle_connection(
-    websocket: WebSocket<std::net::TcpStream>,
-    clients: Arc<Mutex<Vec<WebSocket<std::net::TcpStream>>>>,
-) {
-    let peer_addr = websocket.get_ref().peer_addr().unwrap();
+use std::thread;
 
-    {
-        let mut clients_guard = clients.lock().unwrap();
-        clients_guard.push(websocket);
-    }
-
+pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net::TcpStream>>>) {
+    let mut buffer_size = vec![0; 512];
+    // Spawn a new thread for the ping handler
+    let mut ping_stream = stream.try_clone().expect("Failed to clone TcpStream");
+    thread::spawn(move || {
+        ping_handler::begin_small_ping_loop(&mut ping_stream);
+    });
     loop {
-        let mut clients_guard = clients.lock().unwrap();
-        let websocket_option = clients_guard
-            .iter_mut()
-            .find(|ws| ws.get_ref().peer_addr().unwrap() == peer_addr);
-
-        if let Some(websocket) = websocket_option {
-            match websocket.read_message() {
-                Ok(_msg) => {
-                    match _msg {
-                        Message::Binary(_bin) => {
-                            println!("Received binary message");
-                        }
-                        Message::Ping(_ping) => {
-                            println!("Received ping");
-                        }
-                        Message::Pong(_pong) => {
-                            println!("Received pong");
-                        }
-                        Message::Close(_close) => {
-                            println!("Received close");
-                            break;
-                        }
-                        Message::Text(_msg) => {
-                            println!("Received: {}", _msg);
-                            // Parse the message
-                            let end_of_header = "END_OF_HEADER:";
-                            let buffer = _msg;
-                            if buffer.contains(end_of_header) {
-                                let parts: Vec<&str> = buffer.split(end_of_header).collect();
-                                let header = parts[0];
-                                let buffer = parts[1];
-                                println!("Header: {}", header);
-                                println!("Buffer: {}", buffer);
-
-                                let parts: Vec<&str> = header.split(':').collect();
-                                let file_type = parts[0];
-                                let file_name = parts[1];
-                                let device_name = parts[1];
-                                let file_size = parts[2];
-                                let password = parts[2];
-                                let username = parts[3];
-                                println!("File type: {}", file_type);
-                                println!("File name: {}", file_name);
-                                println!("File size: {}", file_size);
-                                println!("Username: {}", username);
-                                println!("Password: {}", password);
-                                if file_type == "MSG" {
-                                    message_handler::process_message_request(
-                                        buffer, username, password,
-                                    );
-                                }
-                                if file_type == "LOGIN_REQUEST" {
-                                    login_handler::process_login_request(
-                                        buffer, username, password,
-                                    );
-                                }
-                                if file_type == "REGISTRATION_REQUEST" {
-                                    registration_handler::process_registration_request(
-                                        buffer, username, password,
-                                    );
-                                }
-                                if file_type == "FILE" {
-                                    file_handler::process_file(
-                                        buffer,
-                                        username,
-                                        password,
-                                        file_name,
-                                        device_name,
-                                        file_size,
-                                    );
-                                }
-                                if file_type == "FILE_REQUEST" {
-                                    file_handler::process_file_request(
-                                        buffer,
-                                        username,
-                                        password,
-                                        file_name,
-                                        device_name,
-                                        file_size,
-                                    );
-                                }
-                                if file_type == "FILE_REQUEST_RESPONSE" {
-                                    file_handler::process_file_request_response(
-                                        buffer,
-                                        username,
-                                        password,
-                                        file_name,
-                                        device_name,
-                                        file_size,
-                                    );
-                                }
-                                if file_type == "DEVICE_DELETE_REQUEST" {
-                                    device_handler::process_device_delete_request(
-                                        buffer,
-                                        username,
-                                        password,
-                                        file_name,
-                                        device_name,
-                                        file_size,
-                                    );
-                                }
-                                if file_type == "FILE_DELETE_REQUEST" {
-                                    file_handler::process_file_delete_request(
-                                        buffer,
-                                        username,
-                                        password,
-                                        file_name,
-                                        device_name,
-                                        file_size,
-                                    );
-                                }
-                                if file_type == "FILE_DELETE_REQUEST_RESPONSE" {
-                                    file_handler::process_file_delete_request_response(
-                                        buffer,
-                                        username,
-                                        password,
-                                        file_name,
-                                        device_name,
-                                        file_size,
-                                    );
-                                }
-                                if file_type == "CHANGE_PROFILE_REQUEST" {
-                                    profile_handler::process_change_profile_request(
-                                        buffer,
-                                        username,
-                                        password,
-                                        file_name,
-                                        device_name,
-                                        file_size,
-                                    );
-                                }
-                                if file_type == "SMALL_PING_REQUEST_RESPONSE" {
-                                    ping_handler::process_small_ping_request_response(
-                                        buffer,
-                                        username,
-                                        password,
-                                        file_name,
-                                        device_name,
-                                        file_size,
-                                    );
-                                }
-                                if file_type == "PING_REQUEST_RESPONSE" {
-                                    ping_handler::process_ping_request_response(
-                                        buffer,
-                                        username,
-                                        password,
-                                        file_name,
-                                        device_name,
-                                        file_size,
-                                    );
-                                }
-                            }
-                        }
-
-                        Message::Frame(_bin) => {
-                            println!("Received binary message");
-                        }
-                    }
-                }
-                Err(e) => {
-                    println!("Error reading message: {:?}", e);
+        match stream.read(&mut buffer_size) {
+            Ok(bytes_read) => {
+                if bytes_read == 0 {
+                    // connection closed by client
+                    println!("Connection closed by client");
                     break;
                 }
+                println!("Received: {} bytes", bytes_read);
+
+                let buffer = String::from_utf8_lossy(&buffer_size[..bytes_read]);
+                let end_of_header = "END_OF_HEADER:";
+
+                if buffer.contains(end_of_header) {
+                    let parts: Vec<&str> = buffer.split(end_of_header).collect();
+                    let header = parts[0];
+                    let buffer = parts[1];
+                    println!("Header: {}", header);
+                    println!("Buffer: {}", buffer);
+
+                    let header_parts: Vec<&str> = header.split(':').collect();
+                    if header_parts.len() < 4 {
+                        println!("Malformed header: {}", header);
+                        continue;
+                    }
+
+                    let file_type = header_parts[0];
+                    let file_name = header_parts[1];
+                    let device_name = header_parts[1];
+                    let file_size = header_parts[2];
+                    let username = header_parts[3];
+                    let password = header_parts[3];
+                    println!("File type: {}", file_type);
+                    println!("File name: {}", file_name);
+                    println!("File size: {}", file_size);
+                    println!("Username: {}", username);
+                    println!("Password: {}", password);
+
+                    match file_type {
+                        "MSG" => {
+                            message_handler::process_message_request(buffer, username, password)
+                        }
+                        "LOGIN_REQUEST" => {
+                            login_handler::process_login_request(buffer, username, password)
+                        }
+                        "REGISTRATION_REQUEST" => {
+                            registration_handler::process_registration_request(
+                                buffer, username, password,
+                            )
+                        }
+                        "FILE" => file_handler::process_file(
+                            buffer,
+                            username,
+                            password,
+                            file_name,
+                            device_name,
+                            file_size,
+                        ),
+                        "FILE_REQUEST" => file_handler::process_file_request(
+                            buffer,
+                            username,
+                            password,
+                            file_name,
+                            device_name,
+                            file_size,
+                        ),
+                        "FILE_REQUEST_RESPONSE" => file_handler::process_file_request_response(
+                            buffer,
+                            username,
+                            password,
+                            file_name,
+                            device_name,
+                            file_size,
+                        ),
+                        "DEVICE_DELETE_REQUEST" => device_handler::process_device_delete_request(
+                            buffer,
+                            username,
+                            password,
+                            file_name,
+                            device_name,
+                            file_size,
+                        ),
+                        "FILE_DELETE_REQUEST" => file_handler::process_file_delete_request(
+                            buffer,
+                            username,
+                            password,
+                            file_name,
+                            device_name,
+                            file_size,
+                        ),
+                        "FILE_DELETE_REQUEST_RESPONSE" => {
+                            file_handler::process_file_delete_request_response(
+                                buffer,
+                                username,
+                                password,
+                                file_name,
+                                device_name,
+                                file_size,
+                            )
+                        }
+                        "CHANGE_PROFILE_REQUEST" => {
+                            profile_handler::process_change_profile_request(
+                                buffer,
+                                username,
+                                password,
+                                file_name,
+                                device_name,
+                                file_size,
+                            )
+                        }
+                        "SMALL_PING_REQUEST_RESPONSE" => {
+                            ping_handler::process_small_ping_request_response(
+                                buffer,
+                                username,
+                                password,
+                                file_name,
+                                device_name,
+                                file_size,
+                            )
+                        }
+                        "PING_REQUEST_RESPONSE" => ping_handler::process_ping_request_response(
+                            buffer,
+                            username,
+                            password,
+                            file_name,
+                            device_name,
+                            file_size,
+                        ),
+                        _ => println!("Unknown file type: {}", file_type),
+                    }
+                } else {
+                    println!("Received: {}", buffer);
+                }
             }
-        } else {
-            break;
+            Err(e) => {
+                println!("Error reading message: {:?}", e);
+                break;
+            }
         }
     }
 
-    {
-        let mut clients_guard = clients.lock().unwrap();
-        clients_guard.retain(|ws| ws.get_ref().peer_addr().unwrap() != peer_addr);
-    }
+    let mut clients_lock = clients.lock().unwrap();
+    clients_lock.retain(|client| client.peer_addr().ok() != stream.peer_addr().ok());
 }

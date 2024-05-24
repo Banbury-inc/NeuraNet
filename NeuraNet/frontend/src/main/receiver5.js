@@ -65,7 +65,7 @@ function run(receiver_socket, global_username) {
                             console.log(buffer);
                             index = buffer.indexOf(end_of_header);
                             _loop_1 = function () {
-                                var headerPart, content, headerStr, _b, file_type, file_name, file_sizeStr, username, password, file_size, directory_name, directory_path, file_save_path, request_file_name, file, null_string, file_header, total_bytes_sent_1, credentials, user, device_number, device_name, files, storage_capacity_GB, date_added, ip_address, average_network_speed, upload_network_speed, download_network_speed, gpu_usage, cpu_usage, ram_usage, network_reliability, average_time_online, device_priority, sync_status, optimization_status, online, device_info_json, credentials, user, device_number, device_name, files, date_added, device_info_json;
+                                var headerPart, content, headerStr, _b, file_type, file_name, file_sizeStr, username, password, file_size, directory_name, directory_path, file_save_path, request_file_name, file, null_string, file_header, total_bytes_sent_1, credentials, user, device_number, device_name, files, storage_capacity_GB, max_storage_capacity_GB, date_added, ip_address, average_network_speed, upload_network_speed, download_network_speed, gpu_usage, cpu_usage, ram_usage, predicted_upload_network_speed, predicted_download_network_speed, predicted_gpu_usage, predicted_cpu_usage, predicted_ram_usage, predicted_performance_score, network_reliability, average_time_online, tasks, device_priority, sync_status, optimization_status, online, device_info_json, credentials, user, device_number, device_name, files, date_added, device_info_json;
                                 return __generator(this, function (_c) {
                                     switch (_c.label) {
                                         case 0:
@@ -140,6 +140,7 @@ function run(receiver_socket, global_username) {
                                             return [4 /*yield*/, get_storage_capacity()];
                                         case 7:
                                             storage_capacity_GB = _c.sent();
+                                            max_storage_capacity_GB = 50;
                                             date_added = get_current_date_and_time();
                                             return [4 /*yield*/, get_ip_address()];
                                         case 8:
@@ -156,8 +157,15 @@ function run(receiver_socket, global_username) {
                                             return [4 /*yield*/, get_ram_usage()];
                                         case 11:
                                             ram_usage = _c.sent();
+                                            predicted_upload_network_speed = 0;
+                                            predicted_download_network_speed = 0;
+                                            predicted_gpu_usage = 0;
+                                            predicted_cpu_usage = 0;
+                                            predicted_ram_usage = 0;
+                                            predicted_performance_score = 0;
                                             network_reliability = 0;
                                             average_time_online = 0;
+                                            tasks = 0;
                                             device_priority = 1;
                                             sync_status = true;
                                             optimization_status = true;
@@ -168,6 +176,7 @@ function run(receiver_socket, global_username) {
                                                 device_name: device_name,
                                                 files: files,
                                                 storage_capacity_GB: storage_capacity_GB,
+                                                max_storage_capacity_GB: max_storage_capacity_GB,
                                                 date_added: date_added,
                                                 ip_address: ip_address,
                                                 average_network_speed: average_network_speed,
@@ -176,8 +185,15 @@ function run(receiver_socket, global_username) {
                                                 gpu_usage: gpu_usage,
                                                 cpu_usage: cpu_usage,
                                                 ram_usage: ram_usage,
+                                                predicted_upload_network_speed: predicted_upload_network_speed,
+                                                predicted_download_network_speed: predicted_download_network_speed,
+                                                predicted_gpu_usage: predicted_gpu_usage,
+                                                predicted_cpu_usage: predicted_cpu_usage,
+                                                predicted_ram_usage: predicted_ram_usage,
+                                                predicted_performance_score: predicted_performance_score,
                                                 network_reliability: network_reliability,
                                                 average_time_online: average_time_online,
+                                                tasks: tasks,
                                                 device_priority: device_priority,
                                                 sync_status: sync_status,
                                                 optimization_status: optimization_status,
@@ -543,7 +559,9 @@ function get_directory_info() {
             var fileInfo = {
                 "File Name": filename,
                 "Date Uploaded": luxon_1.DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
-                "File Size": stats.size
+                "File Size": stats.size,
+                "File Priority": 5,
+                "Original_Device": filename
             };
             filesInfo.push(fileInfo);
         }

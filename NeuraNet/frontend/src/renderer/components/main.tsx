@@ -26,10 +26,10 @@ import DevicesIcon from '@mui/icons-material/Devices';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import FolderIcon from '@mui/icons-material/Folder';
-import EnhancedTable from "./Table" 
+import EnhancedTable from "./Table"
 import Dashboard from './Dashboard';
-import Devices from "./Devices" 
-import DifferentLength from "./LineChart" 
+import Devices from "./Devices"
+import DifferentLength from "./LineChart"
 import { Stack } from '@mui/material';
 const drawerWidth = 200;
 import { Chip } from '@mui/material';
@@ -72,19 +72,19 @@ const closedMixin = (theme: Theme): CSSObject => ({
 
 
 function initialize_receiver(username: any) {
-    // const SERVER_HOST = '34.28.13.79'
-    const SERVER_HOST = '0.0.0.0'
-    const SERVER_PORT = 443;
-    const receiver_socket = new net.Socket();
-    receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
-        console.log("Connected to server");
-    });
+  // const SERVER_HOST = '34.28.13.79'
+  const SERVER_HOST = '0.0.0.0'
+  const SERVER_PORT = 443;
+  const receiver_socket = new net.Socket();
+  receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
+    console.log("Connected to server");
+  });
 
-    receiver_socket.on('error', (err) => {
-        console.error("Error:", err);
-    });
-    receiver5.run(receiver_socket, username);
-  }
+  receiver_socket.on('error', (err) => {
+    console.error("Error:", err);
+  });
+  receiver5.run(receiver_socket, username);
+}
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -138,7 +138,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function PermanentDrawerLeft() {
   const location = useLocation();
   const theme = useTheme();
-  const initialActiveTab = location.state?.activeTab || 'Files'; 
+  const initialActiveTab = location.state?.activeTab || 'Files';
   const [activeTab, setActiveTab] = React.useState(initialActiveTab);
   const { username, redirect_to_login, setredirect_to_login } = useAuth();
   const [open, setOpen] = React.useState(false);
@@ -152,9 +152,9 @@ export default function PermanentDrawerLeft() {
     setOpen(false);
   };
 
-const toggleDrawer = () => {
-  setOpen(!open); // This will set 'open' to the opposite of its current value
-};
+  const toggleDrawer = () => {
+    setOpen(!open); // This will set 'open' to the opposite of its current value
+  };
 
   useEffect(() => {
     initialize_receiver(username);
@@ -172,7 +172,7 @@ const toggleDrawer = () => {
       {/*   sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }} */}
       {/* > */}
       {/* </AppBar> */}
-     <Drawer
+      <Drawer
         sx={{
           '& .MuiDrawer-paper': {
             marginTop: '42px'
@@ -189,22 +189,22 @@ const toggleDrawer = () => {
             edge="start"
             sx={{
               marginRight: 0,
-              ...(open && { }),
+              ...(open && {}),
             }}
           >
             <MenuIcon />
           </IconButton>
- 
+
           {/* <IconButton onClick={toggleDrawer}> */}
-            {/* {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />} */}
+          {/* {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />} */}
           {/* </IconButton> */}
         </DrawerHeader>
 
         <List>
- 
+
           {['Dashboard', 'Files', 'Devices', 'AI', 'Profile'].map((text, index) => (
             <ListItem key={text} disablePadding>
-                <ListItemButton
+              <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
@@ -213,39 +213,39 @@ const toggleDrawer = () => {
                 }}
                 onClick={() => setActiveTab(text)}>
 
-              <ListItemIcon
+                <ListItemIcon
                   color='inherit'
                   aria-label='open drawer'
                   sx={{
                     minWidth: 0,
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
-                  }}  
+                  }}
 
 
 
                 >
-                {(() => {
-                  switch (index % 5) {
-                    case 0:
-                      return <DashboardIcon />;
-                    case 1:
-                      return <FolderIcon/>;
-                    case 2:
-                      return <DevicesIcon/>;
-                    case 3:
-                      return <AutoAwesomeIcon/>;
-                    case 4:
-                      return <AccountBoxIcon/>;
- 
-                    default:
-                      return null; // Just in case
-                  }
-                })()}
-              </ListItemIcon>
+                  {(() => {
+                    switch (index % 5) {
+                      case 0:
+                        return <DashboardIcon />;
+                      case 1:
+                        return <FolderIcon />;
+                      case 2:
+                        return <DevicesIcon />;
+                      case 3:
+                        return <AutoAwesomeIcon />;
+                      case 4:
+                        return <AccountBoxIcon />;
+
+                      default:
+                        return null; // Just in case
+                    }
+                  })()}
+                </ListItemIcon>
                 {/* <ListItemText primary={text} */}
-                <ListItemText secondary={text} sx={{ 
-                  opacity: open ? 1 : 1, 
+                <ListItemText secondary={text} sx={{
+                  opacity: open ? 1 : 1,
                   display: open ? 'block' : 'block', // Always display block
                   textAlign: 'center',  // Center text
                 }} />
@@ -259,14 +259,14 @@ const toggleDrawer = () => {
         <List>
           {['Settings'].map((text, index) => (
             <ListItem key={text} disablePadding>
-                <ListItemButton 
+              <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
                   flexDirection: open ? 'row' : 'column',  // Change here
                   px: 2.5,
                 }}
- 
+
                 onClick={() => setActiveTab(text)}>
                 <ListItemIcon
                   color='inherit'
@@ -275,18 +275,18 @@ const toggleDrawer = () => {
                     minWidth: 0,
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
-                  }}  
+                  }}
 
 
                 >
 
-                  {index % 2 === 0 ? <SettingsIcon/> : <SettingsIcon/>}
+                  {index % 2 === 0 ? <SettingsIcon /> : <SettingsIcon />}
                 </ListItemIcon>
-                <ListItemText secondary={text} sx={{ 
-                  opacity: open ? 1 : 1, 
+                <ListItemText secondary={text} sx={{
+                  opacity: open ? 1 : 1,
                   display: open ? 'block' : 'block', // Always display block
                   textAlign: 'center',  // Center text
- 
+
 
                 }} />
               </ListItemButton>
@@ -297,28 +297,28 @@ const toggleDrawer = () => {
       </Drawer>
       <Box
         component="main"
-        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 0}}
+        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 0 }}
       >
-  {(() => {
-    switch (activeTab) {
-      case 'Dashboard':
-        return <Dashboard />;
-      case 'Files':
-        return <Files />;
-      case 'Devices':
-        return <DevicesTable  />;
-      case 'AI':
-        return <AI />;
-      case 'Profile':
-        return <Profile  />;
-      case 'Settings':
-        return <Settings  />;
-        // Replace <Typography> with your settings component
-        return <Typography paragraph>Settings Component Here</Typography>;
-      default:
-        return <Typography paragraph>Select a tab to display its content.</Typography>;
-    }
-  })()}      
+        {(() => {
+          switch (activeTab) {
+            case 'Dashboard':
+              return <Dashboard />;
+            case 'Files':
+              return <Files />;
+            case 'Devices':
+              return <DevicesTable />;
+            case 'AI':
+              return <AI />;
+            case 'Profile':
+              return <Profile />;
+            case 'Settings':
+              return <Settings />;
+              // Replace <Typography> with your settings component
+              return <Typography paragraph>Settings Component Here</Typography>;
+            default:
+              return <Typography paragraph>Select a tab to display its content.</Typography>;
+          }
+        })()}
       </Box>
 
 

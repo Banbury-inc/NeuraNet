@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import sys
 import subprocess
 import threading
+import ssl
 import os
 import json
 import re
@@ -13,6 +14,7 @@ import pymongo
 import time
 import psutil
 import GPUtil
+import websockets
 
 def run(receiver_socket):
     end_of_header = b"END_OF_HEADER"
@@ -634,8 +636,8 @@ def get_wifi_speed():
 
 def main():
     load_dotenv()
-    SERVER_HOST = os.getenv("RELAY_HOST")
-    #SERVER_HOST = "0.0.0.0"
+    # SERVER_HOST = os.getenv("RELAY_HOST")
+    SERVER_HOST = "0.0.0.0"
     print("Launching NeuraNet")
 
     sys.stdout.flush()
@@ -644,6 +646,10 @@ def main():
     receiver_socket.connect((SERVER_HOST, SERVER_PORT))
     client_sockets = []
     client_addresses = []
+    # Initialize SSL context for secure connection
+    ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
     run(receiver_socket)
     receiver_socket.close()
 
