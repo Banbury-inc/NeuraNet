@@ -34,30 +34,35 @@ pub fn process_small_ping_request_response(
     file_size: &str,
 ) {
     println!("Received small ping request response");
-    println!("Buffer: {}", buffer);
-    println!("Username: {}", username);
-    println!("Password: {}", password);
-    // Parse the JSON buffer
-    let json_value: Value = serde_json::from_str(buffer).expect("Invalid JSON");
+    let end_of_json = "END_OF_JSON";
 
-    // Extract specific values from the JSON
-    let username = json_value
-        .get("user")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
-    let device_name = json_value
-        .get("device_name")
-        .and_then(Value::as_i64)
-        .unwrap_or_default();
-    let files = json_value
-        .get("files")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
+    if buffer.contains(end_of_json) {
+        let parts: Vec<&str> = buffer.split(end_of_json).collect();
+        let json_content = parts[0];
+        let json_trash = parts[1];
 
-    // Print extracted values
-    println!("User: {}", username);
-    println!("Device Number: {}", device_name);
-    println!("File Path: {}", files);
+        // Parse the JSON buffer
+        let json_value: Value = serde_json::from_str(json_content).expect("Invalid JSON");
+
+        // Extract specific values from the JSON
+        let username = json_value
+            .get("user")
+            .and_then(Value::as_str)
+            .unwrap_or_default();
+        let device_name = json_value
+            .get("device_name")
+            .and_then(Value::as_i64)
+            .unwrap_or_default();
+        let files = json_value
+            .get("files")
+            .and_then(Value::as_str)
+            .unwrap_or_default();
+
+        // Print extracted values
+        println!("User: {}", username);
+        println!("Device Number: {}", device_name);
+        println!("File Path: {}", files);
+    }
 }
 
 pub fn process_ping_request_response(

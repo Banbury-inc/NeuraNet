@@ -15,7 +15,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 
 pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net::TcpStream>>>) {
-    let mut buffer_size = vec![0; 512];
+    let mut buffer_size = vec![0; 4096];
     // Spawn a new thread for the ping handler
     let mut ping_stream = stream.try_clone().expect("Failed to clone TcpStream");
     thread::spawn(move || {
@@ -29,10 +29,11 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
                     println!("Connection closed by client");
                     break;
                 }
-                println!("Received: {} bytes", bytes_read);
+                // println!("Received: {} bytes", bytes_read);
 
                 let buffer = String::from_utf8_lossy(&buffer_size[..bytes_read]);
-                let end_of_header = "END_OF_HEADER:";
+                println!("Received: {}", buffer);
+                let end_of_header = "END_OF_HEADER";
 
                 if buffer.contains(end_of_header) {
                     let parts: Vec<&str> = buffer.split(end_of_header).collect();
@@ -152,7 +153,7 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
                         _ => println!("Unknown file type: {}", file_type),
                     }
                 } else {
-                    println!("Received: {}", buffer);
+                    println!("Received unknown file type");
                 }
             }
             Err(e) => {
