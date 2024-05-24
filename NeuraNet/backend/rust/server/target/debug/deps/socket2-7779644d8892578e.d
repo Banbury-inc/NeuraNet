@@ -1,0 +1,11 @@
+/home/mmills/Documents/NeuraNet/NeuraNet/backend/rust/server/target/debug/deps/libsocket2-7779644d8892578e.rmeta: /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/lib.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockaddr.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/socket.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockref.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sys/unix.rs
+
+/home/mmills/Documents/NeuraNet/NeuraNet/backend/rust/server/target/debug/deps/libsocket2-7779644d8892578e.rlib: /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/lib.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockaddr.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/socket.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockref.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sys/unix.rs
+
+/home/mmills/Documents/NeuraNet/NeuraNet/backend/rust/server/target/debug/deps/socket2-7779644d8892578e.d: /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/lib.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockaddr.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/socket.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockref.rs /home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sys/unix.rs
+
+/home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/lib.rs:
+/home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockaddr.rs:
+/home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/socket.rs:
+/home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockref.rs:
+/home/mmills/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sys/unix.rs:

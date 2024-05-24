@@ -2,9 +2,7 @@ extern crate tungstenite;
 extern crate url;
 use super::ping_handler::send_ping;
 use std::sync::{Arc, Mutex};
-use std::thread;
 use tungstenite::protocol::WebSocket;
-use tungstenite::Message;
 
 pub fn handle_connection(
     websocket: WebSocket<std::net::TcpStream>,
@@ -41,12 +39,5 @@ pub fn handle_connection(
     {
         let mut clients_guard = clients.lock().unwrap();
         clients_guard.retain(|ws| ws.get_ref().peer_addr().unwrap() != peer_addr);
-    }
-}
-
-pub fn send_message(websocket: &mut WebSocket<std::net::TcpStream>, message: &str) {
-    let message = Message::Text(message.to_string());
-    if let Err(e) = websocket.write_message(message) {
-        println!("Error sending message: {:?}", e);
     }
 }
