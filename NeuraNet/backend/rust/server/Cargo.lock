@@ -961,6 +961,7 @@ dependencies = [
  "mongodb",
  "serde",
  "serde_json",
+ "thiserror",
  "tokio",
  "tungstenite",
  "url",

@@ -17,10 +17,7 @@ fn main() {
     println!("Initializing Database...");
     database_handler::initialize();
     println!("Database Initialized");
-    // test functions
-    // call_get_devices().unwrap();
-    // call_get_user().unwrap();
-    database_handler::update_total_data_processed().unwrap();
+    database_handler::get_total_data_processed().unwrap();
     for stream in listener.incoming() {
         println!("Connection established");
         let stream = stream.unwrap();

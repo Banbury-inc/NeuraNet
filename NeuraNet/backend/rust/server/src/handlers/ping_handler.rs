@@ -1,3 +1,4 @@
+use super::database_handler;
 use serde_json::Value;
 use std::io::{Result, Write};
 use std::net::TcpStream;
@@ -55,7 +56,7 @@ pub fn process_small_ping_request_response(
         let device_number = json_value
             .get("device_number")
             .and_then(Value::as_i64)
-            .unwrap_or_default();
+            .unwrap_or(0); // Defaulting to 0 if missing
         let files = json_value.get("files").and_then(Value::as_array);
         let date_added = json_value
             .get("date_added")
@@ -68,7 +69,9 @@ pub fn process_small_ping_request_response(
         // println!("Files: {:?}", files);
         // println!("Date Added: {}", date_added);
 
-        // println!("Devices: {:?}", devices);
+        let devices = database_handler::get_devices(username).unwrap().unwrap();
+        database_handler::update_devices(username, devices).unwrap();
+        
         // TODO: If the device doesn't match any of the devices in the database, send a big ping
         // TODO: Make sure devices are updated properly
     }

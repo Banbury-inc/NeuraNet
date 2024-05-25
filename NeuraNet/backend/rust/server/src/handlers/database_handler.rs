@@ -1,3 +1,4 @@
+use futures::stream::Any;
 use mongodb::bson;
 use mongodb::bson::oid::ObjectId;
 use mongodb::{
@@ -8,11 +9,11 @@ use mongodb::{
 };
 use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
-struct Server {
+pub struct Server {
     total_data_processed: i64,
 }
 #[derive(Serialize, Deserialize, Debug)]
-struct Users {
+pub struct Users {
     _id: ObjectId,
     username: String,
     first_name: String,
@@ -22,12 +23,21 @@ struct Users {
     devices: Vec<Devices>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
-struct Devices {
+pub struct Devices {
     device_name: String,
+    device_number: i64,
+    // files: Vec<Files>,
+    date_added: String,
     online: bool,
 }
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Files {
+    file_name: String,
+    date_uploaded: String,
+    file_size: i64,
+}
 
-pub fn update_total_data_processed() -> mongodb::error::Result<()> {
+pub fn get_total_data_processed() -> mongodb::error::Result<()> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
     let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
@@ -40,6 +50,36 @@ pub fn update_total_data_processed() -> mongodb::error::Result<()> {
     }
     Ok(())
 }
+pub fn update_total_data_processed(bytes_read: usize) -> mongodb::error::Result<()> {
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+    let client = Client::with_uri_str(uri)?;
+    let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
+
+    // convert bytes_read to i64
+    let bytes_read = bytes_read as i64;
+    // Define the amount to add to 'total_data_processed'
+    let increment_amount = bytes_read; // Example increment value
+
+    // Find the document and update 'total_data_processed'
+    let filter = doc! { "total_data_processed": { "$exists": true } };
+    let update = doc! { "$inc": { "total_data_processed": increment_amount } };
+    let result = my_coll.find_one_and_update(filter, update, None)?;
+
+    match result {
+        Some(server_data) => {
+            println!(
+                "Updated Total Data Processed: {}",
+                server_data.total_data_processed + increment_amount
+            );
+        }
+        None => {
+            println!("No document found with 'total_data_processed' field or update failed.");
+        }
+    }
+
+    Ok(())
+}
+
 pub fn initialize() -> mongodb::error::Result<()> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
@@ -73,4 +113,46 @@ pub fn initialize() -> mongodb::error::Result<()> {
     }
 
     Ok(())
+}
+pub fn get_user(user: &str) -> mongodb::error::Result<Option<Users>> {
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+    let client = Client::with_uri_str(uri)?;
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+
+    // Find the user with the specified username
+    let result = collection.find_one(doc! { "username": user }, None)?;
+
+    Ok(result)
+}
+pub fn get_devices(user: &str) -> mongodb::error::Result<Option<Vec<Devices>>> {
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+    let client = Client::with_uri_str(uri)?;
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+
+    // Find the user with the specified username
+    let result = collection.find_one(doc! { "username": user }, None)?;
+    // get specifically the devices from that user
+    // let devices = result.as_ref().map(|user| user.devices.clone());
+    let devices = result.map(|user| user.devices);
+    Ok(devices)
+}
+
+pub fn update_devices(user: &str, devices: Vec<Devices>) -> mongodb::error::Result<Option<Users>> {
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+    let client = Client::with_uri_str(uri)?;
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+
+    let result = collection.find_one(doc! { "username": user }, None)?;
+
+    // Convert devices to BSON before updating
+    let devices_bson = bson::to_bson(&devices).map_err(|e| mongodb::error::Error::from(e))?;
+
+    // Find the user with the specified username
+    collection.update_one(
+        doc! { "username": user },
+        doc! { "$set": { "devices": devices_bson } },
+        None,
+    )?;
+
+    Ok(result)
 }

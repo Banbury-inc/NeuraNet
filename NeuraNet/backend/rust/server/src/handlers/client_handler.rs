@@ -1,6 +1,7 @@
 extern crate tungstenite;
 extern crate url;
 use super::client_handler;
+use super::database_handler;
 use super::device_handler;
 use super::file_handler;
 use super::login_handler;
@@ -23,13 +24,13 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
     loop {
         match stream.read(&mut buffer_size) {
             Ok(bytes_read) => {
+                database_handler::update_total_data_processed(bytes_read).unwrap();
                 if bytes_read == 0 {
                     // connection closed by client
                     println!("Connection closed by client");
                     break;
                 }
                 // println!("Received: {} bytes", bytes_read);
-
                 let buffer = String::from_utf8_lossy(&buffer_size[..bytes_read]);
                 println!("Received: {}", buffer);
                 let end_of_header = "END_OF_HEADER";
