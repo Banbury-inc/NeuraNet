@@ -1,7 +1,6 @@
 extern crate tungstenite;
 extern crate url;
 use super::client_handler;
-use super::database_handler;
 use super::device_handler;
 use super::file_handler;
 use super::login_handler;

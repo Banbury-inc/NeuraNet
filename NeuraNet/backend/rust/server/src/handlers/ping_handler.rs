@@ -4,7 +4,6 @@ use std::net::TcpStream;
 use std::thread;
 use tungstenite::protocol::WebSocket;
 use tungstenite::Message;
-
 pub fn begin_small_ping_loop(stream: &mut TcpStream) {
     loop {
         // set a timer for 5 seconds
@@ -63,11 +62,15 @@ pub fn process_small_ping_request_response(
             .and_then(Value::as_str)
             .unwrap_or_default();
         // Print extracted values
-        println!("User: {}", username);
-        println!("Device Name: {}", device_name);
-        println!("Device Number: {}", device_number);
-        println!("Files: {:?}", files);
-        println!("Date Added: {}", date_added);
+        // println!("User: {}", username);
+        // println!("Device Name: {}", device_name);
+        // println!("Device Number: {}", device_number);
+        // println!("Files: {:?}", files);
+        // println!("Date Added: {}", date_added);
+
+        // println!("Devices: {:?}", devices);
+        // TODO: If the device doesn't match any of the devices in the database, send a big ping
+        // TODO: Make sure devices are updated properly
     }
 }
 

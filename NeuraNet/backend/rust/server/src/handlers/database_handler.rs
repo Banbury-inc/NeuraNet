@@ -1,203 +1,76 @@
-use futures::stream::TryStreamExt;
+use mongodb::bson;
+use mongodb::bson::oid::ObjectId;
 use mongodb::{
-    bson::doc, bson::Document, error::Result, options::ClientOptions, Client, Collection,
+    bson::doc,
+    bson::to_bson,
+    bson::Bson,
+    sync::{Client, Collection},
 };
-use std::collections::HashSet;
-
-pub async fn connect_to_mongodb(
-    uri: &str,
-    db_name: &str,
-    coll_name: &str,
-) -> Result<Collection<Document>> {
-    // Parse a connection string into an options struct.
-    let client_options = ClientOptions::parse(uri).await?;
-
-    // Get a handle to the deployment.
-    let client = Client::with_options(client_options)?;
-
-    // Get a handle to the database and collection.
-    let database = client.database(db_name);
-    let collection = database.collection::<Document>(coll_name);
-
-    Ok(collection)
+use serde::{Deserialize, Serialize};
+#[derive(Serialize, Deserialize, Debug)]
+struct Server {
+    total_data_processed: i64,
+}
+#[derive(Serialize, Deserialize, Debug)]
+struct Users {
+    _id: ObjectId,
+    username: String,
+    first_name: String,
+    last_name: String,
+    phone_number: String,
+    email: String,
+    devices: Vec<Devices>,
+}
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct Devices {
+    device_name: String,
+    online: bool,
 }
 
-pub async fn get_some_data(collection: &Collection<Document>) -> Result<Vec<Document>> {
-    let filter = doc! {};
-    let find_options = None;
+pub fn update_total_data_processed() -> mongodb::error::Result<()> {
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+    let client = Client::with_uri_str(uri)?;
+    let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
+    let result = my_coll.find_one(doc! { "total_data_processed": { "$exists": true } }, None)?;
 
-    // Find the documents
-    let mut cursor = collection.find(filter, find_options).await?;
-
-    // Collect the documents
-    let mut docs = Vec::new();
-    while let Some(result) = cursor.try_next().await? {
-        docs.push(result);
+    if let Some(server_data) = result {
+        println!("Total Data Processed: {}", server_data.total_data_processed);
+    } else {
+        println!("No document found with 'total_data_processed' field.");
     }
-
-    Ok(docs)
+    Ok(())
 }
+pub fn initialize() -> mongodb::error::Result<()> {
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+    let client = Client::with_uri_str(uri)?;
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
 
-pub async fn initialize(collection: &Collection<Document>) -> Result<Vec<Document>> {
-    let filter = doc! {};
-    let find_options = None;
+    let cursor = collection.find(None, None)?;
 
-    // Find the documents
-    let mut cursor = collection.find(filter, find_options).await?;
-
-    // Collect the documents and update them
     let mut docs = Vec::new();
-    while let Some(mut user) = cursor.try_next().await? {
-        let user_id = user
-            .get_object_id("_id")
-            .expect("Failed to get user _id")
-            .clone();
+    for result in cursor {
+        let mut user = result?;
+        let user_id = user._id.clone();
+        let mut updated = false;
 
-        if let Some(devices) = user.get_array_mut("devices").ok() {
-            let mut updated = false;
-            for device in devices.iter_mut() {
-                if let Some(device_doc) = device.as_document_mut() {
-                    if let Some(online) = device_doc.get_bool("online").ok() {
-                        if online {
-                            device_doc.insert("online", false);
-                            updated = true;
-                        }
-                    }
-                }
+        // Iterate over devices and update their 'online' status if necessary
+        for device in &mut user.devices {
+            if device.online {
+                device.online = false;
+                updated = true;
             }
-            if updated {
-                collection
-                    .update_one(
-                        doc! { "_id": user_id },
-                        doc! { "$set": { "devices": devices.clone() } },
-                        None,
-                    )
-                    .await?;
-            }
+        }
+
+        // Perform update operation if any device was updated
+        if updated {
+            collection.update_one(
+                doc! { "_id": user_id, "devices.online": true },
+                doc! { "$set": { "devices.$[].online": false } },
+                None,
+            )?;
         }
         docs.push(user);
     }
 
-    Ok(docs)
-}
-pub async fn get_devices(
-    collection: &Collection<Document>,
-    username: &str,
-) -> Result<Vec<Document>> {
-    let filter = doc! { "username": username };
-    let find_options = None;
-
-    // Find the document for the given username
-    let mut cursor = collection.find(filter, find_options).await?;
-
-    // Collect the devices
-    let mut devices = Vec::new();
-    while let Some(user) = cursor.try_next().await? {
-        if let Some(user_devices) = user.get_array("devices").ok() {
-            for device in user_devices {
-                if let Some(device_doc) = device.as_document() {
-                    devices.push(device_doc.clone());
-                }
-            }
-        }
-    }
-
-    Ok(devices)
-}
-pub async fn get_user(
-    collection: &Collection<Document>,
-    username: &str,
-) -> Result<Option<Document>> {
-    let filter = doc! { "username": username };
-    let find_options = None;
-
-    // Find the document for the given username
-    let mut cursor = collection.find(filter, find_options).await?;
-
-    // Retrieve the user document
-    if let Some(user) = cursor.try_next().await? {
-        return Ok(Some(user));
-    }
-
-    Ok(None)
-}
-pub async fn update_devices(
-    collection: &Collection<Document>,
-    username: &str,
-    devices: &str,
-) -> Result<Option<Document>> {
-    let filter = doc! { "username": username };
-    let find_options = None;
-
-    // Find the document for the given username
-    let mut cursor = collection.find(filter, find_options).await?;
-
-    while let Some(mut user) = cursor.try_next().await? {
-        let user_id = user
-            .get_object_id("_id")
-            .expect("Failed to get user _id")
-            .clone();
-
-        collection
-            .update_one(
-                doc! { "_id": user_id },
-                doc! { "$set": { "devices": devices.clone() } },
-                None,
-            )
-            .await?;
-    }
-    Ok(None)
-}
-// devices must be a list of the users devices and not all devices
-pub async fn update_device_numbers(
-    collection: &Collection<Document>,
-    username: &str,
-) -> Result<Option<Document>> {
-    let filter = doc! { "username": username };
-    let find_options = None;
-
-    // Find the document for the given username
-    let mut cursor = collection.find(filter, find_options).await?;
-
-    if let Some(mut user) = cursor.try_next().await? {
-        let user_id = user
-            .get_object_id("_id")
-            .expect("Failed to get user _id")
-            .clone();
-
-        if let Some(devices) = user.get_array_mut("devices").ok() {
-            let mut seen_device_numbers = HashSet::new();
-            let mut updated = false;
-
-            for device in devices.iter_mut() {
-                if let Some(device_doc) = device.as_document_mut() {
-                    if let Some(device_number) = device_doc.get_i32("device_number").ok() {
-                        if !seen_device_numbers.insert(device_number) {
-                            // Device number is not unique, assign a new one
-                            let new_device_number = (1..)
-                                .find(|num| !seen_device_numbers.contains(num))
-                                .expect("Failed to find a unique device number");
-                            device_doc.insert("device_number", new_device_number);
-                            seen_device_numbers.insert(new_device_number);
-                            updated = true;
-                        }
-                    }
-                }
-            }
-
-            if updated {
-                collection
-                    .update_one(
-                        doc! { "_id": user_id },
-                        doc! { "$set": { "devices": devices.clone() } },
-                        None,
-                    )
-                    .await?;
-            }
-        }
-
-        return Ok(Some(user));
-    }
-
-    Ok(None)
+    Ok(())
 }
