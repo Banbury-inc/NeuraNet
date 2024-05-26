@@ -450,9 +450,9 @@ def get_directory_info():
             # Get file stats
             stats = os.stat(file_path)
             file_info = {
-                "File Name": filename,
-                "Date Uploaded": datetime.fromtimestamp(stats.st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
-                "File Size": stats.st_size
+                "file_name": filename,
+                "date_uploaded": datetime.fromtimestamp(stats.st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
+                "file_size": stats.st_size
             }
             files_info.append(file_info)
 

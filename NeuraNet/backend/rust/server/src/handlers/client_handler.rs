@@ -17,10 +17,15 @@ use std::thread;
 pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net::TcpStream>>>) {
     let mut buffer_size = vec![0; 4096];
     // Spawn a new thread for the ping handler
+    let mut small_ping_stream = stream.try_clone().expect("Failed to clone TcpStream");
     let mut ping_stream = stream.try_clone().expect("Failed to clone TcpStream");
     thread::spawn(move || {
-        ping_handler::begin_small_ping_loop(&mut ping_stream);
+        // ping_handler::begin_small_ping_loop(&mut small_ping_stream);
     });
+    thread::spawn(move || {
+        ping_handler::begin_ping_loop(&mut ping_stream);
+    });
+
     loop {
         match stream.read(&mut buffer_size) {
             Ok(bytes_read) => {
@@ -127,14 +132,7 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
                             )
                         }
                         "SMALL_PING_REQUEST_RESPONSE" => {
-                            ping_handler::process_small_ping_request_response(
-                                buffer,
-                                username,
-                                password,
-                                file_name,
-                                device_name,
-                                file_size,
-                            )
+                            ping_handler::process_small_ping_request_response(buffer)
                         }
                         "PING_REQUEST_RESPONSE" => ping_handler::process_ping_request_response(
                             buffer,

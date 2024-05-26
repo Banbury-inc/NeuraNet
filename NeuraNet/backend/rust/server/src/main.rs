@@ -14,10 +14,10 @@ fn main() {
     println!("Welcome to the Banbury NeuraNet");
     let listener = TcpListener::bind("127.0.0.1:443").unwrap();
     let clients = Arc::new(Mutex::new(Vec::new()));
+    database_handler::get_total_data_processed().unwrap();
     println!("Initializing Database...");
     database_handler::initialize();
     println!("Database Initialized");
-    database_handler::get_total_data_processed().unwrap();
     for stream in listener.incoming() {
         println!("Connection established");
         let stream = stream.unwrap();

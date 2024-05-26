@@ -24,19 +24,36 @@ pub struct Users {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Devices {
-    device_name: String,
     device_number: i64,
-    // files: Vec<Files>,
+    device_name: String,
+    files: Vec<Files>,
     date_added: String,
     online: bool,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Files {
-    file_name: String,
-    date_uploaded: String,
-    file_size: i64,
+    pub file_name: String,
+    pub date_uploaded: String,
+    pub file_size: i64,
 }
+fn format_bytes(bytes: i64) -> String {
+    let kilobyte = 1024;
+    let megabyte = kilobyte * 1024;
+    let gigabyte = megabyte * 1024;
+    let terabyte = gigabyte * 1024;
 
+    if bytes >= terabyte {
+        format!("{:.2} TB", bytes as f64 / terabyte as f64)
+    } else if bytes >= gigabyte {
+        format!("{:.2} GB", bytes as f64 / gigabyte as f64)
+    } else if bytes >= megabyte {
+        format!("{:.2} MB", bytes as f64 / megabyte as f64)
+    } else if bytes >= kilobyte {
+        format!("{:.2} KB", bytes as f64 / kilobyte as f64)
+    } else {
+        format!("{} bytes", bytes)
+    }
+}
 pub fn get_total_data_processed() -> mongodb::error::Result<()> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
@@ -44,12 +61,16 @@ pub fn get_total_data_processed() -> mongodb::error::Result<()> {
     let result = my_coll.find_one(doc! { "total_data_processed": { "$exists": true } }, None)?;
 
     if let Some(server_data) = result {
-        println!("Total Data Processed: {}", server_data.total_data_processed);
+        println!(
+            "Total Data Processed: {}",
+            format_bytes(server_data.total_data_processed)
+        );
     } else {
         println!("No document found with 'total_data_processed' field.");
     }
     Ok(())
 }
+
 pub fn update_total_data_processed(bytes_read: usize) -> mongodb::error::Result<()> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
@@ -155,4 +176,85 @@ pub fn update_devices(user: &str, devices: Vec<Devices>) -> mongodb::error::Resu
     )?;
 
     Ok(result)
+}
+pub fn append_device_info(
+    user: &str,
+    device_number: i64,
+    device_name: &str,
+    files: Option<Vec<Files>>,
+    storage_capacity_GB: i64,
+    date_added: &str,
+    ip_address: &str,
+    avg_network_speed: i64,
+    upload_network_speed: &str,
+    download_network_speed: &str,
+    gpu_usage: f64,
+    cpu_usage: f64,
+    ram_usage: f64,
+    network_reliability: f64,
+    average_time_online: f64,
+    device_priority: i64,
+    sync_status: bool,
+    optimization_status: bool,
+) -> mongodb::error::Result<Option<Users>> {
+    println!("Appending device info for user: {}", user);
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+
+    let client = Client::with_uri_str(uri)?;
+
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+
+    // Convert devices and files to BSON
+    // let devices_bson = bson::to_bson(&devices).map_err(|e| mongodb::error::Error::from(e))?;
+    let files_bson = bson::to_bson(&files).map_err(|e| mongodb::error::Error::from(e))?;
+
+    // Create the BSON document with all the variables
+    let update_doc = doc! {
+        "device_name": device_name,
+        "files": files_bson,
+        "storage_capacity_GB": storage_capacity_GB,
+        "date_added": date_added,
+        "ip_address": ip_address,
+        "avg_network_speed": avg_network_speed,
+        "upload_network_speed": upload_network_speed,
+        "download_network_speed": download_network_speed,
+        "gpu_usage": gpu_usage,
+        "cpu_usage": cpu_usage,
+        "ram_usage": ram_usage,
+        "network_reliability": network_reliability,
+        "average_time_online": average_time_online,
+        "device_priority": device_priority,
+        "sync_status": sync_status,
+        "optimization_status": optimization_status,
+    };
+
+    println!("Checking if device already exists");
+
+    // Use aggregation pipeline to find the specific device
+    let pipeline = vec![
+        doc! { "$match": { "username": user }},
+        doc! { "$unwind": "$devices" },
+        doc! { "$match": { "devices.device_name": device_name }},
+    ];
+    let device_exists = collection.aggregate(pipeline, None)?.next();
+
+    // If the device exists, update the device info
+    if let Some(_) = device_exists {
+        println!("Device already exists, updating device info");
+        collection.update_one(
+            doc! { "username": user, "devices.device_name": device_name },
+            doc! { "$set": { "devices.$": update_doc } },
+            None,
+        )?;
+    } else {
+        // If the device does not exist, append the device info
+        println!("Device does not exist, appending device info");
+        collection.update_one(
+            doc! { "username": user },
+            doc! { "$push": { "devices": update_doc } },
+            None,
+        )?;
+    }
+
+    Ok(None)
 }
