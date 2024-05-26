@@ -54,12 +54,6 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
                     let file_size = header_parts[2];
                     let username = header_parts[3];
                     let password = header_parts[3];
-                    println!("File type: {}", file_type);
-                    println!("File name: {}", file_name);
-                    println!("File size: {}", file_size);
-                    println!("Username: {}", username);
-                    println!("Password: {}", password);
-
                     match file_type {
                         "MSG" => {
                             message_handler::process_message_request(buffer, username, password)
