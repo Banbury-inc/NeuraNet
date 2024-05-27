@@ -41,17 +41,17 @@ interface Message {
 
 
 process.on('uncaughtException', (err: Error & { code?: string }) => {
-    switch (err.code) {
-        case 'ECONNREFUSED':
-            console.error('Connection refused. The server is unreachable.');
-            break;
-        case 'ETIMEDOUT':
-            console.error('Connection timed out.');
-            break;
-        default:
-            console.error('Uncaught error:', err);
-            break;
-    }
+  switch (err.code) {
+    case 'ECONNREFUSED':
+      console.error('Connection refused. The server is unreachable.');
+      break;
+    case 'ETIMEDOUT':
+      console.error('Connection timed out.');
+      break;
+    default:
+      console.error('Uncaught error:', err);
+      break;
+  }
 });
 
 function Copyright(props: any) {
@@ -77,125 +77,125 @@ const BANBURY_FOLDER = path.join(homeDirectory, '.banbury');
 const CONFIG_FILE = path.join(BANBURY_FOLDER, '.banbury_config.ini');
 
 if (!fs.existsSync(BANBURY_FOLDER)) {
-    fs.mkdirSync(BANBURY_FOLDER);
+  fs.mkdirSync(BANBURY_FOLDER);
 }
 
 if (!fs.existsSync(CONFIG_FILE)) {
-    const config = new ConfigParser();
-    config.set('banbury_cloud', 'credentials_file', 'credentials.json');
-    fs.writeFileSync(CONFIG_FILE, config.toString());
+  const config = new ConfigParser();
+  config.set('banbury_cloud', 'credentials_file', 'credentials.json');
+  fs.writeFileSync(CONFIG_FILE, config.toString());
 }
 
 function loadCredentials(): Record<string, string> {
-    try {
-        const config = new ConfigParser();
-        config.read(CONFIG_FILE);
-        const credentialsFile = config.get('banbury_cloud', 'credentials_file') || 'default_filename.json';
-        const credentialsFilePath = path.join(BANBURY_FOLDER, credentialsFile);
-        return JSON.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
-    } catch (error) {
-        return {};
-    }
-}
-
-function saveCredentials(credentials: Record<string, string>): void {
+  try {
     const config = new ConfigParser();
     config.read(CONFIG_FILE);
     const credentialsFile = config.get('banbury_cloud', 'credentials_file') || 'default_filename.json';
     const credentialsFilePath = path.join(BANBURY_FOLDER, credentialsFile);
-    fs.writeFileSync(credentialsFilePath, JSON.stringify(credentials));
+    return JSON.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
+  } catch (error) {
+    return {};
+  }
+}
+
+function saveCredentials(credentials: Record<string, string>): void {
+  const config = new ConfigParser();
+  config.read(CONFIG_FILE);
+  const credentialsFile = config.get('banbury_cloud', 'credentials_file') || 'default_filename.json';
+  const credentialsFilePath = path.join(BANBURY_FOLDER, credentialsFile);
+  fs.writeFileSync(credentialsFilePath, JSON.stringify(credentials));
 }
 
 export default function SignIn() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [redirect_to_register, setredirect_to_register] = useState(false);
-    const { setUsername } = useAuth(); // Destructure setUsername from useAuth
-    const [run_receiver, setrun_receiver] = useState<boolean>(false);
-    const [incorrect_login, setincorrect_login] = useState(false);
-    const [server_offline, setserver_offline] = useState(false);
-    const incorrect_login_message: Message = {
-      type: 'error',
-      content: 'Incorrect username or password',
-    };
-     const server_offline_message: Message = {
-      type: 'error',
-      content: 'Server is offline. Please try again later.',
-    };
- 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [redirect_to_register, setredirect_to_register] = useState(false);
+  const { setUsername } = useAuth(); // Destructure setUsername from useAuth
+  const [run_receiver, setrun_receiver] = useState<boolean>(false);
+  const [incorrect_login, setincorrect_login] = useState(false);
+  const [server_offline, setserver_offline] = useState(false);
+  const incorrect_login_message: Message = {
+    type: 'error',
+    content: 'Incorrect username or password',
+  };
+  const server_offline_message: Message = {
+    type: 'error',
+    content: 'Server is offline. Please try again later.',
+  };
 
 
-    // Move the useState hook outside of the handleSubmit function
-    const [showMain, setShowMain] = useState<boolean>(false);
-    const [showRegister, setShowRegister] = useState<boolean>(false);
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        const email = data.get('email') as string | null;
-        const password = data.get('password') as string | null;
+  // Move the useState hook outside of the handleSubmit function
+  const [showMain, setShowMain] = useState<boolean>(false);
+  const [showRegister, setShowRegister] = useState<boolean>(false);
 
-        if (email && password) {
-            const RELAY_HOST = '34.28.13.79';
-            // const RELAY_HOST = '0.0.0.0';
-            const RELAY_PORT = 443;
-            const senderSocket = new net.Socket();
-            // senderSocket.connect(RELAY_PORT, RELAY_HOST);
-            senderSocket.connect(RELAY_PORT, RELAY_HOST, () => {
-                // Connection established
-            }).on('error', (err: NodeJS.ErrnoException) => {
-                if (err.code === 'ECONNREFUSED') {
-                    console.error('Connection refused. The server is unreachable.');
-                    setserver_offline(true);
-                } else {
-                    console.error('Network error:', err);
-                }
-            });
-            const endOfHeader = Buffer.from('END_OF_HEADER');
-            const fileHeader = `LOGIN_REQUEST::${password}:${email}:`;
-            senderSocket.write(fileHeader);
-            senderSocket.write(endOfHeader);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const email = data.get('email') as string | null;
+    const password = data.get('password') as string | null;
 
-            senderSocket.on('data', (data) => {
-                const fileType = data.toString();
-                console.log('Received:', fileType)
-                try {
-                if (fileType === 'LOGIN_SUCCESS:') {
-                    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-                    const credentials = loadCredentials();
-                    credentials[email] = hashedPassword;
-                    saveCredentials(credentials);
-                    senderSocket.end();
-                    setUsername(email);
-                    setIsAuthenticated(true);
-                    console.log('Result: Login successful.');
-                    setShowMain(true); // Set showMain to true when login is successful
-                    setrun_receiver(true);
-
-                } else if (fileType === 'LOGIN_FAIL:') {
-                    senderSocket.end();
-                    console.log('Result: Login failed.');
-                    setincorrect_login(true);
-                }
-        } catch (error: any) {
-                    console.error('Error:', error);
-                    if (error.code === 'ECONNREFUSED') {
-                        console.error('Connection refused. Is the server running?');
-                    }
-                    else {
-                        console.error('Error:', error);
-                    }
-                }
-            });
+    if (email && password) {
+      // const RELAY_HOST = '34.28.13.79';
+      const RELAY_HOST = '0.0.0.0';
+      const RELAY_PORT = 443;
+      const senderSocket = new net.Socket();
+      // senderSocket.connect(RELAY_PORT, RELAY_HOST);
+      senderSocket.connect(RELAY_PORT, RELAY_HOST, () => {
+        // Connection established
+      }).on('error', (err: NodeJS.ErrnoException) => {
+        if (err.code === 'ECONNREFUSED') {
+          console.error('Connection refused. The server is unreachable.');
+          setserver_offline(true);
+        } else {
+          console.error('Network error:', err);
         }
-    };
+      });
+      // const endOfHeader = Buffer.from('END_OF_HEADER');
+      const fileHeader = `LOGIN_REQUEST::${password}:${email}:END_OF_HEADER`;
+      senderSocket.write(fileHeader);
+      // senderSocket.write(endOfHeader);
 
-    if (isAuthenticated || showMain) { // Render Main component if authenticated or showMain is true
-        return <Main />;
+      senderSocket.on('data', (data) => {
+        const fileType = data.toString();
+        console.log('Received:', fileType)
+        try {
+          if (fileType === 'LOGIN_SUCCESS:') {
+            const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+            const credentials = loadCredentials();
+            credentials[email] = hashedPassword;
+            saveCredentials(credentials);
+            senderSocket.end();
+            setUsername(email);
+            setIsAuthenticated(true);
+            console.log('Result: Login successful.');
+            setShowMain(true); // Set showMain to true when login is successful
+            setrun_receiver(true);
+
+          } else if (fileType === 'LOGIN_FAIL:') {
+            senderSocket.end();
+            console.log('Result: Login failed.');
+            setincorrect_login(true);
+          }
+        } catch (error: any) {
+          console.error('Error:', error);
+          if (error.code === 'ECONNREFUSED') {
+            console.error('Connection refused. Is the server running?');
+          }
+          else {
+            console.error('Error:', error);
+          }
+        }
+      });
     }
-    if (redirect_to_register || showRegister) { // Render Main component if authenticated or showMain is true
-        return <Register />;
-    }
- 
+  };
+
+  if (isAuthenticated || showMain) { // Render Main component if authenticated or showMain is true
+    return <Main />;
+  }
+  if (redirect_to_register || showRegister) { // Render Main component if authenticated or showMain is true
+    return <Register />;
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -209,7 +209,7 @@ export default function SignIn() {
         >
           {/* <Avatar sx={{ mt: 10, bgcolor: 'primary.main' }}> */}
 
-            {/* <LockOutlinedIcon /> */}
+          {/* <LockOutlinedIcon /> */}
           {/* </Avatar> */}
           {/* <img src={NeuraNet_Logo} alt="Logo" style={{ marginTop: 100, marginBottom: 20, width: 157.2, height: 137.2 }} /> */}
           <img src={NeuraNet_Logo} alt="Logo" style={{ marginTop: 100, marginBottom: 20, width: 50, height: 50 }} />
@@ -250,7 +250,7 @@ export default function SignIn() {
               InputLabelProps={{
                 style: { fontSize: '1.3rem' }, // Adjusts the label font size
               }}
- 
+
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -270,7 +270,7 @@ export default function SignIn() {
               <Grid item xs>
                 {/* <Link href="/register" variant="body2"> */}
                 <Link variant="body2" onClick={() => {
-                setredirect_to_register(true);
+                  setredirect_to_register(true);
                 }}>
                   Forgot password?
                 </Link>
@@ -278,9 +278,9 @@ export default function SignIn() {
               <Grid item>
                 {/* <Link href="/register" variant="body2"> */}
                 <Link variant="body2" onClick={() => {
-                setredirect_to_register(true);
+                  setredirect_to_register(true);
                 }}>
- 
+
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
@@ -291,14 +291,14 @@ export default function SignIn() {
                   </div>
                 </Grid>
               </Grid>
-               <Grid container justifyContent="center">
+              <Grid container justifyContent="center">
                 <Grid item>
                   <div style={{ color: "#E22134", opacity: server_offline ? 1 : 0, transition: 'opacity 0.5s' }}>
                     <p>{server_offline_message.content}</p>
                   </div>
                 </Grid>
               </Grid>
- 
+
             </Grid>
           </Box>
         </Box>
