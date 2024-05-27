@@ -13,25 +13,41 @@ pub struct Server {
 pub struct Users {
     _id: ObjectId,
     pub username: String,
+    #[serde(default)]
     pub first_name: String,
+    #[serde(default)]
     pub last_name: String,
+    #[serde(default)]
     pub phone_number: String,
+    #[serde(default)]
     pub email: String,
+    #[serde(default)]
     pub devices: Vec<Devices>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Devices {
     pub device_number: i64,
+    #[serde(default)]
     pub device_name: String,
+    #[serde(default)]
     pub files: Vec<Files>,
+    #[serde(default)]
     pub date_added: String,
+    #[serde(default)]
     pub online: bool,
 }
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Files {
     pub file_name: String,
+    #[serde(default)]
     pub date_uploaded: String,
+    #[serde(default)]
     pub file_size: i64,
+    #[serde(default)]
+    pub file_priority: i64,
+    #[serde(default)]
+    pub original_device: String,
+
 }
 fn format_bytes(bytes: i64) -> String {
     let kilobyte = 1024;

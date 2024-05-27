@@ -172,6 +172,7 @@ pub fn process_ping_request_response(
             .get("optimization_status")
             .and_then(Value::as_bool)
             .unwrap_or_default();
+        println!("Calling append device info");
         database_handler::append_device_info(
             username,
             device_number,

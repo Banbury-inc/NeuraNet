@@ -360,10 +360,13 @@ async function sendDeviceInfo(sender_socket: net.Socket, device_info: DeviceInfo
   const date_time: string = get_current_date_and_time();
   const null_string: string = "";
   const file_header: string = `PING_REQUEST_RESPONSE:${null_string}:${null_string}:${null_string}:END_OF_HEADER`;
-  sender_socket.write(file_header);
+  // sender_socket.write(file_header);
 
   const device_info_with_stop_signal: string = JSON.stringify(device_info) + "END_OF_JSON";
-  sender_socket.write(device_info_with_stop_signal);
+  const full_message = file_header + device_info_with_stop_signal;
+
+  sender_socket.write(full_message);
+  // sender_socket.write(device_info_with_stop_signal);
   console.log(device_info_with_stop_signal);
   console.log(`${date_time} Ping response has been sent successfully.`);
 }
@@ -551,11 +554,11 @@ function get_directory_info() {
       // Get file stats
       const stats = fs.statSync(filePath);
       const fileInfo = {
-        "File Name": filename,
-        "Date Uploaded": DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
-        "File Size": stats.size,
-        "File Priority": 5,
-        "Original_Device": filename,
+        "file_name": filename,
+        "date_uploaded": DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
+        "file_size": stats.size,
+        "file_priority": 5,
+        "original_device": filename,
       };
       filesInfo.push(fileInfo);
     }
