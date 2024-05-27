@@ -1,10 +1,7 @@
-use futures::stream::Any;
 use mongodb::bson;
 use mongodb::bson::oid::ObjectId;
 use mongodb::{
     bson::doc,
-    bson::to_bson,
-    bson::Bson,
     sync::{Client, Collection},
 };
 use serde::{Deserialize, Serialize};
@@ -15,20 +12,20 @@ pub struct Server {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Users {
     _id: ObjectId,
-    username: String,
-    first_name: String,
-    last_name: String,
-    phone_number: String,
-    email: String,
-    devices: Vec<Devices>,
+    pub username: String,
+    pub first_name: String,
+    pub last_name: String,
+    pub phone_number: String,
+    pub email: String,
+    pub devices: Vec<Devices>,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Devices {
-    device_number: i64,
-    device_name: String,
-    files: Vec<Files>,
-    date_added: String,
-    online: bool,
+    pub device_number: i64,
+    pub device_name: String,
+    pub files: Vec<Files>,
+    pub date_added: String,
+    pub online: bool,
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Files {
@@ -145,6 +142,17 @@ pub fn get_user(user: &str) -> mongodb::error::Result<Option<Users>> {
 
     Ok(result)
 }
+pub fn get_username(user: &str) -> mongodb::error::Result<Option<Users>> {
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+    let client = Client::with_uri_str(uri)?;
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+
+    // Find the user with the specified username
+    let result = collection.find_one(doc! { "username": user }, None)?;
+
+    Ok(result)
+}
+
 pub fn get_devices(user: &str) -> mongodb::error::Result<Option<Vec<Devices>>> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
@@ -182,7 +190,7 @@ pub fn append_device_info(
     device_number: i64,
     device_name: &str,
     files: Option<Vec<Files>>,
-    storage_capacity_GB: i64,
+    storage_capacity_gb: i64,
     date_added: &str,
     ip_address: &str,
     avg_network_speed: i64,
@@ -211,8 +219,9 @@ pub fn append_device_info(
     // Create the BSON document with all the variables
     let update_doc = doc! {
         "device_name": device_name,
+        "device_number": device_number,
         "files": files_bson,
-        "storage_capacity_GB": storage_capacity_GB,
+        "storage_capacity_GB": storage_capacity_gb,
         "date_added": date_added,
         "ip_address": ip_address,
         "avg_network_speed": avg_network_speed,
@@ -225,6 +234,7 @@ pub fn append_device_info(
         "average_time_online": average_time_online,
         "device_priority": device_priority,
         "sync_status": sync_status,
+        "online": true,
         "optimization_status": optimization_status,
     };
 

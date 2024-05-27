@@ -64,7 +64,14 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
                             message_handler::process_message_request(buffer, username, password)
                         }
                         "LOGIN_REQUEST" => {
-                            login_handler::process_login_request(buffer, username, password)
+                            if let Err(e) = login_handler::process_login_request(
+                                buffer,
+                                &mut stream,
+                                username,
+                                password,
+                            ) {
+                                println!("Error processing login request: {:?}", e);
+                            }
                         }
                         "REGISTRATION_REQUEST" => {
                             registration_handler::process_registration_request(

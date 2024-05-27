@@ -1,6 +1,7 @@
 extern crate tungstenite;
 extern crate url;
 use handlers::database_handler;
+use handlers::login_handler;
 use std::net::TcpListener;
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -18,6 +19,9 @@ fn main() {
     println!("Initializing Database...");
     database_handler::initialize();
     println!("Database Initialized");
+    let username = "mmills606";
+    let password = "Dirtballer6060";
+    let buffer = "";
     for stream in listener.incoming() {
         println!("Connection established");
         let stream = stream.unwrap();

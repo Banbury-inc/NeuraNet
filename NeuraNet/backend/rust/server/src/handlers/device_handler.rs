@@ -6,9 +6,9 @@ pub fn process_device_delete_request(
     buffer: &str,
     username: &str,
     password: &str,
-    file_name: &str,
-    device_name: &str,
-    file_size: &str,
+    _file_name: &str,
+    _device_name: &str,
+    _file_size: &str,
 ) {
     println!("Received file request response");
     println!("Buffer: {}", buffer);

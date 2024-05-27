@@ -1,13 +1,10 @@
 use super::database_handler;
 use super::database_handler::Files;
-use serde::{Deserialize, Serialize};
 use serde_json::from_value;
 use serde_json::Value;
 use std::io::{Result, Write};
 use std::net::TcpStream;
 use std::thread;
-use tungstenite::protocol::WebSocket;
-use tungstenite::Message;
 
 pub fn begin_small_ping_loop(stream: &mut TcpStream) {
     loop {
@@ -36,7 +33,7 @@ pub fn process_small_ping_request_response(buffer: &str) {
     if buffer.contains(end_of_json) {
         let parts: Vec<&str> = buffer.split(end_of_json).collect();
         let json_content = parts[0];
-        let json_trash = parts[1];
+        let _json_trash = parts[1];
 
         // Parse the JSON buffer
         let json_value: Value = serde_json::from_str(json_content).expect("Invalid JSON");
@@ -46,16 +43,16 @@ pub fn process_small_ping_request_response(buffer: &str) {
             .get("user")
             .and_then(Value::as_str)
             .unwrap_or_default();
-        let device_name = json_value
+        let _device_name = json_value
             .get("device_name")
             .and_then(Value::as_str)
             .unwrap_or_default();
-        let device_number = json_value
+        let _device_number = json_value
             .get("device_number")
             .and_then(Value::as_i64)
             .unwrap_or(0); // Defaulting to 0 if missing
-        let files = json_value.get("files").and_then(Value::as_array);
-        let date_added = json_value
+        let _files = json_value.get("files").and_then(Value::as_array);
+        let _date_added = json_value
             .get("date_added")
             .and_then(Value::as_str)
             .unwrap_or_default();
@@ -76,11 +73,11 @@ pub fn process_small_ping_request_response(buffer: &str) {
 
 pub fn process_ping_request_response(
     buffer: &str,
-    username: &str,
-    password: &str,
-    file_name: &str,
-    device_name: &str,
-    file_size: &str,
+    _username: &str,
+    _password: &str,
+    _file_name: &str,
+    _device_name: &str,
+    _file_size: &str,
 ) {
     println!("Received ping request response");
     // println!("Buffer: {}", buffer);
@@ -91,7 +88,7 @@ pub fn process_ping_request_response(
     if buffer.contains(end_of_json) {
         let parts: Vec<&str> = buffer.split(end_of_json).collect();
         let json_content = parts[0];
-        let json_trash = parts[1];
+        let _json_trash = parts[1];
 
         // Parse the JSON buffer
         let json_value: Value = serde_json::from_str(json_content).expect("Invalid JSON");
@@ -119,7 +116,7 @@ pub fn process_ping_request_response(
                     .map(|file| from_value::<Files>(file.clone()).expect("Invalid file JSON"))
                     .collect()
             });
-        let storage_capacity_GB = json_value
+        let storage_capacity_gb = json_value
             .get("storage_capacity_GB")
             .and_then(Value::as_i64)
             .unwrap_or_default();
@@ -180,7 +177,7 @@ pub fn process_ping_request_response(
             device_number,
             device_name,
             files,
-            storage_capacity_GB,
+            storage_capacity_gb,
             date_added,
             ip_address,
             average_network_speed,
