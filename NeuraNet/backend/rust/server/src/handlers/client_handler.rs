@@ -20,7 +20,7 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
     let mut small_ping_stream = stream.try_clone().expect("Failed to clone TcpStream");
     let mut ping_stream = stream.try_clone().expect("Failed to clone TcpStream");
     thread::spawn(move || {
-        // ping_handler::begin_small_ping_loop(&mut small_ping_stream);
+        ping_handler::begin_small_ping_loop(&mut small_ping_stream);
     });
     thread::spawn(move || {
         ping_handler::begin_ping_loop(&mut ping_stream);
@@ -86,16 +86,22 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
                             device_name,
                             file_size,
                         ),
-                        "FILE_REQUEST" => file_handler::process_file_request(
-                            buffer,
-                            username,
-                            password,
-                            file_name,
-                            device_name,
-                            file_size,
-                        ),
+                        "FILE_REQUEST" => {
+                            if let Err(e) = file_handler::process_file_request(
+                                buffer,
+                                &mut stream,
+                                username,
+                                password,
+                                file_name,
+                                device_name,
+                                file_size,
+                            ) {
+                                println!("Error processing file request: {:?}", e);
+                            }
+                        }
                         "FILE_REQUEST_RESPONSE" => file_handler::process_file_request_response(
                             buffer,
+                            &mut stream,
                             username,
                             password,
                             file_name,
@@ -139,16 +145,19 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
                             )
                         }
                         "SMALL_PING_REQUEST_RESPONSE" => {
-                            ping_handler::process_small_ping_request_response(buffer)
+                            ping_handler::process_small_ping_request_response(&mut stream, buffer)
                         }
-                        "PING_REQUEST_RESPONSE" => ping_handler::process_ping_request_response(
-                            buffer,
-                            username,
-                            password,
-                            file_name,
-                            device_name,
-                            file_size,
-                        ),
+                        "PING_REQUEST_RESPONSE" => {
+                            println!("Received ping request response");
+                            ping_handler::process_ping_request_response(
+                                buffer,
+                                username,
+                                password,
+                                file_name,
+                                device_name,
+                                file_size,
+                            )
+                        }
                         _ => println!("Unknown file type: {}", file_type),
                     }
                 } else {

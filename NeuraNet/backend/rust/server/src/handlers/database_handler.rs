@@ -1,3 +1,4 @@
+use super::ping_handler;
 use mongodb::bson;
 use mongodb::bson::oid::ObjectId;
 use mongodb::{
@@ -5,13 +6,14 @@ use mongodb::{
     sync::{Client, Collection},
 };
 use serde::{Deserialize, Serialize};
+use std::net::TcpStream;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Server {
     total_data_processed: i64,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Users {
-    _id: ObjectId,
+    pub _id: ObjectId,
     pub username: String,
     #[serde(default)]
     pub first_name: String,
@@ -26,15 +28,28 @@ pub struct Users {
 }
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Devices {
+    #[serde(default)]
     pub device_number: i64,
     #[serde(default)]
     pub device_name: String,
     #[serde(default)]
     pub files: Vec<Files>,
     #[serde(default)]
+    pub storage_capacity_GB: f64,
+    #[serde(default)]
+    pub avg_network_speed: f64,
+    #[serde(default)]
+    pub usage_stats: Vec<UsageStats>,
+    #[serde(default)]
+    pub ip_address: String,
+    #[serde(default)]
     pub date_added: String,
     #[serde(default)]
     pub online: bool,
+    #[serde(default)]
+    pub sync_status: bool,
+    #[serde(default)]
+    pub optimization_status: bool,
 }
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Files {
@@ -47,8 +62,18 @@ pub struct Files {
     pub file_priority: i64,
     #[serde(default)]
     pub original_device: String,
-
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct UsageStats {
+    pub upload_network_speed: f64,
+    pub download_network_speed: f64,
+    pub gpu_usage: f64,
+    pub cpu_usage: f64,
+    pub ram_usage: f64,
+    pub timestamp: String,
+}
+
 fn format_bytes(bytes: i64) -> String {
     let kilobyte = 1024;
     let megabyte = kilobyte * 1024;
@@ -182,7 +207,16 @@ pub fn get_devices(user: &str) -> mongodb::error::Result<Option<Vec<Devices>>> {
     Ok(devices)
 }
 
-pub fn update_devices(user: &str, devices: Vec<Devices>) -> mongodb::error::Result<Option<Users>> {
+pub fn update_devices(
+    stream: &mut TcpStream,
+    user: &str,
+    devices: Vec<Devices>,
+    device_name: &str,
+    device_number: i64,
+    files: Option<Vec<Files>>,
+    date_added: &str,
+) -> mongodb::error::Result<Option<Users>> {
+    // Handling a small ping response
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
     let collection: Collection<Users> = client.database("myDatabase").collection("users");
@@ -191,14 +225,37 @@ pub fn update_devices(user: &str, devices: Vec<Devices>) -> mongodb::error::Resu
 
     // Convert devices to BSON before updating
     let devices_bson = bson::to_bson(&devices).map_err(|e| mongodb::error::Error::from(e))?;
+    let files_bson = bson::to_bson(&files).map_err(|e| mongodb::error::Error::from(e))?;
+    // Create the BSON document with all the variables
+    let update_doc = doc! {
+         "device_name": device_name,
+         "device_number": device_number,
+         "files": files_bson.clone(),
+         "date_added": date_added,
+    };
 
-    // Find the user with the specified username
-    collection.update_one(
-        doc! { "username": user },
-        doc! { "$set": { "devices": devices_bson } },
-        None,
-    )?;
+    println!("Checking if device already exists");
 
+    // Use aggregation pipeline to find the specific device
+    let pipeline = vec![
+        doc! { "$match": { "username": user }},
+        doc! { "$unwind": "$devices" },
+        doc! { "$match": { "devices.device_name": device_name }},
+    ];
+    let device_exists = collection.aggregate(pipeline, None)?.next();
+
+    // If the device exists, update the device info
+    if let Some(_) = device_exists {
+        println!("Device already exists, updating device info");
+        collection.update_one(
+            doc! { "username": user, "devices.device_name": device_name },
+            doc! { "$set": { "devices.$": update_doc }},
+            None,
+        )?;
+    } else {
+        println!("Device does not exist, sending a big ping");
+        ping_handler::send_ping(stream);
+    }
     Ok(result)
 }
 pub fn append_device_info(
@@ -210,8 +267,8 @@ pub fn append_device_info(
     date_added: &str,
     ip_address: &str,
     avg_network_speed: i64,
-    upload_network_speed: &str,
-    download_network_speed: &str,
+    upload_network_speed: f64,
+    download_network_speed: f64,
     gpu_usage: f64,
     cpu_usage: f64,
     ram_usage: f64,
@@ -228,15 +285,26 @@ pub fn append_device_info(
 
     let collection: Collection<Users> = client.database("myDatabase").collection("users");
 
+    // Create the usage stats entry
+    let usage_stat = UsageStats {
+        upload_network_speed,
+        download_network_speed,
+        gpu_usage,
+        cpu_usage,
+        ram_usage,
+        timestamp: chrono::Utc::now().to_rfc3339(),
+    };
     // Convert devices and files to BSON
     // let devices_bson = bson::to_bson(&devices).map_err(|e| mongodb::error::Error::from(e))?;
     let files_bson = bson::to_bson(&files).map_err(|e| mongodb::error::Error::from(e))?;
+    let usage_stats_bson =
+        bson::to_bson(&usage_stat).map_err(|e| mongodb::error::Error::from(e))?;
 
     // Create the BSON document with all the variables
     let update_doc = doc! {
         "device_name": device_name,
         "device_number": device_number,
-        "files": files_bson,
+        "files": files_bson.clone(),
         "storage_capacity_GB": storage_capacity_gb,
         "date_added": date_added,
         "ip_address": ip_address,
@@ -269,15 +337,36 @@ pub fn append_device_info(
         println!("Device already exists, updating device info");
         collection.update_one(
             doc! { "username": user, "devices.device_name": device_name },
-            doc! { "$set": { "devices.$": update_doc } },
+            doc! { "$set": { "devices.$": update_doc }},
+            None,
+        )?;
+        collection.update_one(
+            doc! { "username": user, "devices.device_name": device_name },
+            doc! { "$push": { "devices.$.usage_stats": usage_stats_bson}},
             None,
         )?;
     } else {
         // If the device does not exist, append the device info
         println!("Device does not exist, appending device info");
+        let device_doc = doc! {
+            "device_name": device_name,
+            "device_number": device_number,
+            "files": files_bson,
+            "storage_capacity_gb": storage_capacity_gb,
+            "date_added": date_added,
+            "ip_address": ip_address,
+            "avg_network_speed": avg_network_speed,
+            "usage_stats": vec![usage_stats_bson], // Initialize with the first usage stat
+            "network_reliability": network_reliability,
+            "average_time_online": average_time_online,
+            "device_priority": device_priority,
+            "sync_status": sync_status,
+            "optimization_status": optimization_status,
+            "online": true,
+        };
         collection.update_one(
             doc! { "username": user },
-            doc! { "$push": { "devices": update_doc } },
+            doc! { "$push": { "devices": device_doc }},
             None,
         )?;
     }

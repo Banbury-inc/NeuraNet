@@ -10,6 +10,9 @@ use tungstenite::handshake::server::{Request, Response};
 // test
 mod handlers;
 use handlers::client_handler::handle_connection;
+use handlers::file_handler::process_file;
+
+use crate::handlers::file_handler;
 
 fn main() {
     println!("Welcome to the Banbury NeuraNet");
@@ -19,9 +22,6 @@ fn main() {
     println!("Initializing Database...");
     database_handler::initialize();
     println!("Database Initialized");
-    let username = "mmills606";
-    let password = "Dirtballer6060";
-    let buffer = "";
     for stream in listener.incoming() {
         println!("Connection established");
         let stream = stream.unwrap();

@@ -9,24 +9,27 @@ use std::thread;
 pub fn begin_small_ping_loop(stream: &mut TcpStream) {
     loop {
         // set a timer for 5 seconds
-        thread::sleep(std::time::Duration::from_secs(5));
-        println!("Sending small ping request");
+        // println!("Sending small ping request");
         send_message(stream, "SMALL_PING_REQUEST:::END_OF_HEADER");
+        thread::sleep(std::time::Duration::from_secs(30));
     }
 }
 pub fn begin_ping_loop(stream: &mut TcpStream) {
     loop {
         // set a timer for 5 seconds
         send_message(stream, "PING_REQUEST:::END_OF_HEADER");
-        thread::sleep(std::time::Duration::from_secs(15));
+        thread::sleep(std::time::Duration::from_secs(600));
     }
+}
+pub fn send_ping(stream: &mut TcpStream) {
+    send_message(stream, "PING_REQUEST:::END_OF_HEADER");
 }
 
 pub fn send_message(stream: &mut TcpStream, message: &str) -> Result<()> {
     stream.write_all(message.as_bytes())
 }
 
-pub fn process_small_ping_request_response(buffer: &str) {
+pub fn process_small_ping_request_response(stream: &mut TcpStream, buffer: &str) {
     println!("Received small ping request response");
     let end_of_json = "END_OF_JSON";
 
@@ -51,20 +54,31 @@ pub fn process_small_ping_request_response(buffer: &str) {
             .get("device_number")
             .and_then(Value::as_i64)
             .unwrap_or(0); // Defaulting to 0 if missing
-        let _files = json_value.get("files").and_then(Value::as_array);
+        let files: Option<Vec<Files>> = json_value
+            .get("files")
+            .and_then(|files| files.as_array())
+            .map(|files_array| {
+                files_array
+                    .iter()
+                    .map(|file| from_value::<Files>(file.clone()).expect("Invalid file JSON"))
+                    .collect()
+            });
+
         let _date_added = json_value
             .get("date_added")
             .and_then(Value::as_str)
             .unwrap_or_default();
-        // Print extracted values
-        // println!("User: {}", username);
-        // println!("Device Name: {}", device_name);
-        // println!("Device Number: {}", device_number);
-        // println!("Files: {:?}", files);
-        // println!("Date Added: {}", date_added);
-
         let devices = database_handler::get_devices(username).unwrap().unwrap();
-        database_handler::update_devices(username, devices).unwrap();
+        database_handler::update_devices(
+            stream,
+            username,
+            devices,
+            _device_name,
+            _device_number,
+            files,
+            _date_added,
+        )
+        .unwrap();
 
         // TODO: If the device doesn't match any of the devices in the database, send a big ping
         // TODO: Make sure devices are updated properly
@@ -134,11 +148,11 @@ pub fn process_ping_request_response(
             .unwrap_or_default();
         let upload_network_speed = json_value
             .get("upload_network_speed")
-            .and_then(Value::as_str)
+            .and_then(Value::as_f64)
             .unwrap_or_default();
         let download_network_speed = json_value
             .get("download_network_speed")
-            .and_then(Value::as_str)
+            .and_then(Value::as_f64)
             .unwrap_or_default();
         let gpu_usage = json_value
             .get("gpu_usage")

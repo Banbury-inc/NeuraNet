@@ -90,8 +90,8 @@ export default function DevicesTable() {
   };
 
 
-const handleApiCall = async () => {
-  const selectedDeviceNames = getSelectedDeviceNames();
+  const handleApiCall = async () => {
+    const selectedDeviceNames = getSelectedDeviceNames();
   }
   useEffect(() => {
     const fetchData = async () => {
@@ -125,56 +125,56 @@ const handleApiCall = async () => {
 
 
 
-function formatBytes(gigabytes: number, decimals: number = 2): string {
-  if (gigabytes === 0) return '0 GB';
+  function formatBytes(gigabytes: number, decimals: number = 2): string {
+    if (gigabytes === 0) return '0 GB';
 
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-  // Since we're starting from GB, there's no need to find the initial index based on the log.
-  // Instead, we convert the input gigabytes to bytes to use the original formula,
-  // adjusting it to start from GB.
-  const bytes = gigabytes * Math.pow(k, 3); // Converting GB to Bytes for calculation
-  const i = Math.floor(Math.log(bytes) / Math.log(k)) - 3; // Adjusting index to start from GB
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    // Since we're starting from GB, there's no need to find the initial index based on the log.
+    // Instead, we convert the input gigabytes to bytes to use the original formula,
+    // adjusting it to start from GB.
+    const bytes = gigabytes * Math.pow(k, 3); // Converting GB to Bytes for calculation
+    const i = Math.floor(Math.log(bytes) / Math.log(k)) - 3; // Adjusting index to start from GB
 
-  // Ensure the index does not fall below 0
-  const adjustedIndex = Math.max(i, 0);
-  return parseFloat((gigabytes / Math.pow(k, adjustedIndex)).toFixed(dm)) + ' ' + sizes[adjustedIndex];
-}
+    // Ensure the index does not fall below 0
+    const adjustedIndex = Math.max(i, 0);
+    return parseFloat((gigabytes / Math.pow(k, adjustedIndex)).toFixed(dm)) + ' ' + sizes[adjustedIndex];
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
-        const data = response.data;
-        // Processing data for the frontend, assuming your API returns data directly usable by the UI
-        const roundedDevices = data.devices.map(device => ({
-          ...device,
-          average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
-          storage_capacity_GB: formatBytes(device.storage_capacity_GB),
-          average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
-          average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
-          average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
-          average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
-          date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
-          onlineStatus: device.online ? "Online" : "Offline"
-        }));
+      const fetchData = async () => {
+        try {
+          const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+          const data = response.data;
+          // Processing data for the frontend, assuming your API returns data directly usable by the UI
+          const roundedDevices = data.devices.map(device => ({
+            ...device,
+            average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
+            storage_capacity_GB: formatBytes(device.storage_capacity_GB),
+            average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
+            average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
+            average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
+            average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
+            date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
+            onlineStatus: device.online ? "Online" : "Offline"
+          }));
 
-        setDevices(roundedDevices);
-        setDeviceRows(roundedDevices);
-        setFirstname(data.first_name);
-        setLastname(data.last_name);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-  }, 10000); // Refresh every 10 seconds 
+          setDevices(roundedDevices);
+          setDeviceRows(roundedDevices);
+          setFirstname(data.first_name);
+          setLastname(data.last_name);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+      fetchData();
+    }, 10000); // Refresh every 10 seconds 
 
     return () => clearInterval(interval);
   },
-  []);
+    []);
 
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -233,17 +233,17 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
     const fetchData = async () => {
       try {
         const response = await axios.get<{
-          devices: any[] 
+          devices: any[]
           first_name: string;
           last_name: string;
-        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username +'/');
+        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
 
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;
-        setFirstname(fetchedFirstname); 
-        setLastname(fetchedLastname); 
+        setFirstname(fetchedFirstname);
+        setLastname(fetchedLastname);
         console.log(fetchedFirstname);
-     } catch (error) {
+      } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
@@ -254,43 +254,43 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   return (
 
 
-      <Box sx={{ width: '100%',pl: 4, pr: 4, mt: 0, pt: 5 }}>
-        <Stack spacing={2}>
-         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+    <Box sx={{ width: '100%', pl: 4, pr: 4, mt: 0, pt: 5 }}>
+      <Stack spacing={2}>
+        <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
 
-            <Grid item>
-          <Typography variant="h2" textAlign="left">
-            Devices
-          </Typography>
-            </Grid>
-            <Grid item>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+          <Grid item>
+            <Typography variant="h2" textAlign="left">
+              Devices
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
               <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
                 <TaskBadge />
                 <AccountMenuIcon />
-                </Stack>
- 
-      </Box>
- 
-            </Grid>
-            </Grid>
+              </Stack>
 
-          <Grid container spacing={2}>
-            </Grid>
+            </Box>
+
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={2}>
+        </Grid>
 
       </Stack>
-<Card variant='outlined'>
-<CardContent>
+      <Card variant='outlined'>
+        <CardContent>
           <Grid container spacing={1}>
             {/* <Grid item> */}
-              {/* <Button variant="outlined" size="small">Add Device</Button> */}
+            {/* <Button variant="outlined" size="small">Add Device</Button> */}
             {/* </Grid> */}
             <Grid item>
               <Button variant="outlined" onClick={handleDeleteClick} size="small">Remove Device</Button>
             </Grid>
           </Grid>
 
-        <Box my={2}>
+          <Box my={2}>
             <TableContainer>
               <Table size="small">
                 <TableHead>
@@ -334,49 +334,49 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
                         key={device.device_number}
                         selected={isItemSelected}
                       >
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} padding="checkbox">
+                        <TableCell sx={{ borderBottomColor: "#424242" }} padding="checkbox">
                           <Checkbox
                             color="primary"
                             checked={isItemSelected}
                             inputProps={{ 'aria-labelledby': labelId }}
                           />
                         </TableCell>
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
+                        <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
                           {device.device_name}
                         </TableCell>
 
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
+                        <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
                           {device.ip_address}
                         </TableCell>
 
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='left'component="th" id={labelId} scope="row">
+                        <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
                           {device.storage_capacity_GB}
                         </TableCell>
- 
-                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='left'component="th" id={labelId} scope="row" style={{ color: device.onlineStatus === "Online" ? "#1DB954" : "red" }}>
+
+                        <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row" style={{ color: device.onlineStatus === "Online" ? "#1DB954" : "red" }}>
                           {device.onlineStatus}
                         </TableCell>
- 
- {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
- {/*                          {device.average_upload_speed} */}
- {/*                        </TableCell> */}
- {/*  */}
- {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
- {/*                          {device.average_download_speed} */}
- {/*                        </TableCell> */}
- {/*  */}
- {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
- {/*                          {device.average_gpu_usage} */}
- {/*                        </TableCell> */}
- {/*  */}
- {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
- {/*                          {device.average_cpu_usage} */}
- {/*                        </TableCell> */}
- {/*  */}
- {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
- {/*                          {device.average_ram_usage} */}
- {/*                        </TableCell> */}
- {/*   */}
+
+                        {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
+                        {/*                          {device.average_upload_speed} */}
+                        {/*                        </TableCell> */}
+                        {/*  */}
+                        {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
+                        {/*                          {device.average_download_speed} */}
+                        {/*                        </TableCell> */}
+                        {/*  */}
+                        {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
+                        {/*                          {device.average_gpu_usage} */}
+                        {/*                        </TableCell> */}
+                        {/*  */}
+                        {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
+                        {/*                          {device.average_cpu_usage} */}
+                        {/*                        </TableCell> */}
+                        {/*  */}
+                        {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
+                        {/*                          {device.average_ram_usage} */}
+                        {/*                        </TableCell> */}
+                        {/*   */}
 
                         {/* Render other device details here */}
                       </TableRow>
@@ -385,21 +385,21 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
                 </TableBody>
               </Table>
             </TableContainer>
-     </Box>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={devices.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-       </CardContent>
+          </Box>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={devices.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </CardContent>
       </Card>
- 
-     </Box>
-     
+
+    </Box>
+
 
   );
 

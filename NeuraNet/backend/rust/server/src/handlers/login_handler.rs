@@ -20,7 +20,7 @@ pub fn process_login_request(
     println!("Received login request");
 
     let user = database_handler::get_user(username).unwrap();
-    println!("User: {:?}", user);
+    // println!("User: {:?}", user);
 
     // check if the user exists
     if user.is_none() {

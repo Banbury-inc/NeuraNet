@@ -62,6 +62,7 @@ import CircularProgress, {
 } from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import delete_file from './scripts/delete';
+import download_file from './scripts/download_file';
 import upload_file from './scripts/upload';
 import DataManagementCard from './TreeView';
 import CustomizedTreeView from './TreeView';
@@ -453,55 +454,13 @@ export default function EnhancedTable() {
   const [selectedfiles, setSelectedFiles] = useState<readonly number[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const handleDownloadClick = async () => {
-    try {
-      setLoading(true);
-
-      if (selectedfiles.length === 0) {
-        setLoading(false);
-        return; // If no files are selected, exit the function
-      }
+    setSelectedFiles(selected);
+    console.log(selectedFileNames)
+    console.log("handling download click")
+    let result = download_file(selectedFileNames, selectedDeviceNames);
+    console.log(result)
 
 
-      // const scriptPath = 'src/main/download.py'; // Update this to the path of your Python script
-
-      const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let filename = '';
-      let command = '';
-      let devbaseDir = 'python';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-        filename = 'python/prod-signin2.py';
-        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
-        filename = 'prod-signin2.py';
-        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-      }
-
-
-      const exactcommand = path.join(baseDir, command);
-      const scriptPath = path.join(baseDir, filename);
-
-
-
-
-      exec(`${exactcommand} "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-        }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-        }
-        setLoading(false);
-      });
-    } catch (error) {
-      console.error('There was an error!', error);
-    }
   };
 
   const [deleteloading, setdeleteLoading] = useState<boolean>(false);
@@ -908,6 +867,7 @@ export default function EnhancedTable() {
               <InputFileUploadButton />
 
             </Grid>
+            {/* // download button */}
             <Grid item>
               <LoadingButton variant="outlined" loading={loading} loadingPosition="end" endIcon={<DownloadIcon />} onClick={handleDownloadClick} size="small">
                 {/* {buttonText} */}

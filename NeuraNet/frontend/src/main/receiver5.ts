@@ -360,25 +360,18 @@ async function sendDeviceInfo(sender_socket: net.Socket, device_info: DeviceInfo
   const date_time: string = get_current_date_and_time();
   const null_string: string = "";
   const file_header: string = `PING_REQUEST_RESPONSE:${null_string}:${null_string}:${null_string}:END_OF_HEADER`;
-  // sender_socket.write(file_header);
-
   const device_info_with_stop_signal: string = JSON.stringify(device_info) + "END_OF_JSON";
-  const full_message = file_header + device_info_with_stop_signal;
-
+  let full_message = file_header + device_info_with_stop_signal;
   sender_socket.write(full_message);
-  // sender_socket.write(device_info_with_stop_signal);
-  console.log(device_info_with_stop_signal);
-  console.log(`${date_time} Ping response has been sent successfully.`);
 }
 
 async function sendSmallDeviceInfo(sender_socket: net.Socket, device_info: SmallDeviceInfo): Promise<void> {
   const date_time: string = get_current_date_and_time();
   const null_string: string = "";
   const file_header: string = `SMALL_PING_REQUEST_RESPONSE:${null_string}:${null_string}:${null_string}:END_OF_HEADER`;
-  sender_socket.write(file_header);
-
   const device_info_with_stop_signal: string = JSON.stringify(device_info) + "END_OF_JSON";
-  sender_socket.write(device_info_with_stop_signal);
+  let full_message = file_header + device_info_with_stop_signal;
+  sender_socket.write(full_message);
 }
 
 async function get_cpu_info(): Promise<CPUPerformance> {
