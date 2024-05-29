@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import time
 import pandas as pd
 from datetime import datetime
 from sklearn.preprocessing import MinMaxScaler
@@ -67,7 +68,9 @@ class PredictionService:
             dfs = {}
 
             for metric in metrics:
-                print(metric)
+                print("")
+                print("Device: ", device_name, "Metric: ", metric)
+                print("")
                 speeds = [float(speed) for speed in device.get(metric, []) if isinstance(speed, (int, str, float)) and speed != '']
                 timestamps = [datetime.strptime(ts.split('.')[0], "%Y-%m-%d %H:%M:%S") for ts in device.get('date_added', []) if ts]
                 df = pd.DataFrame({'timestamp': timestamps, metric: speeds})
@@ -82,17 +85,24 @@ class PredictionService:
                 if X.size == 0:
                     print(f"Skipping {device_name}: not enough data points for training.")
                     continue
-
+                train_start_time = time.time()      
                 X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42)
                 model = self.build_and_train_model(X_train, y_train, time_steps, 1)
+                train_end_time = time.time()
+                inference_start_time = time.time()
                 predicted_metric = self.predict_future_speed(model, df, scaler, time_steps, metric)
-
+                inference_end_time = time.time()
+                training_time = train_end_time - train_start_time
+                inference_time = inference_end_time - inference_start_time
                 dfs[metric] = df
                 performance_data.append({
                     'device_name': device_name,
-                    f'predicted_{metric}': predicted_metric
+                    f'predicted_{metric}': predicted_metric,
+                    'training_time_seconds': training_time,
+                    'inference_time_seconds': inference_time
                 })
-
+                print("Training Time: ", training_time)
+                print("Inference Time: ", inference_time)
                 if show_graph:
                     self.plot_data(df, predicted_metric, future_datetime, metric, 'Speed' if 'speed' in metric else 'Usage (%)')
 
