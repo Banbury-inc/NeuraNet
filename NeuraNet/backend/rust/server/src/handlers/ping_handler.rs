@@ -18,7 +18,7 @@ pub fn begin_ping_loop(stream: &mut TcpStream) {
     loop {
         // set a timer for 5 seconds
         send_message(stream, "PING_REQUEST:::END_OF_HEADER");
-        thread::sleep(std::time::Duration::from_secs(600));
+        thread::sleep(std::time::Duration::from_secs(60));
     }
 }
 pub fn send_ping(stream: &mut TcpStream) {

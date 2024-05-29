@@ -223,15 +223,14 @@ pub fn update_devices(
 
     let result = collection.find_one(doc! { "username": user }, None)?;
 
-    // Convert devices to BSON before updating
-    let devices_bson = bson::to_bson(&devices).map_err(|e| mongodb::error::Error::from(e))?;
+    // Convert files to BSON before updating
     let files_bson = bson::to_bson(&files).map_err(|e| mongodb::error::Error::from(e))?;
-    // Create the BSON document with all the variables
+
+    // Create the BSON document with the fields to update
     let update_doc = doc! {
-         "device_name": device_name,
-         "device_number": device_number,
-         "files": files_bson.clone(),
-         "date_added": date_added,
+        "devices.$.device_number": device_number,
+        "devices.$.files": files_bson,
+        "devices.$.date_added": date_added,
     };
 
     println!("Checking if device already exists");
@@ -249,7 +248,7 @@ pub fn update_devices(
         println!("Device already exists, updating device info");
         collection.update_one(
             doc! { "username": user, "devices.device_name": device_name },
-            doc! { "$set": { "devices.$": update_doc }},
+            doc! { "$set": update_doc },
             None,
         )?;
     } else {
@@ -285,41 +284,23 @@ pub fn append_device_info(
 
     let collection: Collection<Users> = client.database("myDatabase").collection("users");
 
-    // Create the usage stats entry
-    let usage_stat = UsageStats {
-        upload_network_speed,
-        download_network_speed,
-        gpu_usage,
-        cpu_usage,
-        ram_usage,
-        timestamp: chrono::Utc::now().to_rfc3339(),
-    };
-    // Convert devices and files to BSON
-    // let devices_bson = bson::to_bson(&devices).map_err(|e| mongodb::error::Error::from(e))?;
+    // Convert files to BSON
     let files_bson = bson::to_bson(&files).map_err(|e| mongodb::error::Error::from(e))?;
-    let usage_stats_bson =
-        bson::to_bson(&usage_stat).map_err(|e| mongodb::error::Error::from(e))?;
 
-    // Create the BSON document with all the variables
+    // Create the BSON document with all the variables that need to be updated
     let update_doc = doc! {
-        "device_name": device_name,
-        "device_number": device_number,
-        "files": files_bson.clone(),
-        "storage_capacity_GB": storage_capacity_gb,
-        "date_added": date_added,
-        "ip_address": ip_address,
-        "avg_network_speed": avg_network_speed,
-        "upload_network_speed": upload_network_speed,
-        "download_network_speed": download_network_speed,
-        "gpu_usage": gpu_usage,
-        "cpu_usage": cpu_usage,
-        "ram_usage": ram_usage,
-        "network_reliability": network_reliability,
-        "average_time_online": average_time_online,
-        "device_priority": device_priority,
-        "sync_status": sync_status,
-        "online": true,
-        "optimization_status": optimization_status,
+        "devices.$.device_number": device_number,
+        "devices.$.files": files_bson.clone(),
+        "devices.$.date_added": date_added,
+        "devices.$.storage_capacity_gb": storage_capacity_gb,
+        "devices.$.ip_address": ip_address,
+        "devices.$.avg_network_speed": avg_network_speed,
+        "devices.$.network_reliability": network_reliability,
+        "devices.$.average_time_online": average_time_online,
+        "devices.$.device_priority": device_priority,
+        "devices.$.sync_status": sync_status,
+        "devices.$.optimization_status": optimization_status,
+        "devices.$.online": true,
     };
 
     println!("Checking if device already exists");
@@ -332,21 +313,27 @@ pub fn append_device_info(
     ];
     let device_exists = collection.aggregate(pipeline, None)?.next();
 
-    // If the device exists, update the device info
+    // If the device exists, update the device info and append the stats to the arrays
     if let Some(_) = device_exists {
         println!("Device already exists, updating device info");
         collection.update_one(
             doc! { "username": user, "devices.device_name": device_name },
-            doc! { "$set": { "devices.$": update_doc }},
+            doc! { "$set": update_doc },
             None,
         )?;
         collection.update_one(
             doc! { "username": user, "devices.device_name": device_name },
-            doc! { "$push": { "devices.$.usage_stats": usage_stats_bson}},
+            doc! { "$push": { 
+                "devices.$.upload_network_speed": upload_network_speed,
+                "devices.$.download_network_speed": download_network_speed,
+                "devices.$.gpu_usage": gpu_usage,
+                "devices.$.cpu_usage": cpu_usage,
+                "devices.$.ram_usage": ram_usage,
+            }},
             None,
         )?;
     } else {
-        // If the device does not exist, append the device info
+        // If the device does not exist, append the device info with initialized arrays
         println!("Device does not exist, appending device info");
         let device_doc = doc! {
             "device_name": device_name,
@@ -356,7 +343,11 @@ pub fn append_device_info(
             "date_added": date_added,
             "ip_address": ip_address,
             "avg_network_speed": avg_network_speed,
-            "usage_stats": vec![usage_stats_bson], // Initialize with the first usage stat
+            "upload_network_speed": vec![upload_network_speed], // Initialize with the first value
+            "download_network_speed": vec![download_network_speed], // Initialize with the first value
+            "gpu_usage": vec![gpu_usage], // Initialize with the first value
+            "cpu_usage": vec![cpu_usage], // Initialize with the first value
+            "ram_usage": vec![ram_usage], // Initialize with the first value
             "network_reliability": network_reliability,
             "average_time_online": average_time_online,
             "device_priority": device_priority,

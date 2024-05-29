@@ -8,7 +8,7 @@ import * as util from 'util';
 import si from '../../dependency/systeminformation'
 import axios from 'axios';
 import commander from 'commander';
-import speedTest, { ResultEvent } from 'speedtest-net';
+import speedTest from 'speedtest-net';
 import { DateTime } from 'luxon';
 import ConfigParser from 'configparser';
 import { useAuth } from '../renderer/context/AuthContext';
@@ -211,7 +211,7 @@ async function run(receiver_socket: net.Socket, global_username: any): Promise<v
 
         let user = global_username;
         // let user = username;
-        let device_number = 0
+        let device_number = 1
         let device_name = get_device_name();
         let files = get_directory_info();
         let storage_capacity_GB = await get_storage_capacity();
@@ -373,7 +373,6 @@ async function sendSmallDeviceInfo(sender_socket: net.Socket, device_info: Small
   let full_message = file_header + device_info_with_stop_signal;
   sender_socket.write(full_message);
 }
-
 async function get_cpu_info(): Promise<CPUPerformance> {
   try {
     const cpuData = await si.cpu();
@@ -391,7 +390,23 @@ async function get_cpu_info(): Promise<CPUPerformance> {
     throw error; // Rethrow error to handle externally
   }
 }
+async function get_wifi_download_speed(url: string): Promise<number> {
+  try {
+    const start = performance.now(); // Start time
+    const response = await fetch(url); // Download the file
+    const blob = await response.blob(); // Convert response to Blob
+    const end = performance.now(); // End time
 
+    const fileSize = blob.size; // File size in bytes
+    const downloadTime = (end - start) / 1000; // Download time in seconds
+    const downloadSpeed = (fileSize / downloadTime) * 8 / 1000000; // Convert to Mbps
+
+    return downloadSpeed;
+  } catch (error) {
+    console.error('Error measuring WiFi download speed:', error);
+    throw error;
+  }
+}
 async function get_cpu_usage(): Promise<number> {
   try {
     const cpuData = await si.currentLoad();
