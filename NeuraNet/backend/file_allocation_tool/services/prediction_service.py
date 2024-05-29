@@ -58,7 +58,6 @@ class PredictionService:
         # datetime_string = '2024-05-04 19:25:50.473372'
         datetime_string = date 
         future_datetime = datetime.strptime(datetime_string.split('.')[0], '%Y-%m-%d %H:%M:%S')
-
         performance_data = []
 
         for device in devices:
@@ -66,7 +65,8 @@ class PredictionService:
             print(device_name)
             metrics = ['upload_network_speed', 'download_network_speed', 'gpu_usage', 'cpu_usage', 'ram_usage']
             dfs = {}
-
+            device_dictionary = {}
+            device_dictionary['device_name'] = device_name
             for metric in metrics:
                 print("")
                 print("Device: ", device_name, "Metric: ", metric)
@@ -95,20 +95,14 @@ class PredictionService:
                 training_time = train_end_time - train_start_time
                 inference_time = inference_end_time - inference_start_time
                 dfs[metric] = df
-                performance_data.append({
-                    'device_name': device_name,
-                    f'predicted_{metric}': predicted_metric,
-                    'training_time_seconds': training_time,
-                    'inference_time_seconds': inference_time
-                })
-                print("Training Time: ", training_time)
-                print("Inference Time: ", inference_time)
+                # Append the performance data to the list
+                device_dictionary[f'predicted_{metric}'] = predicted_metric
                 if show_graph:
                     self.plot_data(df, predicted_metric, future_datetime, metric, 'Speed' if 'speed' in metric else 'Usage (%)')
+            performance_data.append(device_dictionary)
 
         if not show_graph:
-            print(performance_data)
-
+            pass
         return performance_data
 
 

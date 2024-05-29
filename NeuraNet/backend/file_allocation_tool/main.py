@@ -13,13 +13,12 @@ def main():
     for device in devices:
         device['capacity'] = device.get('storage_capacity_GB', 0)  # Default to 0 if not found
 
-        date = f'2024-05-5 19:25:50.473372'
-        performance_data = predict.performance_data(devices, date, show_graph=False)
-        print(performance_data)
+    date = f'2024-05-5 19:25:50.473372'
+    performance_data = predict.performance_data(devices, date, show_graph=False)
 
     score = ScoringService() 
     scored_devices = score.devices(performance_data)
-
+    print(scored_devices)
     for device in scored_devices:
         print(f"Device: {device['device_name']}, Score: {device['score']:.2f}")
 
