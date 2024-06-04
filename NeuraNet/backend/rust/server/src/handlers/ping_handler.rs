@@ -10,15 +10,15 @@ pub fn begin_small_ping_loop(stream: &mut TcpStream) {
     loop {
         // set a timer for 5 seconds
         // println!("Sending small ping request");
+        thread::sleep(std::time::Duration::from_secs(300));
         send_message(stream, "SMALL_PING_REQUEST:::END_OF_HEADER");
-        thread::sleep(std::time::Duration::from_secs(30));
     }
 }
 pub fn begin_ping_loop(stream: &mut TcpStream) {
     loop {
         // set a timer for 5 seconds
+        thread::sleep(std::time::Duration::from_secs(600));
         send_message(stream, "PING_REQUEST:::END_OF_HEADER");
-        thread::sleep(std::time::Duration::from_secs(60));
     }
 }
 pub fn send_ping(stream: &mut TcpStream) {

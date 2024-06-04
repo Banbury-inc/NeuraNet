@@ -136,7 +136,7 @@ async function run(receiver_socket: net.Socket, global_username: any): Promise<v
 
   receiver_socket.on('data', async (data: Buffer) => {
     buffer = Buffer.concat([buffer, data]);
-    console.log(buffer)
+    // console.log(buffer)
     let index = buffer.indexOf(end_of_header);
     while (index !== -1) {
       const headerPart = buffer.slice(0, index);
@@ -154,7 +154,7 @@ async function run(receiver_socket: net.Socket, global_username: any): Promise<v
       };
 
       buffer = content;
-
+      console.log(`Received header: ${JSON.stringify(header)}`);
       if (header.file_type === "MSG") {
         // Handle message
       } else if (header.file_type === "UPDATE") {

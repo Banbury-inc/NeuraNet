@@ -12,8 +12,6 @@ mod handlers;
 use handlers::client_handler::handle_connection;
 use handlers::file_handler::process_file;
 
-use crate::handlers::file_handler;
-
 fn main() {
     println!("Welcome to the Banbury NeuraNet");
     let listener = TcpListener::bind("127.0.0.1:443").unwrap();

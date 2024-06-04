@@ -46,7 +46,7 @@ def main():
         print(f"Device: {device['device_name']}, Stored Files: {device['files']}, Used Capacity: {device['used_capacity']}/{device['capacity']}")
 
     print("")
-    allocated_devices_with_cap = allocate.devices_with_capacity_cap(scored_devices, files, .0005)
+    allocated_devices_with_cap = allocate.devices_with_capacity_cap(scored_devices, files, .0001)
     for device in allocated_devices_with_cap:
         print(f"Device: {device['device_name']}, Stored Files: {device['files']}, Used Capacity: {device['used_capacity']}/{device['capacity']}")
 

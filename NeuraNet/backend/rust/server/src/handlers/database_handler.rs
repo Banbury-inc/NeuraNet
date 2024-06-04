@@ -53,6 +53,7 @@ pub struct Devices {
 }
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Files {
+    #[serde(default)]
     pub file_name: String,
     #[serde(default)]
     pub date_uploaded: String,
@@ -142,7 +143,7 @@ pub fn update_total_data_processed(bytes_read: usize) -> mongodb::error::Result<
 pub fn initialize() -> mongodb::error::Result<()> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
     let cursor = collection.find(None, None)?;
 
@@ -176,7 +177,7 @@ pub fn initialize() -> mongodb::error::Result<()> {
 pub fn get_user(user: &str) -> mongodb::error::Result<Option<Users>> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
     // Find the user with the specified username
     let result = collection.find_one(doc! { "username": user }, None)?;
@@ -186,7 +187,7 @@ pub fn get_user(user: &str) -> mongodb::error::Result<Option<Users>> {
 pub fn get_username(user: &str) -> mongodb::error::Result<Option<Users>> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
     // Find the user with the specified username
     let result = collection.find_one(doc! { "username": user }, None)?;
@@ -197,7 +198,7 @@ pub fn get_username(user: &str) -> mongodb::error::Result<Option<Users>> {
 pub fn get_devices(user: &str) -> mongodb::error::Result<Option<Vec<Devices>>> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
     // Find the user with the specified username
     let result = collection.find_one(doc! { "username": user }, None)?;
@@ -219,7 +220,7 @@ pub fn update_devices(
     // Handling a small ping response
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
     let result = collection.find_one(doc! { "username": user }, None)?;
 
@@ -282,7 +283,7 @@ pub fn append_device_info(
 
     let client = Client::with_uri_str(uri)?;
 
-    let collection: Collection<Users> = client.database("myDatabase").collection("users");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
     // Convert files to BSON
     let files_bson = bson::to_bson(&files).map_err(|e| mongodb::error::Error::from(e))?;
@@ -323,7 +324,7 @@ pub fn append_device_info(
         )?;
         collection.update_one(
             doc! { "username": user, "devices.device_name": device_name },
-            doc! { "$push": { 
+            doc! { "$push": {
                 "devices.$.upload_network_speed": upload_network_speed,
                 "devices.$.download_network_speed": download_network_speed,
                 "devices.$.gpu_usage": gpu_usage,

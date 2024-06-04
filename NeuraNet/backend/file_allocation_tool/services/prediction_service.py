@@ -97,9 +97,13 @@ class PredictionService:
                 dfs[metric] = df
                 # Append the performance data to the list
                 device_dictionary[f'predicted_{metric}'] = predicted_metric
+                print(f"Training Time: {training_time} seconds")
+                print(f"Inference Time: {inference_time} seconds")
                 if show_graph:
                     self.plot_data(df, predicted_metric, future_datetime, metric, 'Speed' if 'speed' in metric else 'Usage (%)')
+
             performance_data.append(device_dictionary)
+                
 
         if not show_graph:
             pass

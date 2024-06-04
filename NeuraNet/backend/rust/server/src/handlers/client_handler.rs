@@ -10,7 +10,7 @@ use super::ping_handler;
 use super::profile_handler;
 use super::registration_handler;
 use std::io::{Read, Write};
-use std::net::TcpStream;
+use std::net::{TcpListener, TcpStream};
 use std::sync::{Arc, Mutex};
 use std::thread;
 
@@ -37,7 +37,6 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
                 }
                 // println!("Received: {} bytes", bytes_read);
                 let buffer = String::from_utf8_lossy(&buffer_size[..bytes_read]);
-                println!("Received: {}", buffer);
                 let end_of_header = "END_OF_HEADER";
 
                 if buffer.contains(end_of_header) {
@@ -45,7 +44,7 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
                     let header = parts[0];
                     let buffer = parts[1];
                     println!("Header: {}", header);
-                    println!("Buffer: {}", buffer);
+                    // println!("Buffer: {}", buffer);
 
                     let header_parts: Vec<&str> = header.split(':').collect();
                     if header_parts.len() < 4 {
@@ -90,24 +89,24 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
                             if let Err(e) = file_handler::process_file_request(
                                 buffer,
                                 &mut stream,
+                                file_name,
+                                file_size,
                                 username,
-                                password,
+                            ) {
+                                println!("Error processing login request: {:?}", e);
+                            }
+                        }
+
+                        "FILE_REQUEST_RESPONSE" => {
+                            if let Err(e) = file_handler::process_file_request_response(
+                                &mut stream,
                                 file_name,
                                 device_name,
                                 file_size,
                             ) {
-                                println!("Error processing file request: {:?}", e);
+                                println!("Error processing file request response: {:?}", e);
                             }
                         }
-                        "FILE_REQUEST_RESPONSE" => file_handler::process_file_request_response(
-                            buffer,
-                            &mut stream,
-                            username,
-                            password,
-                            file_name,
-                            device_name,
-                            file_size,
-                        ),
                         "DEVICE_DELETE_REQUEST" => device_handler::process_device_delete_request(
                             buffer,
                             username,

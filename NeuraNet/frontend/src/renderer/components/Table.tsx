@@ -62,7 +62,7 @@ import CircularProgress, {
 } from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import delete_file from './scripts/delete';
-import download_file from './scripts/download_file';
+import { download_file } from './scripts/download_file';
 import upload_file from './scripts/upload';
 import DataManagementCard from './TreeView';
 import CustomizedTreeView from './TreeView';
@@ -869,7 +869,8 @@ export default function EnhancedTable() {
             </Grid>
             {/* // download button */}
             <Grid item>
-              <LoadingButton variant="outlined" loading={loading} loadingPosition="end" endIcon={<DownloadIcon />} onClick={handleDownloadClick} size="small">
+              <LoadingButton variant="outlined" loading={loading} loadingPosition="end"
+                endIcon={<DownloadIcon />} onClick={handleDownloadClick} size="small">
                 {/* {buttonText} */}
                 {loading ? 'Loading...' : buttonText}
               </LoadingButton>
