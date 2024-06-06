@@ -17,6 +17,7 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:443").unwrap();
     let clients = Arc::new(Mutex::new(Vec::new()));
     database_handler::get_total_data_processed().unwrap();
+    database_handler::get_total_requests_processed().unwrap();
     println!("Initializing Database...");
     database_handler::initialize();
     println!("Database Initialized");

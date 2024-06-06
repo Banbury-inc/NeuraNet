@@ -10,6 +10,7 @@ use std::net::TcpStream;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Server {
     total_data_processed: i64,
+    total_number_of_requests: i64,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Users {
@@ -93,7 +94,7 @@ fn format_bytes(bytes: i64) -> String {
         format!("{} bytes", bytes)
     }
 }
-pub fn get_total_data_processed() -> mongodb::error::Result<()> {
+pub fn get_total_data_processed() -> mongodb::error::Result<Option<i64>> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
     let client = Client::with_uri_str(uri)?;
     let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
@@ -104,10 +105,32 @@ pub fn get_total_data_processed() -> mongodb::error::Result<()> {
             "Total Data Processed: {}",
             format_bytes(server_data.total_data_processed)
         );
+        Ok(Some(server_data.total_data_processed))
     } else {
         println!("No document found with 'total_data_processed' field.");
+        Ok(None)
     }
-    Ok(())
+}
+
+pub fn get_total_requests_processed() -> mongodb::error::Result<Option<i64>> {
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+    let client = Client::with_uri_str(uri)?;
+    let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
+    let result = my_coll.find_one(
+        doc! { "total_number_of_requests": { "$exists": true } },
+        None,
+    )?;
+
+    if let Some(server_data) = result {
+        println!(
+            "Total Requests Processed: {}",
+            server_data.total_number_of_requests
+        );
+        Ok(Some(server_data.total_number_of_requests))
+    } else {
+        println!("No document found with 'total_data_processed' field.");
+        Ok(None)
+    }
 }
 
 pub fn update_total_data_processed(bytes_read: usize) -> mongodb::error::Result<()> {
@@ -134,6 +157,34 @@ pub fn update_total_data_processed(bytes_read: usize) -> mongodb::error::Result<
         }
         None => {
             println!("No document found with 'total_data_processed' field or update failed.");
+        }
+    }
+
+    Ok(())
+}
+
+pub fn update_number_of_requests_processed() -> mongodb::error::Result<()> {
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+    let client = Client::with_uri_str(uri)?;
+    let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
+
+    // Define the amount to add to 'total_number_of_requests'
+    let increment_amount = 1; // Example increment value
+
+    // Find the document and update 'total_data_processed'
+    let filter = doc! { "total_number_of_requests": { "$exists": true } };
+    let update = doc! { "$inc": { "total_number_of_requests": increment_amount } };
+    let result = my_coll.find_one_and_update(filter, update, None)?;
+
+    match result {
+        Some(server_data) => {
+            println!(
+                "Number_of_requests: {}",
+                server_data.total_number_of_requests + increment_amount
+            );
+        }
+        None => {
+            println!("No document found with 'total_number_of_requests' field or update failed.");
         }
     }
 

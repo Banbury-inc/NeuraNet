@@ -30,6 +30,7 @@ pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net:
         match stream.read(&mut buffer_size) {
             Ok(bytes_read) => {
                 database_handler::update_total_data_processed(bytes_read).unwrap();
+                database_handler::update_number_of_requests_processed().unwrap();
                 if bytes_read == 0 {
                     // connection closed by client
                     println!("Connection closed by client");
