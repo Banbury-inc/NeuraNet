@@ -1,17 +1,21 @@
 use super::ping_handler;
+use futures::stream::TryStreamExt;
 use mongodb::bson;
 use mongodb::bson::oid::ObjectId;
-use mongodb::{
-    bson::doc,
-    sync::{Client, Collection},
-};
+use mongodb::error::Result;
+use mongodb::{bson::doc, options::ClientOptions, Client, Collection};
 use serde::{Deserialize, Serialize};
-use std::net::TcpStream;
+use std::sync::Arc;
+use tokio::io::AsyncWriteExt;
+use tokio::net::TcpStream;
+use tokio::sync::Mutex;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Server {
-    total_data_processed: i64,
-    total_number_of_requests: i64,
+    pub total_data_processed: i64,
+    pub total_number_of_requests: i64,
 }
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Users {
     pub _id: ObjectId,
@@ -27,6 +31,7 @@ pub struct Users {
     #[serde(default)]
     pub devices: Vec<Devices>,
 }
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Devices {
     #[serde(default)]
@@ -52,6 +57,7 @@ pub struct Devices {
     #[serde(default)]
     pub optimization_status: bool,
 }
+
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Files {
     #[serde(default)]
@@ -94,11 +100,25 @@ fn format_bytes(bytes: i64) -> String {
         format!("{} bytes", bytes)
     }
 }
-pub fn get_total_data_processed() -> mongodb::error::Result<Option<i64>> {
+
+async fn get_client() -> Result<Client> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
-    let client = Client::with_uri_str(uri)?;
+
+    let client_options = ClientOptions::parse(uri).await?;
+    let client = Client::with_options(client_options)?;
+
+    Ok(client)
+}
+pub async fn get_total_data_processed() -> mongodb::error::Result<Option<i64>> {
+    // Use logging library instead of println! for errors
+
+    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
+    let client_options = ClientOptions::parse(uri).await?;
+    let client = Client::with_options(client_options)?;
     let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
-    let result = my_coll.find_one(doc! { "total_data_processed": { "$exists": true } }, None)?;
+    let result = my_coll
+        .find_one(doc! { "total_data_processed": { "$exists": true } }, None)
+        .await?;
 
     if let Some(server_data) = result {
         println!(
@@ -112,14 +132,15 @@ pub fn get_total_data_processed() -> mongodb::error::Result<Option<i64>> {
     }
 }
 
-pub fn get_total_requests_processed() -> mongodb::error::Result<Option<i64>> {
-    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
-    let client = Client::with_uri_str(uri)?;
+pub async fn get_total_requests_processed() -> Result<Option<i64>> {
+    let client = get_client().await?;
     let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
-    let result = my_coll.find_one(
-        doc! { "total_number_of_requests": { "$exists": true } },
-        None,
-    )?;
+    let result = my_coll
+        .find_one(
+            doc! { "total_number_of_requests": { "$exists": true } },
+            None,
+        )
+        .await?;
 
     if let Some(server_data) = result {
         println!(
@@ -128,83 +149,22 @@ pub fn get_total_requests_processed() -> mongodb::error::Result<Option<i64>> {
         );
         Ok(Some(server_data.total_number_of_requests))
     } else {
-        println!("No document found with 'total_data_processed' field.");
+        println!("No document found with 'total_number_of_requests' field.");
         Ok(None)
     }
 }
 
-pub fn update_total_data_processed(bytes_read: usize) -> mongodb::error::Result<()> {
-    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
-    let client = Client::with_uri_str(uri)?;
-    let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
-
-    // convert bytes_read to i64
-    let bytes_read = bytes_read as i64;
-    // Define the amount to add to 'total_data_processed'
-    let increment_amount = bytes_read; // Example increment value
-
-    // Find the document and update 'total_data_processed'
-    let filter = doc! { "total_data_processed": { "$exists": true } };
-    let update = doc! { "$inc": { "total_data_processed": increment_amount } };
-    let result = my_coll.find_one_and_update(filter, update, None)?;
-
-    match result {
-        Some(server_data) => {
-            println!(
-                "Updated Total Data Processed: {}",
-                server_data.total_data_processed + increment_amount
-            );
-        }
-        None => {
-            println!("No document found with 'total_data_processed' field or update failed.");
-        }
-    }
-
-    Ok(())
-}
-
-pub fn update_number_of_requests_processed() -> mongodb::error::Result<()> {
-    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
-    let client = Client::with_uri_str(uri)?;
-    let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
-
-    // Define the amount to add to 'total_number_of_requests'
-    let increment_amount = 1; // Example increment value
-
-    // Find the document and update 'total_data_processed'
-    let filter = doc! { "total_number_of_requests": { "$exists": true } };
-    let update = doc! { "$inc": { "total_number_of_requests": increment_amount } };
-    let result = my_coll.find_one_and_update(filter, update, None)?;
-
-    match result {
-        Some(server_data) => {
-            println!(
-                "Number_of_requests: {}",
-                server_data.total_number_of_requests + increment_amount
-            );
-        }
-        None => {
-            println!("No document found with 'total_number_of_requests' field or update failed.");
-        }
-    }
-
-    Ok(())
-}
-
-pub fn initialize() -> mongodb::error::Result<()> {
-    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
-    let client = Client::with_uri_str(uri)?;
+pub async fn initialize() -> Result<()> {
+    let client = get_client().await?;
     let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
-    let cursor = collection.find(None, None)?;
+    let mut cursor = collection.find(None, None).await?;
 
-    let mut docs = Vec::new();
-    for result in cursor {
-        let mut user = result?;
+    while let Some(result) = cursor.try_next().await? {
+        let mut user = result;
         let user_id = user._id.clone();
         let mut updated = false;
 
-        // Iterate over devices and update their 'online' status if necessary
         for device in &mut user.devices {
             if device.online {
                 device.online = false;
@@ -212,55 +172,94 @@ pub fn initialize() -> mongodb::error::Result<()> {
             }
         }
 
-        // Perform update operation if any device was updated
         if updated {
-            collection.update_one(
-                doc! { "_id": user_id, "devices.online": true },
-                doc! { "$set": { "devices.$[].online": false } },
-                None,
-            )?;
+            collection
+                .update_one(
+                    doc! { "_id": user_id, "devices.online": true },
+                    doc! { "$set": { "devices.$[].online": false } },
+                    None,
+                )
+                .await?;
         }
-        docs.push(user);
     }
 
     Ok(())
 }
-pub fn get_user(user: &str) -> mongodb::error::Result<Option<Users>> {
-    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
-    let client = Client::with_uri_str(uri)?;
+
+pub async fn update_total_data_processed(bytes_read: usize) -> mongodb::error::Result<()> {
+    let client = get_client().await?;
+    let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
+
+    let bytes_read = bytes_read as i64;
+    let increment_amount = bytes_read;
+
+    let filter = doc! { "total_data_processed": { "$exists": true } };
+    let update = doc! { "$inc": { "total_data_processed": increment_amount } };
+    let result = my_coll.find_one_and_update(filter, update, None).await?;
+
+    if let Some(server_data) = result {
+        println!(
+            "Updated Total Data Processed: {}",
+            server_data.total_data_processed + increment_amount
+        );
+    } else {
+        println!("No document found with 'total_data_processed' field or update failed.");
+    }
+
+    Ok(())
+}
+
+pub async fn update_number_of_requests_processed() -> mongodb::error::Result<()> {
+    let client = get_client().await?;
+    let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
+
+    let increment_amount = 1;
+
+    let filter = doc! { "total_number_of_requests": { "$exists": true } };
+    let update = doc! { "$inc": { "total_number_of_requests": increment_amount } };
+    let result = my_coll.find_one_and_update(filter, update, None).await?;
+
+    if let Some(server_data) = result {
+        println!(
+            "Number_of_requests: {}",
+            server_data.total_number_of_requests + increment_amount
+        );
+    } else {
+        println!("No document found with 'total_number_of_requests' field or update failed.");
+    }
+
+    Ok(())
+}
+
+pub async fn get_user(user: &str) -> mongodb::error::Result<Option<Users>> {
+    let client = get_client().await?;
     let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
-    // Find the user with the specified username
-    let result = collection.find_one(doc! { "username": user }, None)?;
+    let result = collection.find_one(doc! { "username": user }, None).await?;
 
     Ok(result)
 }
-pub fn get_username(user: &str) -> mongodb::error::Result<Option<Users>> {
-    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
-    let client = Client::with_uri_str(uri)?;
+
+pub async fn get_username(user: &str) -> mongodb::error::Result<Option<Users>> {
+    let client = get_client().await?;
     let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
-    // Find the user with the specified username
-    let result = collection.find_one(doc! { "username": user }, None)?;
+    let result = collection.find_one(doc! { "username": user }, None).await?;
 
     Ok(result)
 }
 
-pub fn get_devices(user: &str) -> mongodb::error::Result<Option<Vec<Devices>>> {
-    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
-    let client = Client::with_uri_str(uri)?;
+pub async fn get_devices(user: &str) -> mongodb::error::Result<Option<Vec<Devices>>> {
+    let client = get_client().await?;
     let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
-    // Find the user with the specified username
-    let result = collection.find_one(doc! { "username": user }, None)?;
-    // get specifically the devices from that user
-    // let devices = result.as_ref().map(|user| user.devices.clone());
+    let result = collection.find_one(doc! { "username": user }, None).await?;
     let devices = result.map(|user| user.devices);
     Ok(devices)
 }
 
-pub fn update_devices(
-    stream: &mut TcpStream,
+pub async fn update_devices(
+    stream: Arc<Mutex<TcpStream>>,
     user: &str,
     devices: Vec<Devices>,
     device_name: &str,
@@ -268,17 +267,13 @@ pub fn update_devices(
     files: Option<Vec<Files>>,
     date_added: &str,
 ) -> mongodb::error::Result<Option<Users>> {
-    // Handling a small ping response
-    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
-    let client = Client::with_uri_str(uri)?;
+    let client = get_client().await?;
     let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
-    let result = collection.find_one(doc! { "username": user }, None)?;
+    let result = collection.find_one(doc! { "username": user }, None).await?;
 
-    // Convert files to BSON before updating
     let files_bson = bson::to_bson(&files).map_err(|e| mongodb::error::Error::from(e))?;
 
-    // Create the BSON document with the fields to update
     let update_doc = doc! {
         "devices.$.device_number": device_number,
         "devices.$.files": files_bson,
@@ -287,29 +282,34 @@ pub fn update_devices(
 
     println!("Checking if device already exists");
 
-    // Use aggregation pipeline to find the specific device
     let pipeline = vec![
         doc! { "$match": { "username": user }},
         doc! { "$unwind": "$devices" },
         doc! { "$match": { "devices.device_name": device_name }},
     ];
-    let device_exists = collection.aggregate(pipeline, None)?.next();
+    let device_exists = collection
+        .aggregate(pipeline, None)
+        .await?
+        .try_next()
+        .await?;
 
-    // If the device exists, update the device info
-    if let Some(_) = device_exists {
+    if device_exists.is_some() {
         println!("Device already exists, updating device info");
-        collection.update_one(
-            doc! { "username": user, "devices.device_name": device_name },
-            doc! { "$set": update_doc },
-            None,
-        )?;
+        collection
+            .update_one(
+                doc! { "username": user, "devices.device_name": device_name },
+                doc! { "$set": update_doc },
+                None,
+            )
+            .await?;
     } else {
         println!("Device does not exist, sending a big ping");
-        ping_handler::send_ping(stream);
+        ping_handler::send_ping(stream).await;
     }
     Ok(result)
 }
-pub fn append_device_info(
+
+pub async fn append_device_info(
     user: &str,
     device_number: i64,
     device_name: &str,
@@ -330,16 +330,11 @@ pub fn append_device_info(
     optimization_status: bool,
 ) -> mongodb::error::Result<Option<Users>> {
     println!("Appending device info for user: {}", user);
-    let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
-
-    let client = Client::with_uri_str(uri)?;
-
+    let client = get_client().await?;
     let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
 
-    // Convert files to BSON
     let files_bson = bson::to_bson(&files).map_err(|e| mongodb::error::Error::from(e))?;
 
-    // Create the BSON document with all the variables that need to be updated
     let update_doc = doc! {
         "devices.$.device_number": device_number,
         "devices.$.files": files_bson.clone(),
@@ -357,35 +352,40 @@ pub fn append_device_info(
 
     println!("Checking if device already exists");
 
-    // Use aggregation pipeline to find the specific device
     let pipeline = vec![
         doc! { "$match": { "username": user }},
         doc! { "$unwind": "$devices" },
         doc! { "$match": { "devices.device_name": device_name }},
     ];
-    let device_exists = collection.aggregate(pipeline, None)?.next();
+    let device_exists = collection
+        .aggregate(pipeline, None)
+        .await?
+        .try_next()
+        .await?;
 
-    // If the device exists, update the device info and append the stats to the arrays
-    if let Some(_) = device_exists {
+    if device_exists.is_some() {
         println!("Device already exists, updating device info");
-        collection.update_one(
-            doc! { "username": user, "devices.device_name": device_name },
-            doc! { "$set": update_doc },
-            None,
-        )?;
-        collection.update_one(
-            doc! { "username": user, "devices.device_name": device_name },
-            doc! { "$push": {
-                "devices.$.upload_network_speed": upload_network_speed,
-                "devices.$.download_network_speed": download_network_speed,
-                "devices.$.gpu_usage": gpu_usage,
-                "devices.$.cpu_usage": cpu_usage,
-                "devices.$.ram_usage": ram_usage,
-            }},
-            None,
-        )?;
+        collection
+            .update_one(
+                doc! { "username": user, "devices.device_name": device_name },
+                doc! { "$set": update_doc },
+                None,
+            )
+            .await?;
+        collection
+            .update_one(
+                doc! { "username": user, "devices.device_name": device_name },
+                doc! { "$push": {
+                    "devices.$.upload_network_speed": upload_network_speed,
+                    "devices.$.download_network_speed": download_network_speed,
+                    "devices.$.gpu_usage": gpu_usage,
+                    "devices.$.cpu_usage": cpu_usage,
+                    "devices.$.ram_usage": ram_usage,
+                }},
+                None,
+            )
+            .await?;
     } else {
-        // If the device does not exist, append the device info with initialized arrays
         println!("Device does not exist, appending device info");
         let device_doc = doc! {
             "device_name": device_name,
@@ -395,11 +395,11 @@ pub fn append_device_info(
             "date_added": date_added,
             "ip_address": ip_address,
             "avg_network_speed": avg_network_speed,
-            "upload_network_speed": vec![upload_network_speed], // Initialize with the first value
-            "download_network_speed": vec![download_network_speed], // Initialize with the first value
-            "gpu_usage": vec![gpu_usage], // Initialize with the first value
-            "cpu_usage": vec![cpu_usage], // Initialize with the first value
-            "ram_usage": vec![ram_usage], // Initialize with the first value
+            "upload_network_speed": vec![upload_network_speed],
+            "download_network_speed": vec![download_network_speed],
+            "gpu_usage": vec![gpu_usage],
+            "cpu_usage": vec![cpu_usage],
+            "ram_usage": vec![ram_usage],
             "network_reliability": network_reliability,
             "average_time_online": average_time_online,
             "device_priority": device_priority,
@@ -407,11 +407,13 @@ pub fn append_device_info(
             "optimization_status": optimization_status,
             "online": true,
         };
-        collection.update_one(
-            doc! { "username": user },
-            doc! { "$push": { "devices": device_doc }},
-            None,
-        )?;
+        collection
+            .update_one(
+                doc! { "username": user },
+                doc! { "$push": { "devices": device_doc }},
+                None,
+            )
+            .await?;
     }
 
     Ok(None)

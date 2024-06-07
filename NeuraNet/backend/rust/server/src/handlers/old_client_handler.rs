@@ -1,5 +1,6 @@
 extern crate tungstenite;
 extern crate url;
+use super::client_handler;
 use super::database_handler;
 use super::device_handler;
 use super::file_handler;
@@ -8,32 +9,28 @@ use super::message_handler;
 use super::ping_handler;
 use super::profile_handler;
 use super::registration_handler;
-use std::sync::Arc;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tokio::net::TcpStream;
-use tokio::sync::Mutex;
-use tokio::task;
+use std::io::{Read, Write};
+use std::net::{TcpListener, TcpStream};
+use std::sync::{Arc, Mutex};
+use std::thread;
 
-pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mutex<TcpStream>>>>>) {
-    let stream = Arc::new(Mutex::new(stream));
+pub fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<std::net::TcpStream>>>) {
     let mut buffer_size = vec![0; 4096];
-
-    // Spawn new async tasks for the ping handler
-    let small_ping_stream = Arc::clone(&stream);
-    let ping_stream = Arc::clone(&stream);
-    task::spawn(async move {
-        ping_handler::begin_small_ping_loop(small_ping_stream).await;
+    // Spawn a new thread for the ping handler
+    let mut small_ping_stream = stream.try_clone().expect("Failed to clone TcpStream");
+    let mut ping_stream = stream.try_clone().expect("Failed to clone TcpStream");
+    thread::spawn(move || {
+        ping_handler::begin_small_ping_loop(&mut small_ping_stream);
     });
-    task::spawn(async move {
-        ping_handler::begin_ping_loop(ping_stream).await;
+    thread::spawn(move || {
+        ping_handler::begin_ping_loop(&mut ping_stream);
     });
 
     loop {
-        let mut stream_guard = stream.lock().await;
-        match stream_guard.read(&mut buffer_size).await {
+        match stream.read(&mut buffer_size) {
             Ok(bytes_read) => {
-                database_handler::update_total_data_processed(bytes_read);
-                database_handler::update_number_of_requests_processed();
+                database_handler::update_total_data_processed(bytes_read).unwrap();
+                database_handler::update_number_of_requests_processed().unwrap();
                 if bytes_read == 0 {
                     // connection closed by client
                     println!("Connection closed by client");
@@ -65,17 +62,14 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
                     match file_type {
                         "MSG" => {
                             message_handler::process_message_request(buffer, username, password)
-                                .await
                         }
                         "LOGIN_REQUEST" => {
                             if let Err(e) = login_handler::process_login_request(
                                 buffer,
-                                &mut *stream_guard,
+                                &mut stream,
                                 username,
                                 password,
-                            )
-                            .await
-                            {
+                            ) {
                                 println!("Error processing login request: {:?}", e);
                             }
                         }
@@ -83,67 +77,53 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
                             registration_handler::process_registration_request(
                                 buffer, username, password,
                             )
-                            .await
                         }
-                        "FILE" => {
-                            file_handler::process_file(
-                                buffer,
-                                username,
-                                password,
-                                file_name,
-                                device_name,
-                                file_size,
-                            )
-                            .await
-                        }
+                        "FILE" => file_handler::process_file(
+                            buffer,
+                            username,
+                            password,
+                            file_name,
+                            device_name,
+                            file_size,
+                        ),
                         "FILE_REQUEST" => {
                             if let Err(e) = file_handler::process_file_request(
                                 buffer,
-                                stream.clone(),
+                                &mut stream,
                                 file_name,
                                 file_size,
                                 username,
-                            )
-                            .await
-                            {
-                                println!("Error processing file request: {:?}", e);
+                            ) {
+                                println!("Error processing login request: {:?}", e);
                             }
                         }
 
                         "FILE_REQUEST_RESPONSE" => {
                             if let Err(e) = file_handler::process_file_request_response(
-                                &mut *stream_guard,
+                                &mut stream,
                                 file_name,
                                 device_name,
                                 file_size,
-                            )
-                            .await
-                            {
+                            ) {
                                 println!("Error processing file request response: {:?}", e);
                             }
                         }
-                        "DEVICE_DELETE_REQUEST" => {
-                            device_handler::process_device_delete_request(
-                                buffer,
-                                username,
-                                password,
-                                file_name,
-                                device_name,
-                                file_size,
-                            )
-                            .await
-                        }
-                        "FILE_DELETE_REQUEST" => {
-                            file_handler::process_file_delete_request(
-                                buffer,
-                                username,
-                                password,
-                                file_name,
-                                device_name,
-                                file_size,
-                            )
-                            .await
-                        }
+                        "DEVICE_DELETE_REQUEST" => device_handler::process_device_delete_request(
+                            buffer,
+                            username,
+                            password,
+                            file_name,
+                            device_name,
+                            file_size,
+                        ),
+                        "FILE_DELETE_REQUEST" => file_handler::process_file_delete_request(
+                            buffer,
+                            username,
+                            password,
+                            file_name,
+                            device_name,
+                            file_size,
+                        ),
                         "FILE_DELETE_REQUEST_RESPONSE" => {
                             file_handler::process_file_delete_request_response(
                                 buffer,
@@ -153,7 +133,6 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
                                 device_name,
                                 file_size,
                             )
-                            .await
                         }
                         "CHANGE_PROFILE_REQUEST" => {
                             profile_handler::process_change_profile_request(
@@ -164,14 +143,9 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
                                 device_name,
                                 file_size,
                             )
-                            .await
                         }
                         "SMALL_PING_REQUEST_RESPONSE" => {
-                            ping_handler::process_small_ping_request_response(
-                                stream.clone(),
-                                buffer,
-                            )
-                            .await
+                            ping_handler::process_small_ping_request_response(&mut stream, buffer)
                         }
                         "PING_REQUEST_RESPONSE" => {
                             println!("Received ping request response");
@@ -183,7 +157,6 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
                                 device_name,
                                 file_size,
                             )
-                            .await
                         }
                         _ => println!("Unknown file type: {}", file_type),
                     }
@@ -198,19 +171,6 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
         }
     }
 
-    let mut clients_lock = clients.lock().await;
-    let mut retained_clients = Vec::new();
-    for client in clients_lock.iter() {
-        let client_addr = client.lock().await.peer_addr().ok();
-        let stream_addr = stream.lock().await.peer_addr().ok();
-        if client_addr != stream_addr {
-            retained_clients.push(client.clone());
-        }
-    }
-    *clients_lock = retained_clients;
-}
-
-async fn process_file(file_content: &str) {
-    // Example file processing logic
-    println!("Processing file: {}", file_content);
+    let mut clients_lock = clients.lock().unwrap();
+    clients_lock.retain(|client| client.peer_addr().ok() != stream.peer_addr().ok());
 }

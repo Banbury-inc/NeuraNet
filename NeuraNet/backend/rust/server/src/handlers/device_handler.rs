@@ -2,7 +2,7 @@ use std::thread;
 use tungstenite::protocol::WebSocket;
 use tungstenite::Message;
 
-pub fn process_device_delete_request(
+pub async fn process_device_delete_request(
     buffer: &str,
     username: &str,
     password: &str,

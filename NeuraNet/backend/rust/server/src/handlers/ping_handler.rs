@@ -1,35 +1,50 @@
 use super::database_handler;
 use super::database_handler::Files;
-use serde_json::from_value;
-use serde_json::Value;
-use std::io::{Result, Write};
-use std::net::TcpStream;
-use std::thread;
+use serde_json::{from_value, Value};
+use std::sync::Arc;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::net::TcpStream;
+use tokio::sync::Mutex;
+use tokio::time::{sleep, Duration};
 
-pub fn begin_small_ping_loop(stream: &mut TcpStream) {
+pub async fn begin_small_ping_loop(stream: Arc<Mutex<TcpStream>>) {
     loop {
-        // set a timer for 5 seconds
-        // println!("Sending small ping request");
-        thread::sleep(std::time::Duration::from_secs(300));
-        send_message(stream, "SMALL_PING_REQUEST:::END_OF_HEADER");
+        // set a timer for 5 minutes
+        sleep(Duration::from_secs(300)).await;
+        let mut stream = stream.lock().await;
+        if let Err(e) = send_message(&mut *stream, "SMALL_PING_REQUEST:::END_OF_HEADER").await {
+            println!("Error sending small ping request: {:?}", e);
+            break;
+        }
     }
 }
-pub fn begin_ping_loop(stream: &mut TcpStream) {
+
+pub async fn begin_ping_loop(stream: Arc<Mutex<TcpStream>>) {
     loop {
-        // set a timer for 5 seconds
-        thread::sleep(std::time::Duration::from_secs(600));
-        send_message(stream, "PING_REQUEST:::END_OF_HEADER");
+        // set a timer for 10 minutes
+        sleep(Duration::from_secs(600)).await;
+        let mut stream = stream.lock().await;
+        if let Err(e) = send_message(&mut *stream, "PING_REQUEST:::END_OF_HEADER").await {
+            println!("Error sending ping request: {:?}", e);
+            break;
+        }
     }
 }
-pub fn send_ping(stream: &mut TcpStream) {
-    send_message(stream, "PING_REQUEST:::END_OF_HEADER");
+
+pub async fn send_ping(stream: Arc<Mutex<TcpStream>>) {
+    // set a timer for 10 minutes
+    let mut stream = stream.lock().await;
+    if let Err(e) = send_message(&mut *stream, "PING_REQUEST:::END_OF_HEADER").await {
+        println!("Error sending ping request: {:?}", e);
+    }
 }
 
-pub fn send_message(stream: &mut TcpStream, message: &str) -> Result<()> {
-    stream.write_all(message.as_bytes())
+pub async fn send_message(stream: &mut TcpStream, message: &str) -> tokio::io::Result<()> {
+    stream.write_all(message.as_bytes()).await?;
+    stream.flush().await
 }
 
-pub fn process_small_ping_request_response(stream: &mut TcpStream, buffer: &str) {
+pub async fn process_small_ping_request_response(stream: Arc<Mutex<TcpStream>>, buffer: &str) {
     println!("Received small ping request response");
     let end_of_json = "END_OF_JSON";
 
@@ -68,7 +83,10 @@ pub fn process_small_ping_request_response(stream: &mut TcpStream, buffer: &str)
             .get("date_added")
             .and_then(Value::as_str)
             .unwrap_or_default();
-        let devices = database_handler::get_devices(username).unwrap().unwrap();
+        let devices = database_handler::get_devices(username)
+            .await
+            .unwrap()
+            .unwrap();
         database_handler::update_devices(
             stream,
             username,
@@ -78,6 +96,7 @@ pub fn process_small_ping_request_response(stream: &mut TcpStream, buffer: &str)
             files,
             _date_added,
         )
+        .await
         .unwrap();
 
         // TODO: If the device doesn't match any of the devices in the database, send a big ping
@@ -85,7 +104,7 @@ pub fn process_small_ping_request_response(stream: &mut TcpStream, buffer: &str)
     }
 }
 
-pub fn process_ping_request_response(
+pub async fn process_ping_request_response(
     buffer: &str,
     _username: &str,
     _password: &str,
@@ -94,9 +113,6 @@ pub fn process_ping_request_response(
     _file_size: &str,
 ) {
     println!("Received ping request response");
-    // println!("Buffer: {}", buffer);
-    // println!("Username: {}", username);
-    // println!("Password: {}", password);
     let end_of_json = "END_OF_JSON";
 
     if buffer.contains(end_of_json) {
@@ -120,7 +136,6 @@ pub fn process_ping_request_response(
             .get("device_name")
             .and_then(Value::as_str)
             .unwrap_or_default();
-        // Deserialize the files array
         let files: Option<Vec<Files>> = json_value
             .get("files")
             .and_then(|files| files.as_array())
@@ -206,6 +221,7 @@ pub fn process_ping_request_response(
             device_priority,
             sync_status,
             optimization_status,
-        );
+        )
+        .await;
     }
 }
