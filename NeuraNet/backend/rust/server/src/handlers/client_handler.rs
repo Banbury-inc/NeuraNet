@@ -16,11 +16,19 @@ use tokio::task;
 
 pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mutex<TcpStream>>>>>) {
     let stream = Arc::new(Mutex::new(stream));
+    // let client = Arc::new(Mutex::new(stream));
+    let client = Arc::clone(&stream);
+    {
+        let mut clients_guard = clients.lock().await;
+        clients_guard.push(client.clone());
+        println!("New client added. Total clients: {}", clients_guard.len());
+    }
     let mut buffer_size = vec![0; 4096];
 
     // Spawn new async tasks for the ping handler
     let small_ping_stream = Arc::clone(&stream);
     let ping_stream = Arc::clone(&stream);
+    let broadcast_clients = Arc::clone(&clients);
     task::spawn(async move {
         ping_handler::begin_small_ping_loop(small_ping_stream).await;
     });
@@ -32,8 +40,8 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
         let mut stream_guard = stream.lock().await;
         match stream_guard.read(&mut buffer_size).await {
             Ok(bytes_read) => {
-                database_handler::update_total_data_processed(bytes_read);
-                database_handler::update_number_of_requests_processed();
+                database_handler::update_total_data_processed(bytes_read).await;
+                database_handler::update_number_of_requests_processed().await;
                 if bytes_read == 0 {
                     // connection closed by client
                     println!("Connection closed by client");
@@ -99,7 +107,7 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
                         "FILE_REQUEST" => {
                             if let Err(e) = file_handler::process_file_request(
                                 buffer,
-                                stream.clone(),
+                                &mut *stream_guard,
                                 file_name,
                                 file_size,
                                 username,
@@ -112,14 +120,16 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
 
                         "FILE_REQUEST_RESPONSE" => {
                             if let Err(e) = file_handler::process_file_request_response(
+                                // Arc::clone(&stream),
                                 &mut *stream_guard,
                                 file_name,
                                 device_name,
                                 file_size,
+                                Arc::clone(&clients),
                             )
                             .await
                             {
-                                println!("Error processing file request response: {:?}", e);
+                                println!("File request failed: {}", e);
                             }
                         }
                         "DEVICE_DELETE_REQUEST" => {
@@ -198,19 +208,10 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
         }
     }
 
-    let mut clients_lock = clients.lock().await;
-    let mut retained_clients = Vec::new();
-    for client in clients_lock.iter() {
-        let client_addr = client.lock().await.peer_addr().ok();
-        let stream_addr = stream.lock().await.peer_addr().ok();
-        if client_addr != stream_addr {
-            retained_clients.push(client.clone());
-        }
+    // Remove client from the list
+    let mut clients_guard = clients.lock().await;
+    if let Some(pos) = clients_guard.iter().position(|x| Arc::ptr_eq(x, &stream)) {
+        clients_guard.remove(pos);
     }
-    *clients_lock = retained_clients;
-}
-
-async fn process_file(file_content: &str) {
-    // Example file processing logic
-    println!("Processing file: {}", file_content);
+    println!("Client disconnected");
 }

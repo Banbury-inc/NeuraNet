@@ -160,6 +160,7 @@ async function run(receiver_socket: net.Socket, global_username: any): Promise<v
       } else if (header.file_type === "UPDATE") {
         // Handle update
       } else if (header.file_type === "FILE") {
+        console.log("Received file");
         await handleFile(header, buffer);
       } else if (header.file_type === "FILE_REQUEST") {
 

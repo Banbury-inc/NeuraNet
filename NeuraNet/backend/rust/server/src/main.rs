@@ -12,6 +12,7 @@ use tungstenite::accept_hdr;
 use tungstenite::handshake::server::{Request, Response};
 mod handlers;
 use handlers::client_handler::handle_connection;
+use handlers::file_handler;
 
 #[tokio::main]
 async fn main() {
@@ -26,12 +27,12 @@ async fn main() {
     // Start the async server
     let listener = TcpListener::bind("127.0.0.1:443").await.unwrap();
     let clients = Arc::new(Mutex::new(Vec::new()));
+
     loop {
         let (stream, _) = listener.accept().await.unwrap();
         println!("Connection established");
         let clients = Arc::clone(&clients);
-        println!("Stream: {:?}", stream);
-
+        println!("Client count: {}", clients.lock().await.len());
         tokio::spawn(async move {
             handle_connection(stream, clients).await;
         });

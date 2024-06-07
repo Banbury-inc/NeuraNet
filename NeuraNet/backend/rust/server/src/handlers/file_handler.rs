@@ -3,10 +3,12 @@ use super::ping_handler::send_message;
 use mongodb::{bson::doc, options::ClientOptions, Client, Collection};
 use std::path::Path;
 use std::sync::Arc;
+use std::time::Duration;
 use tokio::fs::{self, File};
 use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 use tokio::sync::Mutex;
+use tokio::time::{self, timeout};
 
 async fn get_client() -> mongodb::error::Result<Client> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
@@ -46,7 +48,8 @@ pub async fn process_file(
 
 pub async fn process_file_request(
     buffer: &str,
-    stream: Arc<Mutex<TcpStream>>,
+    // stream: Arc<Mutex<TcpStream>>,
+    stream: &mut TcpStream,
     file_name: &str,
     file_size: &str,
     username: &str,
@@ -64,17 +67,19 @@ pub async fn process_file_request(
         return Ok(());
     } else {
         println!("sending file request :)");
-        let mut stream_guard = stream.lock().await;
-        send_message(&mut *stream_guard, &message).await;
+        send_message(stream, &message).await?;
+
         return Ok(());
     }
 }
 
 pub async fn process_file_request_response(
+    // stream: Arc<Mutex<TcpStream>>,
     stream: &mut TcpStream,
     file_name: &str,
     device_name: &str,
     file_size: &str,
+    clients: Arc<Mutex<Vec<Arc<Mutex<TcpStream>>>>>,
 ) -> io::Result<()> {
     println!("Received file request response");
     let directory_name = "NeuraNet_File_Directory";
@@ -92,11 +97,22 @@ pub async fn process_file_request_response(
     println!("Receiving file...");
 
     let mut file = File::create(&file_path).await?;
+    println!("File size: {}", file_size);
     let mut buffer = vec![0; 4096];
+    println!("Buffer size: {}", buffer.len());
     let mut total_bytes_read = 0;
+    println!("Total bytes read: {}", total_bytes_read);
     let file_size = file_size.parse::<usize>().unwrap();
+    println!("File size: {}", file_size);
 
     while total_bytes_read < file_size {
+        println!("Total bytes read: {}", total_bytes_read);
+        // let mut stream_guard = stream.lock().await;
+        // println!("Stream guard: {:?}", stream_guard);
+        // let bytes_read = stream_guard.read(&mut buffer).await?;
+        // println!("Bytes read: {}", bytes_read);
+        // drop(stream_guard); // release the lock as early as possible
+        // println!("Received: {} bytes", bytes_read);
         let bytes_read = stream.read(&mut buffer).await?;
         if bytes_read == 0 {
             break; // Connection closed
@@ -110,9 +126,48 @@ pub async fn process_file_request_response(
 
     println!("Broadcasting to other devices");
 
+    let file_content = tokio::fs::read(file_path).await?;
+
+    let header = format!("FILE:{}:{}:END_OF_HEADER", file_name, file_size);
+    send_message(stream, &header).await?;
+
+    stream.write_all(&file_content).await?;
+    stream.flush().await?;
+    println!("Successfully sent file content to client");
+
+    // Broadcast the file to all connected clients
     Ok(())
 }
 
+async fn broadcast_file_to_clients(
+    clients: &mut Vec<&mut TcpStream>,
+    file_name: &str,
+    file_path: &str,
+) -> io::Result<()> {
+    println!("Beginning broadcast");
+
+    let file_content = tokio::fs::read(file_path).await?;
+
+    for (index, client) in clients.iter_mut().enumerate() {
+        let header = format!("FILE:{}:END_OF_HEADER", file_name);
+
+        println!("Processing client {}", index);
+
+        // Send header
+        client.write_all(header.as_bytes()).await?;
+        println!("Successfully sent file header to client {}", index);
+
+        // Send file content
+        client.write_all(&file_content).await?;
+        println!("Successfully sent file content to client {}", index);
+
+        // Ensure the data is flushed to the stream
+        client.flush().await?;
+        println!("Successfully flushed data to client {}", index);
+    }
+
+    Ok(())
+}
 pub async fn process_file_delete_request(
     buffer: &str,
     username: &str,
@@ -140,4 +195,3 @@ pub async fn process_file_delete_request_response(
     println!("Username: {}", username);
     println!("Password: {}", password);
 }
-

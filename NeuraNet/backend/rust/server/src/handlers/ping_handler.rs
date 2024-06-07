@@ -10,7 +10,7 @@ use tokio::time::{sleep, Duration};
 pub async fn begin_small_ping_loop(stream: Arc<Mutex<TcpStream>>) {
     loop {
         // set a timer for 5 minutes
-        sleep(Duration::from_secs(300)).await;
+        sleep(Duration::from_secs(15)).await;
         let mut stream = stream.lock().await;
         if let Err(e) = send_message(&mut *stream, "SMALL_PING_REQUEST:::END_OF_HEADER").await {
             println!("Error sending small ping request: {:?}", e);
