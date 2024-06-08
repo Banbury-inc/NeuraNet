@@ -95,7 +95,28 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
                                     }
                                     println!("4");
                                     sleep(Duration::from_secs(5)).await;
-                                    println!("Sending ping request");
+                                    println!("Sent small ping request");
+                                }
+                            });
+                            let client_clone_2 = Arc::clone(&client);
+                            tokio::spawn(async move {
+                                loop {
+                                    println!("1");
+                                    {
+                                        let mut stream_guard = client_clone_2.lock().await;
+                                        println!("2");
+                                        let message = "PING_REQUEST:::END_OF_HEADER";
+                                        println!("3");
+                                        if let Err(e) =
+                                            stream_guard.write_all(message.as_bytes()).await
+                                        {
+                                            println!("Failed to send message: {:?}", e);
+                                            break;
+                                        }
+                                    }
+                                    println!("4");
+                                    sleep(Duration::from_secs(10)).await;
+                                    println!("Sent ping request");
                                 }
                             });
                         }

@@ -1,7 +1,9 @@
 
 import * as os from 'os';
 import * as fs from 'fs';
+import axios from 'axios';
 import * as path from 'path';
+import si from '../../../../dependency/systeminformation';
 import { DateTime } from 'luxon';
 import * as dotenv from 'dotenv';
 import * as net from 'net';
@@ -65,7 +67,6 @@ interface SmallDeviceInfo {
   date_added: string;
 }
 
-
 interface FileInfo {
   File_Name: string;
   Date_Uploaded: string;
@@ -73,7 +74,6 @@ interface FileInfo {
   File_Priority: number;
   Original_Device: string;
 }
-
 
 interface CPUPerformance {
   manufacturer: string;
@@ -102,11 +102,9 @@ interface SpeedResult {
   download: number;
 }
 
-
 interface IPAddress {
   networkInterfaces: string;
 }
-
 
 interface SpeedTestResult {
   download: number;
@@ -122,7 +120,6 @@ interface SpeedTestResult {
     id: number;
   };
 }
-
 
 const homeDirectory = os.homedir();
 const BANBURY_FOLDER = path.join(homeDirectory, '.banbury');
@@ -186,7 +183,6 @@ function send_login_request(username: string, password: string): Promise<string>
             // senderSocket.end();
             const result = receiver(username);
             resolve('login success');
-
           } else if (fileType === 'LOGIN_FAIL') {
             console.log('Received login failure from server');
             senderSocket.end();
@@ -212,15 +208,14 @@ function send_login_request(username: string, password: string): Promise<string>
   });
 }
 
-function receiver(username: any) {
+async function receiver(username: any): Promise<void> {
   const file_header: string = `GREETINGS::::END_OF_HEADER`;
   senderSocket.write(file_header);
-
 
   const endOfHeader = Buffer.from('END_OF_HEADER');
   let buffer = Buffer.alloc(0);
 
-  senderSocket.on('data', (data) => {
+  senderSocket.on('data', async (data) => {
     buffer = Buffer.concat([buffer, data]);
     if (buffer.includes(endOfHeader)) {
       const endOfHeaderIndex = buffer.indexOf(endOfHeader);
@@ -245,13 +240,12 @@ function receiver(username: any) {
           console.log('Received login failure from server');
         }
         if (fileType === 'SMALL_PING_REQUEST') {
-
-          console.log("received small ping request")
+          console.log("received small ping request");
           // Handle ping request
           let credentials = loadCredentials();
           let user = username;
           // let user = Object.keys(credentials)[0];
-          let device_number = 0
+          let device_number = 0;
           let device_name = get_device_name();
           let files = get_directory_info();
           let date_added = get_current_date_and_time();
@@ -264,13 +258,76 @@ function receiver(username: any) {
             date_added,
           };
 
-          sendSmallDeviceInfo(senderSocket, device_info_json);
+          await sendSmallDeviceInfo(senderSocket, device_info_json);
+          console.log("completed small ping request");
+        }
+        if (fileType === 'PING_REQUEST') {
+          console.log("Received a ping request");
 
-          console.log("completed smal ping request")
+          let user = username;
+          // let user = username;
+          let device_number = 1;
+          let device_name = get_device_name();
+          let files = get_directory_info();
+          let storage_capacity_GB = await get_storage_capacity();
+          let max_storage_capacity_GB = 50;
+          let date_added = get_current_date_and_time();
+          let ip_address = await get_ip_address();
+          let average_network_speed = 0;
+          let upload_network_speed = 0;
+          let download_network_speed = 0;
+          let gpu_usage = await get_gpu_usage();
+          let cpu_usage = await get_cpu_usage();
+          let ram_usage = await get_ram_usage();
+          let predicted_upload_network_speed = 0;
+          let predicted_download_network_speed = 0;
+          let predicted_gpu_usage = 0;
+          let predicted_cpu_usage = 0;
+          let predicted_ram_usage = 0;
+          let predicted_performance_score = 0;
+          let network_reliability = 0;
+          let average_time_online = 0;
+          let tasks = 0;
+          let device_priority = 1;
+          let sync_status = true;
+          let optimization_status = true;
+          let online = true;
+
+          const device_info_json: DeviceInfo = {
+            user,
+            device_number,
+            device_name,
+            files,
+            storage_capacity_GB,
+            max_storage_capacity_GB,
+            date_added,
+            ip_address,
+            average_network_speed,
+            upload_network_speed,
+            download_network_speed,
+            gpu_usage,
+            cpu_usage,
+            ram_usage,
+            predicted_upload_network_speed,
+            predicted_download_network_speed,
+            predicted_gpu_usage,
+            predicted_cpu_usage,
+            predicted_ram_usage,
+            predicted_performance_score,
+            network_reliability,
+            average_time_online,
+            tasks,
+            device_priority,
+            sync_status,
+            optimization_status,
+            online
+          };
+
+          await sendDeviceInfo(senderSocket, device_info_json);
+          console.log("completed ping request");
         }
 
         if (fileType === 'FILE_REQUEST') {
-
           console.log(`Device is requesting file: ${file_name}`);
           const directory_name: string = "BCloud";
           const directory_path: string = path.join(os.homedir(), directory_name);
@@ -305,15 +362,10 @@ function receiver(username: any) {
             console.error(`Error sending file response: ${error}`);
             senderSocket.end();
           }
-
-
         }
         if (fileType === 'REGISTRATION_FAILURE_USER_ALREADY_EXISTS') {
-
+          // Handle registration failure
         }
-        else {
-        }
-
       }
     }
   });
@@ -328,6 +380,7 @@ function receiver(username: any) {
 
   senderSocket.on('close', hadError => {
     if (!hadError) {
+      console.error('Connection closed unexpectedly');
     }
   });
 }
@@ -335,7 +388,6 @@ function receiver(username: any) {
 function get_device_name(): string {
   return os.hostname();
 }
-
 
 function get_current_date_and_time(): string {
   const now: Date = new Date();
@@ -352,9 +404,8 @@ function get_current_date_and_time(): string {
   return formattedDateTime;
 }
 
-
 function get_directory_info() {
-  const directoryName = "BCloud"
+  const directoryName = "BCloud";
   const directoryPath = os.homedir() + `/${directoryName}`;
   const filesInfo: any[] = [];
 
@@ -400,12 +451,120 @@ async function sendSmallDeviceInfo(sender_socket: net.Socket, device_info: Small
   const device_info_with_stop_signal: string = JSON.stringify(device_info) + "END_OF_JSON";
   let full_message = file_header + device_info_with_stop_signal;
   sender_socket.write(full_message);
-
-
 }
 
-function main() {
-  return receiver('null');
+async function sendDeviceInfo(sender_socket: net.Socket, device_info: DeviceInfo): Promise<void> {
+  const date_time: string = get_current_date_and_time();
+  const null_string: string = "";
+  const file_header: string = `PING_REQUEST_RESPONSE:${null_string}:${null_string}:${null_string}:END_OF_HEADER`;
+  const device_info_with_stop_signal: string = JSON.stringify(device_info) + "END_OF_JSON";
+  let full_message = file_header + device_info_with_stop_signal;
+  sender_socket.write(full_message);
 }
 
-export { main, receiver, send_login_request }
+async function get_storage_capacity(): Promise<number> {
+  try {
+    const diskData = await si.fsSize();
+    const totalCapacityBytes = diskData.reduce((total, disk) => total + disk.size, 0);
+    const totalCapacityGB = totalCapacityBytes / (1024 * 1024 * 1024); // Convert bytes to GB
+    return totalCapacityGB;
+  } catch (error) {
+    console.error('Error retrieving storage capacity:', error);
+    throw error; // Rethrow error to handle externally
+  }
+}
+
+async function get_cpu_info(): Promise<CPUPerformance> {
+  try {
+    const cpuData = await si.cpu();
+    const cpuPerformance: CPUPerformance = {
+      manufacturer: cpuData.manufacturer || 'Unknown',
+      brand: cpuData.brand || 'Unknown',
+      speed: cpuData.speed || 0,
+      cores: cpuData.cores || 0,
+      physicalCores: cpuData.physicalCores || 0,
+      processors: cpuData.processors || 0
+    };
+    return cpuPerformance;
+  } catch (error) {
+    console.error('Error retrieving CPU performance:', error);
+    throw error; // Rethrow error to handle externally
+  }
+}
+
+async function get_cpu_usage(): Promise<number> {
+  try {
+    const cpuData = await si.currentLoad();
+    const cpuUsage = cpuData.currentLoad || 0;
+    return cpuUsage;
+  } catch (error) {
+    console.error('Error retrieving CPU usage:', error);
+    throw error; // Rethrow error to handle externally
+  }
+}
+
+async function get_gpu_usage(): Promise<number> {
+  try {
+    const gpuData = await si.graphics();
+    const totalUtilization = gpuData.controllers.reduce((total, controller) => total + (controller.utilizationGpu || 0), 0);
+    return totalUtilization / gpuData.controllers.length;
+  } catch (error) {
+    console.error('Error retrieving GPU utilization:', error);
+    throw error; // Rethrow error to handle externally
+  }
+}
+
+async function get_ram_usage(): Promise<number> {
+  try {
+    const memData = await si.mem();
+    const totalMemory = memData.total || 0;
+    const usedMemory = memData.used || 0;
+    const freeMemory = memData.free || 0;
+
+    const usagePercentage = (usedMemory / totalMemory) * 100;
+
+    const ramUsage: memUsage = {
+      total: totalMemory,
+      free: freeMemory,
+      used: usedMemory,
+      usagePercentage: isNaN(usagePercentage) ? 0 : usagePercentage // Handle NaN case
+    };
+
+    return isNaN(usagePercentage) ? 0 : usagePercentage; // Handle NaN case
+  } catch (error) {
+    console.error('Error retrieving RAM usage:', error);
+    throw error; // Rethrow error to handle externally
+  }
+}
+
+async function get_ip_address(): Promise<string> {
+  let ip_address: string | null = null;
+
+  try {
+    const response = await axios.get('https://httpbin.org/ip');
+    const ip_info = response.data;
+    const origin: string = ip_info.origin || 'Unknown';
+    ip_address = origin.split(',')[0];
+  } catch (error) {
+    console.error('Error occurred:', error);
+    ip_address = 'Unknown';
+  }
+
+  return ip_address || 'Unknown';
+}
+
+// Wrap the main logic in an async function
+async function run() {
+  try {
+    await receiver('null');
+  } catch (error) {
+    console.error('Error in receiver:', error);
+  }
+}
+
+// Call the async function from the top-level main function
+run().catch((error) => {
+  console.error('Error in main function:', error);
+});
+
+export { receiver, run, send_login_request }
