@@ -1,6 +1,7 @@
 use super::database_handler::{self, Users};
 use super::ping_handler::send_message;
 use mongodb::{bson::doc, options::ClientOptions, Client, Collection};
+use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
@@ -9,6 +10,8 @@ use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 use tokio::sync::Mutex;
 use tokio::time::{self, timeout};
+
+pub type ClientList = Arc<Mutex<HashMap<String, Vec<Arc<Mutex<TcpStream>>>>>>;
 
 async fn get_client() -> mongodb::error::Result<Client> {
     let uri = "mongodb+srv://mmills6060:Dirtballer6060@banbury.fx0xcqk.mongodb.net/?retryWrites=true&w=majority";
@@ -79,7 +82,7 @@ pub async fn process_file_request_response(
     file_name: &str,
     device_name: &str,
     file_size: &str,
-    clients: Arc<Mutex<Vec<Arc<Mutex<TcpStream>>>>>,
+    clients: ClientList,
 ) -> io::Result<()> {
     println!("Received file request response");
     let directory_name = "NeuraNet_File_Directory";

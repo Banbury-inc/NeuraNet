@@ -3,9 +3,11 @@ extern crate tungstenite;
 extern crate url;
 use handlers::database_handler;
 use handlers::login_handler;
+use std::collections::HashMap;
 use std::sync::Arc;
 use std::thread;
 use tokio::net::TcpListener;
+use tokio::net::TcpStream;
 use tokio::sync::Mutex;
 use tokio::task;
 use tungstenite::accept_hdr;
@@ -13,6 +15,8 @@ use tungstenite::handshake::server::{Request, Response};
 mod handlers;
 use handlers::client_handler::handle_connection;
 use handlers::file_handler;
+
+pub type ClientsList = Arc<Mutex<HashMap<String, Vec<Arc<Mutex<TcpStream>>>>>>;
 
 #[tokio::main]
 async fn main() {
@@ -26,8 +30,8 @@ async fn main() {
 
     // Start the async server
     let listener = TcpListener::bind("127.0.0.1:443").await.unwrap();
-    let clients = Arc::new(Mutex::new(Vec::new()));
-
+    // let clients = Arc::new(Mutex::new(Vec::new()));
+    let clients = Arc::new(Mutex::new(HashMap::new()));
     loop {
         let (stream, _) = listener.accept().await.unwrap();
         println!("Connection established");

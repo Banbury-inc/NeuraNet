@@ -89,13 +89,13 @@ fn format_bytes(bytes: i64) -> String {
     let terabyte = gigabyte * 1024;
 
     if bytes >= terabyte {
-        format!("{:.2} TB", bytes as f64 / terabyte as f64)
+        format!("{:.9} TB", bytes as f64 / terabyte as f64)
     } else if bytes >= gigabyte {
-        format!("{:.2} GB", bytes as f64 / gigabyte as f64)
+        format!("{:.9} GB", bytes as f64 / gigabyte as f64)
     } else if bytes >= megabyte {
-        format!("{:.2} MB", bytes as f64 / megabyte as f64)
+        format!("{:.9} MB", bytes as f64 / megabyte as f64)
     } else if bytes >= kilobyte {
-        format!("{:.2} KB", bytes as f64 / kilobyte as f64)
+        format!("{:.9} KB", bytes as f64 / kilobyte as f64)
     } else {
         format!("{} bytes", bytes)
     }
@@ -186,7 +186,7 @@ pub async fn initialize() -> Result<()> {
     Ok(())
 }
 
-pub async fn update_total_data_processed(bytes_read: usize) -> mongodb::error::Result<()> {
+pub async fn update_total_data_processed(bytes_read: usize) -> Result<()> {
     let client = get_client().await?;
     let my_coll: Collection<Server> = client.database("myDatabase").collection("server");
 
@@ -195,15 +195,20 @@ pub async fn update_total_data_processed(bytes_read: usize) -> mongodb::error::R
 
     let filter = doc! { "total_data_processed": { "$exists": true } };
     let update = doc! { "$inc": { "total_data_processed": increment_amount } };
-    let result = my_coll.find_one_and_update(filter, update, None).await?;
 
-    if let Some(server_data) = result {
-        println!(
-            "Updated Total Data Processed: {}",
-            server_data.total_data_processed + increment_amount
-        );
-    } else {
-        println!("No document found with 'total_data_processed' field or update failed.");
+    match my_coll.find_one_and_update(filter, update, None).await {
+        Ok(Some(server_data)) => {
+            println!(
+                "Updated Total Data Processed: {}",
+                server_data.total_data_processed
+            );
+        }
+        Ok(None) => {
+            println!("No document found with 'total_data_processed' field or update failed.");
+        }
+        Err(e) => {
+            println!("Error updating total data processed: {:?}", e);
+        }
     }
 
     Ok(())

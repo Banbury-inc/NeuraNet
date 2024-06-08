@@ -8,6 +8,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+
+import * as receiver5 from '../../main/receiver5';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -32,8 +34,7 @@ import net from 'net';
 import useHistory from 'react-router-dom';
 import crypto from 'crypto';
 import { Dispatch, SetStateAction } from 'react';
-
-
+import { receiver, send_login_request } from './scripts/receiver';
 interface Message {
   type: string;
   content: string;
@@ -98,6 +99,8 @@ function loadCredentials(): Record<string, string> {
   }
 }
 
+
+
 function saveCredentials(credentials: Record<string, string>): void {
   const config = new ConfigParser();
   config.read(CONFIG_FILE);
@@ -110,7 +113,6 @@ export default function SignIn() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [redirect_to_register, setredirect_to_register] = useState(false);
   const { setUsername } = useAuth(); // Destructure setUsername from useAuth
-  const [run_receiver, setrun_receiver] = useState<boolean>(false);
   const [incorrect_login, setincorrect_login] = useState(false);
   const [server_offline, setserver_offline] = useState(false);
   const incorrect_login_message: Message = {
@@ -127,7 +129,6 @@ export default function SignIn() {
   // Move the useState hook outside of the handleSubmit function
   const [showMain, setShowMain] = useState<boolean>(false);
   const [showRegister, setShowRegister] = useState<boolean>(false);
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -135,59 +136,20 @@ export default function SignIn() {
     const password = data.get('password') as string | null;
 
     if (email && password) {
-      // const RELAY_HOST = '34.28.13.79';
-      const RELAY_HOST = '0.0.0.0';
-      const RELAY_PORT = 443;
-      const senderSocket = new net.Socket();
-      // senderSocket.connect(RELAY_PORT, RELAY_HOST);
-      senderSocket.connect(RELAY_PORT, RELAY_HOST, () => {
-        // Connection established
-      }).on('error', (err: NodeJS.ErrnoException) => {
-        if (err.code === 'ECONNREFUSED') {
-          console.error('Connection refused. The server is unreachable.');
-          setserver_offline(true);
-        } else {
-          console.error('Network error:', err);
-        }
-      });
-      // const endOfHeader = Buffer.from('END_OF_HEADER');
-      const fileHeader = `LOGIN_REQUEST::${password}:${email}:END_OF_HEADER`;
-      senderSocket.write(fileHeader);
-      // senderSocket.write(endOfHeader);
-
-      senderSocket.on('data', (data) => {
-        const fileType = data.toString();
-        console.log('Received:', fileType)
-        try {
-          if (fileType === 'LOGIN_SUCCESS:') {
-            const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-            const credentials = loadCredentials();
-            credentials[email] = hashedPassword;
-            saveCredentials(credentials);
-            senderSocket.end();
-            setUsername(email);
-            setIsAuthenticated(true);
-            console.log('Result: Login successful.');
-            setShowMain(true); // Set showMain to true when login is successful
-            setrun_receiver(true);
-
-          } else if (fileType === 'LOGIN_FAIL:') {
-            senderSocket.end();
-            console.log('Result: Login failed.');
-            setincorrect_login(true);
-          }
-        } catch (error: any) {
-          console.error('Error:', error);
-          if (error.code === 'ECONNREFUSED') {
-            console.error('Connection refused. Is the server running?');
-          }
-          else {
-            console.error('Error:', error);
-          }
-        }
-      });
+      try {
+        const result = await send_login_request(email, password);
+        console.log(result);
+        setUsername(email);
+        setIsAuthenticated(true);
+        console.log('Result: Login successful.');
+        setShowMain(true); // Set showMain to true when login is successful
+      } catch (error) {
+        console.error('Error:', error);
+        setincorrect_login(true);
+      }
     }
   };
+
 
   if (isAuthenticated || showMain) { // Render Main component if authenticated or showMain is true
     return <Main />;

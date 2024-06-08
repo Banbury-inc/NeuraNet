@@ -8,47 +8,52 @@ use super::message_handler;
 use super::ping_handler;
 use super::profile_handler;
 use super::registration_handler;
+use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 use tokio::sync::Mutex;
 use tokio::task;
+use tokio::time::{sleep, Duration};
 
-pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mutex<TcpStream>>>>>) {
-    let stream = Arc::new(Mutex::new(stream));
-    // let client = Arc::new(Mutex::new(stream));
-    let client = Arc::clone(&stream);
+pub type ClientList = Arc<Mutex<HashMap<String, Vec<Arc<Mutex<TcpStream>>>>>>;
+
+pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
+    let client_id = get_client_id(&stream); // Function to determine client ID
+    let client = Arc::new(Mutex::new(stream));
+    let client_clone = Arc::clone(&client);
+    // Add the client to the client's connection list
     {
         let mut clients_guard = clients.lock().await;
-        clients_guard.push(client.clone());
-        println!("New client added. Total clients: {}", clients_guard.len());
+        let entry = clients_guard
+            .entry(client_id.clone())
+            .or_insert_with(Vec::new);
+        entry.push(client.clone());
+        println!(
+            "New connection added. Total connections for {}: {}",
+            client_id,
+            entry.len()
+        );
     }
+
     let mut buffer_size = vec![0; 4096];
-
     // Spawn new async tasks for the ping handler
-    let small_ping_stream = Arc::clone(&stream);
-    let ping_stream = Arc::clone(&stream);
-    let broadcast_clients = Arc::clone(&clients);
-    task::spawn(async move {
-        ping_handler::begin_small_ping_loop(small_ping_stream).await;
-    });
-    task::spawn(async move {
-        ping_handler::begin_ping_loop(ping_stream).await;
-    });
-
+    // Spawn new async tasks for the ping handler
     loop {
-        let mut stream_guard = stream.lock().await;
+        let mut stream_guard = client.lock().await;
         match stream_guard.read(&mut buffer_size).await {
             Ok(bytes_read) => {
                 database_handler::update_total_data_processed(bytes_read).await;
                 database_handler::update_number_of_requests_processed().await;
                 if bytes_read == 0 {
                     // connection closed by client
-                    println!("Connection closed by client");
+                    println!("connection closed by client");
+                    // continue;
                     break;
                 }
-                // println!("Received: {} bytes", bytes_read);
+                println!("Received: {} bytes", bytes_read);
                 let buffer = String::from_utf8_lossy(&buffer_size[..bytes_read]);
+                println!("Buffer: {}", buffer);
                 let end_of_header = "END_OF_HEADER";
 
                 if buffer.contains(end_of_header) {
@@ -71,10 +76,35 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
                     let username = header_parts[3];
                     let password = header_parts[3];
                     match file_type {
+                        "GREETINGS" => {
+                            let client_clone = Arc::clone(&client);
+                            tokio::spawn(async move {
+                                loop {
+                                    println!("1");
+                                    {
+                                        let mut stream_guard = client_clone.lock().await;
+                                        println!("2");
+                                        let message = "SMALL_PING_REQUEST:::END_OF_HEADER";
+                                        println!("3");
+                                        if let Err(e) =
+                                            stream_guard.write_all(message.as_bytes()).await
+                                        {
+                                            println!("Failed to send message: {:?}", e);
+                                            break;
+                                        }
+                                    }
+                                    println!("4");
+                                    sleep(Duration::from_secs(5)).await;
+                                    println!("Sending ping request");
+                                }
+                            });
+                        }
+
                         "MSG" => {
                             message_handler::process_message_request(buffer, username, password)
                                 .await
                         }
+
                         "LOGIN_REQUEST" => {
                             if let Err(e) = login_handler::process_login_request(
                                 buffer,
@@ -178,7 +208,7 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
                         }
                         "SMALL_PING_REQUEST_RESPONSE" => {
                             ping_handler::process_small_ping_request_response(
-                                stream.clone(),
+                                Arc::clone(&client),
                                 buffer,
                             )
                             .await
@@ -208,10 +238,37 @@ pub async fn handle_connection(stream: TcpStream, clients: Arc<Mutex<Vec<Arc<Mut
         }
     }
 
-    // Remove client from the list
-    let mut clients_guard = clients.lock().await;
-    if let Some(pos) = clients_guard.iter().position(|x| Arc::ptr_eq(x, &stream)) {
-        clients_guard.remove(pos);
-    }
+    // Remove the client from the list
+    remove_client_from_list(client_id, clients, client).await;
     println!("Client disconnected");
+}
+
+async fn remove_client_from_list(
+    client_id: String,
+    clients: ClientList,
+    client: Arc<Mutex<TcpStream>>,
+) {
+    let mut clients_guard = clients.lock().await;
+    if let Some(client_list) = clients_guard.get_mut(&client_id) {
+        if let Some(pos) = client_list.iter().position(|x| Arc::ptr_eq(x, &client)) {
+            client_list.remove(pos);
+            if client_list.is_empty() {
+                // Drop the mutable borrow before removing the entry
+                drop(client_list);
+                clients_guard.remove(&client_id);
+            } else {
+                println!(
+                    "Connection removed. Total connections for {}: {}",
+                    client_id,
+                    client_list.len()
+                );
+            }
+        }
+    }
+}
+
+fn get_client_id(stream: &TcpStream) -> String {
+    // Implement your logic to determine the client ID
+    // For example, use the peer address or a unique identifier sent by the client
+    stream.peer_addr().unwrap().to_string()
 }

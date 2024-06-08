@@ -1,32 +1,68 @@
 use super::database_handler;
 use super::database_handler::Files;
 use serde_json::{from_value, Value};
+use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 use tokio::sync::Mutex;
 use tokio::time::{sleep, Duration};
 
-pub async fn begin_small_ping_loop(stream: Arc<Mutex<TcpStream>>) {
+pub type ClientList = Arc<Mutex<HashMap<String, Vec<Arc<Mutex<TcpStream>>>>>>;
+
+pub async fn begin_single_small_ping_loop(stream: Arc<Mutex<TcpStream>>) {
     loop {
-        // set a timer for 5 minutes
+        println!("Sending small ping request");
         sleep(Duration::from_secs(15)).await;
         let mut stream = stream.lock().await;
         if let Err(e) = send_message(&mut *stream, "SMALL_PING_REQUEST:::END_OF_HEADER").await {
             println!("Error sending small ping request: {:?}", e);
-            break;
+            continue;
         }
     }
 }
 
-pub async fn begin_ping_loop(stream: Arc<Mutex<TcpStream>>) {
+pub async fn begin_small_ping_loop(clients: ClientList) {
+    loop {
+        println!("Sending small ping request to all clients");
+
+        let clients_guard = clients.lock().await;
+        for (client_id, connections) in clients_guard.iter() {
+            for connection in connections {
+                println!("Sending small ping request to client: {}", client_id);
+                let mut stream = connection.lock().await;
+                let message = "SMALL_PING_REQUEST:::END_OF_HEADER";
+                stream.write_all(message.as_bytes()).await.unwrap();
+                continue;
+            }
+        }
+    }
+}
+pub async fn begin_ping_loop(clients: ClientList) {
+    loop {
+        println!("Sending small ping request to all clients");
+        sleep(Duration::from_secs(15)).await;
+
+        let clients_guard = clients.lock().await;
+
+        for (client_id, connections) in clients_guard.iter() {
+            for connection in connections {
+                let mut stream = connection.lock().await;
+                let message = "SMALL_PING_REQUEST:::END_OF_HEADER";
+                stream.write_all(message.as_bytes());
+            }
+        }
+    }
+}
+
+pub async fn begins_single_ping_loop(stream: Arc<Mutex<TcpStream>>) {
     loop {
         // set a timer for 10 minutes
         sleep(Duration::from_secs(600)).await;
         let mut stream = stream.lock().await;
         if let Err(e) = send_message(&mut *stream, "PING_REQUEST:::END_OF_HEADER").await {
             println!("Error sending ping request: {:?}", e);
-            break;
+            continue;
         }
     }
 }
@@ -41,7 +77,8 @@ pub async fn send_ping(stream: Arc<Mutex<TcpStream>>) {
 
 pub async fn send_message(stream: &mut TcpStream, message: &str) -> tokio::io::Result<()> {
     stream.write_all(message.as_bytes()).await?;
-    stream.flush().await
+    stream.flush().await?;
+    Ok(())
 }
 
 pub async fn process_small_ping_request_response(stream: Arc<Mutex<TcpStream>>, buffer: &str) {

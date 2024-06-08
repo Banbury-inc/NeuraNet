@@ -270,7 +270,7 @@ async function run(receiver_socket: net.Socket, global_username: any): Promise<v
         };
 
         sendDeviceInfo(receiver_socket, device_info_json);
-
+        console.log("completed ping request")
       } else if (header.file_type === "SMALL_PING_REQUEST") {
 
         console.log("received small ping request")
@@ -369,7 +369,7 @@ async function sendDeviceInfo(sender_socket: net.Socket, device_info: DeviceInfo
 async function sendSmallDeviceInfo(sender_socket: net.Socket, device_info: SmallDeviceInfo): Promise<void> {
   const date_time: string = get_current_date_and_time();
   const null_string: string = "";
-  const file_header: string = `SMALL_PING_REQUEST_RESPONSE:${null_string}:${null_string}:${null_string}:END_OF_HEADER`;
+  const file_header: string = "SMALL_PING_REQUEST_RESPONSE::::END_OF_HEADER";
   const device_info_with_stop_signal: string = JSON.stringify(device_info) + "END_OF_JSON";
   let full_message = file_header + device_info_with_stop_signal;
   sender_socket.write(full_message);
@@ -577,19 +577,22 @@ function get_directory_info() {
 }
 
 
-// async function main(): Promise<void> {
-//     const SERVER_HOST = '34.28.13.79'
-//     const SERVER_PORT = 443;
-//     const receiver_socket = new net.Socket();
+// function main(): Promise<void> {
+//   // const SERVER_HOST = '34.28.13.79'
+//   const SERVER_HOST = '0.0.0.0 '
+//   const SERVER_PORT = 443;
+//   const receiver_socket = new net.Socket();
 
-//     receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
-//         console.log("Connected to server");
-//     });
+//   receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
+//     console.log("Connected to server");
+//     const file_header = `MSG::::END_OF_HEADER`;
+//     receiver_socket.write(file_header);
+//   });
 
-//     receiver_socket.on('error', (err) => {
-//         console.error("Error:", err);
-//     });
-//     run(receiver_socket);
+//   receiver_socket.on('error', (err) => {
+//     console.error("Error:", err);
+//   });
+//   return run(receiver_socket, get_username());
 // }
 
 // main();

@@ -37,6 +37,7 @@ import Grid from '@mui/material/Grid';
 import axios from 'axios';
 import DevicesTable from './DeviceTable';
 import Settings from './Settings';
+
 import { useAuth } from '../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 import AccountMenuIcon from './AccountMenuIcon';
@@ -44,32 +45,8 @@ import Login from './Login';
 import Profile from './Profile';
 import net from 'net';
 import * as receiver5 from '../../main/receiver5';
-
-
+import { receiver, send_login_request } from './scripts/receiver';
 const { ipcRenderer } = window.require('electron');
-
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: 'hidden',
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
-});
-
 
 function initialize_receiver(username: any) {
   // const SERVER_HOST = '34.28.13.79'
@@ -86,6 +63,28 @@ function initialize_receiver(username: any) {
   receiver5.run(receiver_socket, username);
 }
 
+const openedMixin = (theme: Theme): CSSObject => ({
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
+
+
+const closedMixin = (theme: Theme): CSSObject => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -98,6 +97,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
+
+
+
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -144,6 +146,17 @@ export default function PermanentDrawerLeft() {
   const [open, setOpen] = React.useState(false);
 
 
+  useEffect(() => {
+    initialize_receiver(username);
+  }, []);
+
+  useEffect(() => {
+    const result = receiver(username);
+  }, []);
+
+
+
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -156,9 +169,6 @@ export default function PermanentDrawerLeft() {
     setOpen(!open); // This will set 'open' to the opposite of its current value
   };
 
-  useEffect(() => {
-    initialize_receiver(username);
-  }, []);
 
   if (redirect_to_login) {
     return <Login />;
