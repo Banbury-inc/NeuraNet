@@ -80,12 +80,9 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
                             let client_clone = Arc::clone(&client);
                             tokio::spawn(async move {
                                 loop {
-                                    println!("1");
                                     {
                                         let mut stream_guard = client_clone.lock().await;
-                                        println!("2");
                                         let message = "SMALL_PING_REQUEST:::END_OF_HEADER";
-                                        println!("3");
                                         if let Err(e) =
                                             stream_guard.write_all(message.as_bytes()).await
                                         {
@@ -93,20 +90,16 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
                                             break;
                                         }
                                     }
-                                    println!("4");
-                                    sleep(Duration::from_secs(5)).await;
+                                    sleep(Duration::from_secs(10)).await;
                                     println!("Sent small ping request");
                                 }
                             });
                             let client_clone_2 = Arc::clone(&client);
                             tokio::spawn(async move {
                                 loop {
-                                    println!("1");
                                     {
                                         let mut stream_guard = client_clone_2.lock().await;
-                                        println!("2");
                                         let message = "PING_REQUEST:::END_OF_HEADER";
-                                        println!("3");
                                         if let Err(e) =
                                             stream_guard.write_all(message.as_bytes()).await
                                         {
@@ -114,8 +107,7 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
                                             break;
                                         }
                                     }
-                                    println!("4");
-                                    sleep(Duration::from_secs(10)).await;
+                                    sleep(Duration::from_secs(300)).await;
                                     println!("Sent ping request");
                                 }
                             });

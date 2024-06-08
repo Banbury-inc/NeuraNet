@@ -260,5 +260,6 @@ pub async fn process_ping_request_response(
             optimization_status,
         )
         .await;
+        println!("Uploaded device info");
     }
 }
