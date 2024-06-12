@@ -43,8 +43,11 @@ class ClientHandler(threading.Thread):
         device_name = None
         file_size = None
         end_of_header = b"END_OF_HEADER"
+        end_of_json = b"END_OF_JSON"
+        found_end_of_json = False
         buffer = b""
         header = None
+
         file_type = "Unknown"
         self.client_socket.settimeout(45)
         while self.running:
@@ -103,7 +106,6 @@ class ClientHandler(threading.Thread):
                 profile_handler.process_change_profile_request(buffer, username, password, file_name, device_name, file_size)
 
             elif file_type == "SMALL_PING_REQUEST_RESPONSE":
-
 
                 date_time = datetime.now()
                 print(f"{date_time} Received small ping request response")

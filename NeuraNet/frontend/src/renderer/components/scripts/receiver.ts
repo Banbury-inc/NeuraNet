@@ -10,6 +10,7 @@ import * as net from 'net';
 import * as crypto from 'crypto';
 import ConfigParser from 'configparser';
 import * as receiver5 from '../../../main/receiver5';
+import { useState, useEffect } from 'react';
 
 dotenv.config();
 
@@ -135,14 +136,70 @@ if (!fs.existsSync(CONFIG_FILE)) {
   fs.writeFileSync(CONFIG_FILE, config.toString());
 }
 
+let senderSocket: net.Socket | null = null;
+
 function connectToRelayServer(): net.Socket {
-  // const RELAY_HOST = '34.28.13.79';
-  const RELAY_HOST = '0.0.0.0';
+  const RELAY_HOST = '0.0.0.0'; // Change this to your actual server IP
   const RELAY_PORT = 443;
-  const senderSocket = new net.Socket();
-  senderSocket.connect(RELAY_PORT, RELAY_HOST);
+
+  // Check if an existing socket should be closed
+  if (senderSocket !== null) {
+    senderSocket.end(); // Close the existing socket
+    senderSocket.destroy(); // Optionally force close the socket immediately
+    senderSocket = null; // Reset the variable
+  }
+
+  // Create a new socket and connect
+  senderSocket = new net.Socket();
+  senderSocket.connect(RELAY_PORT, RELAY_HOST, () => {
+    console.log("Connected to the server.");
+  });
+
+  // Add error handling to log or handle errors
+  senderSocket.on('error', (err) => {
+    console.error("Error connecting to the relay server:", err);
+  });
+
+  senderSocket.on('close', () => {
+    console.log("Socket is now closed.");
+  });
+
   return senderSocket;
 }
+
+
+function connectToRelayServer2(): Promise<net.Socket> {
+  return new Promise((resolve, reject) => {
+
+
+    // Check if an existing socket should be closed
+    if (senderSocket !== null) {
+      // senderSocket.end(); // Close the existing socket
+      // senderSocket.destroy(); // Optionally force close the socket immediately
+      // senderSocket = null; // Reset the variable
+      console.log("Socket already exists");
+    }
+
+    const RELAY_HOST = '0.0.0.0'; // Replace with your actual host
+    const RELAY_PORT = 443;       // Replace with your actual port
+    const sendersocket = new net.Socket();
+
+    sendersocket.connect(RELAY_PORT, RELAY_HOST, () => {
+      console.log("Successfully connected to the server.");
+      resolve(sendersocket);  // Ensure that the socket is resolved here
+    });
+
+    sendersocket.on('error', (err) => {
+      console.error("Error connecting to the relay server:", err);
+      reject(err);  // Make sure to reject the promise on errors
+    });
+
+    sendersocket.on('close', () => {
+      console.log("Socket has been closed.");
+    });
+  });
+}
+
 
 function loadCredentials(): Record<string, string> {
   try {
@@ -156,8 +213,8 @@ function loadCredentials(): Record<string, string> {
   }
 }
 
-let senderSocket = connectToRelayServer();
-function send_login_request(username: string, password: string): Promise<string> {
+// let senderSocket = connectToRelayServer();
+function send_login_request(username: string, password: string, senderSocket: net.Socket): Promise<string> {
   return new Promise((resolve, reject) => {
     const file_header: string = `LOGIN_REQUEST::${password}:${username}:END_OF_HEADER`;
     senderSocket.write(file_header);
@@ -180,12 +237,11 @@ function send_login_request(username: string, password: string): Promise<string>
             console.log('Received greeting from server');
           } else if (fileType === 'LOGIN_SUCCESS') {
             console.log('Received login success from server');
-            // senderSocket.end();
-            const result = receiver(username);
+            const result = receiver(username, senderSocket);
             resolve('login success');
           } else if (fileType === 'LOGIN_FAIL') {
             console.log('Received login failure from server');
-            senderSocket.end();
+            // senderSocket.end();
             reject('login failure');
           }
         }
@@ -208,7 +264,11 @@ function send_login_request(username: string, password: string): Promise<string>
   });
 }
 
-async function receiver(username: any): Promise<void> {
+
+
+
+async function receiver(username: any, senderSocket: net.Socket): Promise<void> {
+  console.log("receiver function called")
   const file_header: string = `GREETINGS::::END_OF_HEADER`;
   senderSocket.write(file_header);
 
@@ -349,12 +409,16 @@ async function receiver(username: any): Promise<void> {
             });
 
             file.on('end', () => {
+
               console.log(`${file_name} has been sent successfully.`);
+
+
               senderSocket.end();
             });
 
             file.on('error', (err: NodeJS.ErrnoException) => {
               console.error(`Error reading file: ${err}`);
+
               senderSocket.end();
             });
 
@@ -556,7 +620,7 @@ async function get_ip_address(): Promise<string> {
 // Wrap the main logic in an async function
 async function run() {
   try {
-    await receiver('null');
+    console.log('Starting receiver...');
   } catch (error) {
     console.error('Error in receiver:', error);
   }
@@ -567,4 +631,4 @@ run().catch((error) => {
   console.error('Error in main function:', error);
 });
 
-export { receiver, run, send_login_request }
+export { receiver, run, send_login_request, connectToRelayServer, connectToRelayServer2 }

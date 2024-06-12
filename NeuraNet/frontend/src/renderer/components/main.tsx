@@ -45,23 +45,8 @@ import Login from './Login';
 import Profile from './Profile';
 import net from 'net';
 import * as receiver5 from '../../main/receiver5';
-import { receiver, send_login_request } from './scripts/receiver';
+import { receiver, send_login_request, connectToRelayServer, connectToRelayServer2 } from './scripts/receiver';
 const { ipcRenderer } = window.require('electron');
-
-function initialize_receiver(username: any) {
-  // const SERVER_HOST = '34.28.13.79'
-  const SERVER_HOST = '0.0.0.0'
-  const SERVER_PORT = 443;
-  const receiver_socket = new net.Socket();
-  receiver_socket.connect(SERVER_PORT, SERVER_HOST, () => {
-    console.log("Connected to server");
-  });
-
-  receiver_socket.on('error', (err) => {
-    console.error("Error:", err);
-  });
-  receiver5.run(receiver_socket, username);
-}
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -147,14 +132,29 @@ export default function PermanentDrawerLeft() {
 
 
   useEffect(() => {
-    initialize_receiver(username);
-  }, []);
+    async function setupConnection() {
+      let senderSocket;
+      try {
+        // Wait for the connection to be established
+        console.log("connecting to relay server")
+        const senderSocket = await connectToRelayServer2();
+        console.log("Starting receiver")
+        // Continue with using senderSocket in your receiver function
+        // Start the receiver function asynchronously and handle errors
+        receiver(username, senderSocket).catch((error) => {
+          console.error("Error in receiver:", error);
+        });
+        console.log("receiver has been started")
+        // Handle the result as necessary
+      } catch (error) {
+        // Handle errors (e.g., connection failed)
+        console.error("Failed to setup connection:", error);
+      }
+    }
 
-  useEffect(() => {
-    const result = receiver(username);
-  }, []);
+    setupConnection();
 
-
+  }, [username]); // Ensure useEffect runs again if username changes
 
 
   const handleDrawerOpen = () => {

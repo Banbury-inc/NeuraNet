@@ -20,14 +20,13 @@ pub type ClientsList = Arc<Mutex<HashMap<String, Vec<Arc<Mutex<TcpStream>>>>>>;
 
 #[tokio::main]
 async fn main() {
-    println!("Welcome to the Banbury NeuraNet");
-
     // Initialize the database
     if let Err(e) = initialize_database().await {
         println!("Error initializing database: {}", e);
         return;
     }
 
+    println!("Welcome to the Banbury NeuraNet");
     // Start the async server
     let listener = TcpListener::bind("127.0.0.1:443").await.unwrap();
     // let clients = Arc::new(Mutex::new(Vec::new()));

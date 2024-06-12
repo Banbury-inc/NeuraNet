@@ -14,6 +14,7 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 use tokio::sync::Mutex;
 use tokio::task;
+use tokio::time::timeout;
 use tokio::time::{sleep, Duration};
 
 pub type ClientList = Arc<Mutex<HashMap<String, Vec<Arc<Mutex<TcpStream>>>>>>;
@@ -25,14 +26,14 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
     // Add the client to the client's connection list
     {
         let mut clients_guard = clients.lock().await;
-        let entry = clients_guard
+        clients_guard
             .entry(client_id.clone())
-            .or_insert_with(Vec::new);
-        entry.push(client.clone());
+            .or_insert_with(Vec::new)
+            .push(client.clone());
         println!(
             "New connection added. Total connections for {}: {}",
             client_id,
-            entry.len()
+            clients_guard[&client_id].len()
         );
     }
 
@@ -45,16 +46,18 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
             Ok(bytes_read) => {
                 database_handler::update_total_data_processed(bytes_read).await;
                 database_handler::update_number_of_requests_processed().await;
+                let client_clone = clients.clone();
                 if bytes_read == 0 {
                     // connection closed by client
                     println!("connection closed by client");
-                    // continue;
+                    stream_guard.shutdown().await;
                     break;
                 }
                 println!("Received: {} bytes", bytes_read);
                 let buffer = String::from_utf8_lossy(&buffer_size[..bytes_read]);
                 println!("Buffer: {}", buffer);
                 let end_of_header = "END_OF_HEADER";
+                let end_of_json = "END_OF_JSON";
 
                 if buffer.contains(end_of_header) {
                     let parts: Vec<&str> = buffer.split(end_of_header).collect();
@@ -67,6 +70,11 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
                     if header_parts.len() < 4 {
                         println!("Malformed header: {}", header);
                         continue;
+                    }
+                    if buffer.contains(end_of_json) {
+                        let parts: Vec<&str> = buffer.split(end_of_json).collect();
+                        let buffer = parts[0];
+                        println!("end of buffer");
                     }
 
                     let file_type = header_parts[0];
@@ -82,16 +90,28 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
                                 loop {
                                     {
                                         let mut stream_guard = client_clone.lock().await;
+                                        let peer_addr = match stream_guard.peer_addr() {
+                                            Ok(addr) => addr.to_string(),
+                                            Err(e) => {
+                                                println!("Failed to get peer address: {:?}", e);
+                                                break;
+                                            }
+                                        };
                                         let message = "SMALL_PING_REQUEST:::END_OF_HEADER";
                                         if let Err(e) =
                                             stream_guard.write_all(message.as_bytes()).await
                                         {
+                                            println!(
+                                                "Tried to send message to {}, but failed",
+                                                peer_addr
+                                            );
                                             println!("Failed to send message: {:?}", e);
                                             break;
                                         }
+
+                                        println!("Sent small ping request to {}", peer_addr);
                                     }
                                     sleep(Duration::from_secs(10)).await;
-                                    println!("Sent small ping request");
                                 }
                             });
                             let client_clone_2 = Arc::clone(&client);
@@ -107,7 +127,7 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
                                             break;
                                         }
                                     }
-                                    sleep(Duration::from_secs(300)).await;
+                                    sleep(Duration::from_secs(6000)).await;
                                     println!("Sent ping request");
                                 }
                             });
@@ -228,6 +248,7 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
                         }
                         "PING_REQUEST_RESPONSE" => {
                             println!("Received ping request response");
+                            let end_of_json = "END_OF_JSON";
                             ping_handler::process_ping_request_response(
                                 buffer,
                                 username,

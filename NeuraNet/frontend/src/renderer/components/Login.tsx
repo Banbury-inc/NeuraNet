@@ -4,6 +4,7 @@ import { exec } from "child_process";
 import Avatar from '@mui/material/Avatar';
 import NeuraNet_Logo from '/static/NeuraNet_Icons/web/icon-512.png';
 import Button from '@mui/material/Button';
+import axios from 'axios';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -34,7 +35,7 @@ import net from 'net';
 import useHistory from 'react-router-dom';
 import crypto from 'crypto';
 import { Dispatch, SetStateAction } from 'react';
-import { receiver, send_login_request } from './scripts/receiver';
+import { receiver, send_login_request, connectToRelayServer, connectToRelayServer2 } from './scripts/receiver';
 interface Message {
   type: string;
   content: string;
@@ -129,14 +130,17 @@ export default function SignIn() {
   // Move the useState hook outside of the handleSubmit function
   const [showMain, setShowMain] = useState<boolean>(false);
   const [showRegister, setShowRegister] = useState<boolean>(false);
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit1 = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log("sending login request")
     const data = new FormData(event.currentTarget);
     const email = data.get('email') as string | null;
     const password = data.get('password') as string | null;
 
     if (email && password) {
       try {
+
+        let senderSocket = await connectToRelayServer2();
         const result = await send_login_request(email, password);
         console.log(result);
         setUsername(email);
@@ -149,6 +153,76 @@ export default function SignIn() {
       }
     }
   };
+  // Move the useState hook outside of the handleSubmit function
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log("sending login request")
+    const data = new FormData(event.currentTarget);
+    const email = data.get('email') as string | null;
+    const password = data.get('password') as string | null;
+
+    if (email && password) {
+      try {
+
+
+        // let senderSocket = await connectToRelayServer2();
+        const result = await send_login_request(email, password);
+        if (result === 'login success') {
+          console.log(result);
+          setUsername(email);
+          setIsAuthenticated(true);
+          console.log('Result: Login successful.');
+          setShowMain(true); // Set showMain to true when login is successful
+        }
+        if (result === 'login failed') {
+          console.log('Result: Login failed.');
+          setincorrect_login(true);
+        }
+        else {
+          console.log('Result: Login failed.');
+          setincorrect_login(true);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setincorrect_login(true);
+      }
+    }
+  };
+
+
+
+  async function send_login_request(username: string, password: string) {
+    try {
+      const response = await axios.get<{
+        username: string;
+        password: string;
+        first_name: string;
+        // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+      }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+      // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+
+      const fetchedpassword = response.data.password;
+      const fetchedusername = response.data.username;
+      const Firstname = response.data.first_name;
+      console.log(Firstname);
+      console.log(fetchedpassword);
+      console.log(password);
+      console.log(fetchedusername);
+      console.log(username);
+      if (fetchedpassword === password && fetchedusername === username) {
+        console.log("login success");
+        return 'login success';
+      }
+      else {
+        console.log("login failed");
+        return 'login failed';
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
+
 
 
   if (isAuthenticated || showMain) { // Render Main component if authenticated or showMain is true

@@ -25,7 +25,7 @@ pub async fn begin_single_small_ping_loop(stream: Arc<Mutex<TcpStream>>) {
 pub async fn begin_small_ping_loop(clients: ClientList) {
     loop {
         println!("Sending small ping request to all clients");
-
+        sleep(Duration::from_secs(10)).await;
         let clients_guard = clients.lock().await;
         for (client_id, connections) in clients_guard.iter() {
             for connection in connections {
@@ -41,7 +41,7 @@ pub async fn begin_small_ping_loop(clients: ClientList) {
 pub async fn begin_ping_loop(clients: ClientList) {
     loop {
         println!("Sending small ping request to all clients");
-        sleep(Duration::from_secs(15)).await;
+        sleep(Duration::from_secs(30)).await;
 
         let clients_guard = clients.lock().await;
 
