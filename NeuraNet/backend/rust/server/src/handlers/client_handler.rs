@@ -62,8 +62,6 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) -> io::Re
 
         // Process the message
         process_message(message, Arc::clone(&writer), Arc::clone(&clients)).await;
-
-        println!("Error reading message");
     }
 }
 
@@ -98,8 +96,13 @@ pub async fn process_message(
             "GREETINGS" => {
                 // println!("Received greetings from {}", client_id);
                 println!("1");
+                let stream_clone = Arc::clone(&stream);
                 tokio::spawn(async move {
-                    ping_handler::begin_single_small_ping_loop(stream);
+                    ping_handler::begin_single_small_ping_loop(stream_clone);
+                });
+                let stream_clone2 = Arc::clone(&stream);
+                tokio::spawn(async move {
+                    ping_handler::begin_single_ping_loop(stream_clone2);
                 });
             }
 
@@ -191,9 +194,8 @@ pub async fn process_message(
                 ping_handler::process_small_ping_request_response(stream, buffer).await
             }
             "PING_REQUEST_RESPONSE" => {
-                println!("Received ping request response");
-                let end_of_json = "END_OF_JSON";
                 ping_handler::process_ping_request_response(
+                    stream,
                     buffer,
                     username,
                     password,
