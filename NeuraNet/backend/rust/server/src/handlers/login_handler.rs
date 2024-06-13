@@ -27,10 +27,10 @@ pub async fn process_login_request(
     // check if the user exists
     if user.is_none() {
         println!("User does not exist");
-        send_message(stream, "LOGIN_FAIL:::END_OF_HEADER").await?;
+        // send_message(stream, "LOGIN_FAIL:::END_OF_HEADER").await?;
     } else {
         println!("User exists, sending acception message to device");
-        send_message(stream, "LOGIN_SUCCESS:::END_OF_HEADER").await?;
+        // send_message(stream, "LOGIN_SUCCESS:::END_OF_HEADER").await?;
     }
     Ok(())
 }

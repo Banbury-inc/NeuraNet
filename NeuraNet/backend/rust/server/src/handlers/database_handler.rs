@@ -5,8 +5,9 @@ use mongodb::bson::oid::ObjectId;
 use mongodb::error::Result;
 use mongodb::{bson::doc, options::ClientOptions, Client, Collection};
 use serde::{Deserialize, Serialize};
+
 use std::sync::Arc;
-use tokio::io::AsyncWriteExt;
+use tokio::io::{self, split, AsyncReadExt, AsyncWriteExt, Error, WriteHalf};
 use tokio::net::TcpStream;
 use tokio::sync::Mutex;
 
@@ -264,7 +265,7 @@ pub async fn get_devices(user: &str) -> mongodb::error::Result<Option<Vec<Device
 }
 
 pub async fn update_devices(
-    stream: Arc<Mutex<TcpStream>>,
+    stream: Arc<Mutex<WriteHalf<TcpStream>>>,
     user: &str,
     devices: Vec<Devices>,
     device_name: &str,
@@ -309,7 +310,7 @@ pub async fn update_devices(
             .await?;
     } else {
         println!("Device does not exist, sending a big ping");
-        ping_handler::send_ping(stream).await;
+        ping_handler::send_ping(stream);
     }
     Ok(result)
 }

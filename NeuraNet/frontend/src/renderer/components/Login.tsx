@@ -35,7 +35,7 @@ import net from 'net';
 import useHistory from 'react-router-dom';
 import crypto from 'crypto';
 import { Dispatch, SetStateAction } from 'react';
-import { receiver, send_login_request, connectToRelayServer, connectToRelayServer2 } from './scripts/receiver';
+import { receiver, send_login_request, connectToRelayServer } from './scripts/receiver';
 interface Message {
   type: string;
   content: string;
@@ -140,7 +140,7 @@ export default function SignIn() {
     if (email && password) {
       try {
 
-        let senderSocket = await connectToRelayServer2();
+        let senderSocket = await connectToRelayServer();
         const result = await send_login_request(email, password);
         console.log(result);
         setUsername(email);
@@ -194,24 +194,19 @@ export default function SignIn() {
   async function send_login_request(username: string, password: string) {
     try {
       const response = await axios.get<{
+        result: string;
         username: string;
-        password: string;
-        first_name: string;
         // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
-      }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+      }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo3/' + username + '/' + password + '/');
       // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
-
-      const fetchedpassword = response.data.password;
-      const fetchedusername = response.data.username;
-      const Firstname = response.data.first_name;
-      console.log(Firstname);
-      console.log(fetchedpassword);
-      console.log(password);
-      console.log(fetchedusername);
-      console.log(username);
-      if (fetchedpassword === password && fetchedusername === username) {
+      const result = response.data.result;
+      if (result === 'success') {
         console.log("login success");
         return 'login success';
+      }
+      if (result === 'fail') {
+        console.log("login failed");
+        return 'login failed';
       }
       else {
         console.log("login failed");

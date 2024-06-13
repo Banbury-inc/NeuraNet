@@ -4,6 +4,7 @@ extern crate url;
 use handlers::database_handler;
 use handlers::login_handler;
 use std::collections::HashMap;
+
 use std::sync::Arc;
 use std::thread;
 use tokio::net::TcpListener;
@@ -20,7 +21,6 @@ pub type ClientsList = Arc<Mutex<HashMap<String, Vec<Arc<Mutex<TcpStream>>>>>>;
 
 #[tokio::main]
 async fn main() {
-    // Initialize the database
     if let Err(e) = initialize_database().await {
         println!("Error initializing database: {}", e);
         return;
@@ -32,10 +32,12 @@ async fn main() {
     // let clients = Arc::new(Mutex::new(Vec::new()));
     let clients = Arc::new(Mutex::new(HashMap::new()));
     loop {
-        let (stream, _) = listener.accept().await.unwrap();
+        let (stream, address) = listener.accept().await.unwrap();
+        
         println!("Connection established");
         let clients = Arc::clone(&clients);
         println!("Client count: {}", clients.lock().await.len());
+        println!("Client address: {}", address);
         tokio::spawn(async move {
             handle_connection(stream, clients).await;
         });

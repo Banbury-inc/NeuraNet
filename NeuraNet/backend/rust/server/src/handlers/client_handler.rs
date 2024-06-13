@@ -2,6 +2,7 @@ extern crate tungstenite;
 extern crate url;
 use super::database_handler;
 use super::device_handler;
+use super::device_handler::ClientList;
 use super::file_handler;
 use super::login_handler;
 use super::message_handler;
@@ -10,271 +11,203 @@ use super::profile_handler;
 use super::registration_handler;
 use std::collections::HashMap;
 use std::sync::Arc;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::{self, split, AsyncReadExt, AsyncWriteExt, Error, WriteHalf};
+
 use tokio::net::TcpStream;
 use tokio::sync::Mutex;
+use tokio::sync::MutexGuard;
 use tokio::task;
 use tokio::time::timeout;
 use tokio::time::{sleep, Duration};
 
-pub type ClientList = Arc<Mutex<HashMap<String, Vec<Arc<Mutex<TcpStream>>>>>>;
+// pub type ClientList = Arc<Mutex<HashMap<String, Vec<Arc<Mutex<TcpStream>>>>>>;
 
-pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
-    let client_id = get_client_id(&stream); // Function to determine client ID
-    let client = Arc::new(Mutex::new(stream));
-    let client_clone = Arc::clone(&client);
-    // Add the client to the client's connection list
-    {
-        let mut clients_guard = clients.lock().await;
-        clients_guard
-            .entry(client_id.clone())
-            .or_insert_with(Vec::new)
-            .push(client.clone());
-        println!(
-            "New connection added. Total connections for {}: {}",
-            client_id,
-            clients_guard[&client_id].len()
-        );
-    }
-
-    let mut buffer_size = vec![0; 4096];
-    // Spawn new async tasks for the ping handler
-    // Spawn new async tasks for the ping handler
-    loop {
-        let mut stream_guard = client.lock().await;
-        match stream_guard.read(&mut buffer_size).await {
-            Ok(bytes_read) => {
-                database_handler::update_total_data_processed(bytes_read).await;
-                database_handler::update_number_of_requests_processed().await;
-                let client_clone = clients.clone();
-                if bytes_read == 0 {
-                    // connection closed by client
-                    println!("connection closed by client");
-                    stream_guard.shutdown().await;
-                    break;
-                }
-                println!("Received: {} bytes", bytes_read);
-                let buffer = String::from_utf8_lossy(&buffer_size[..bytes_read]);
-                println!("Buffer: {}", buffer);
-                let end_of_header = "END_OF_HEADER";
-                let end_of_json = "END_OF_JSON";
-
-                if buffer.contains(end_of_header) {
-                    let parts: Vec<&str> = buffer.split(end_of_header).collect();
-                    let header = parts[0];
-                    let buffer = parts[1];
-                    println!("Header: {}", header);
-                    // println!("Buffer: {}", buffer);
-
-                    let header_parts: Vec<&str> = header.split(':').collect();
-                    if header_parts.len() < 4 {
-                        println!("Malformed header: {}", header);
-                        continue;
-                    }
-                    if buffer.contains(end_of_json) {
-                        let parts: Vec<&str> = buffer.split(end_of_json).collect();
-                        let buffer = parts[0];
-                        println!("end of buffer");
-                    }
-
-                    let file_type = header_parts[0];
-                    let file_name = header_parts[1];
-                    let device_name = header_parts[1];
-                    let file_size = header_parts[2];
-                    let username = header_parts[3];
-                    let password = header_parts[3];
-                    match file_type {
-                        "GREETINGS" => {
-                            let client_clone = Arc::clone(&client);
-                            tokio::spawn(async move {
-                                loop {
-                                    {
-                                        let mut stream_guard = client_clone.lock().await;
-                                        let peer_addr = match stream_guard.peer_addr() {
-                                            Ok(addr) => addr.to_string(),
-                                            Err(e) => {
-                                                println!("Failed to get peer address: {:?}", e);
-                                                break;
-                                            }
-                                        };
-                                        let message = "SMALL_PING_REQUEST:::END_OF_HEADER";
-                                        if let Err(e) =
-                                            stream_guard.write_all(message.as_bytes()).await
-                                        {
-                                            println!(
-                                                "Tried to send message to {}, but failed",
-                                                peer_addr
-                                            );
-                                            println!("Failed to send message: {:?}", e);
-                                            break;
-                                        }
-
-                                        println!("Sent small ping request to {}", peer_addr);
-                                    }
-                                    sleep(Duration::from_secs(10)).await;
-                                }
-                            });
-                            let client_clone_2 = Arc::clone(&client);
-                            tokio::spawn(async move {
-                                loop {
-                                    {
-                                        let mut stream_guard = client_clone_2.lock().await;
-                                        let message = "PING_REQUEST:::END_OF_HEADER";
-                                        if let Err(e) =
-                                            stream_guard.write_all(message.as_bytes()).await
-                                        {
-                                            println!("Failed to send message: {:?}", e);
-                                            break;
-                                        }
-                                    }
-                                    sleep(Duration::from_secs(6000)).await;
-                                    println!("Sent ping request");
-                                }
-                            });
-                        }
-
-                        "MSG" => {
-                            message_handler::process_message_request(buffer, username, password)
-                                .await
-                        }
-
-                        "LOGIN_REQUEST" => {
-                            if let Err(e) = login_handler::process_login_request(
-                                buffer,
-                                &mut *stream_guard,
-                                username,
-                                password,
-                            )
-                            .await
-                            {
-                                println!("Error processing login request: {:?}", e);
-                            }
-                        }
-                        "REGISTRATION_REQUEST" => {
-                            registration_handler::process_registration_request(
-                                buffer, username, password,
-                            )
-                            .await
-                        }
-                        "FILE" => {
-                            file_handler::process_file(
-                                buffer,
-                                username,
-                                password,
-                                file_name,
-                                device_name,
-                                file_size,
-                            )
-                            .await
-                        }
-                        "FILE_REQUEST" => {
-                            if let Err(e) = file_handler::process_file_request(
-                                buffer,
-                                &mut *stream_guard,
-                                file_name,
-                                file_size,
-                                username,
-                            )
-                            .await
-                            {
-                                println!("Error processing file request: {:?}", e);
-                            }
-                        }
-
-                        "FILE_REQUEST_RESPONSE" => {
-                            if let Err(e) = file_handler::process_file_request_response(
-                                // Arc::clone(&stream),
-                                &mut *stream_guard,
-                                file_name,
-                                device_name,
-                                file_size,
-                                Arc::clone(&clients),
-                            )
-                            .await
-                            {
-                                println!("File request failed: {}", e);
-                            }
-                        }
-                        "DEVICE_DELETE_REQUEST" => {
-                            device_handler::process_device_delete_request(
-                                buffer,
-                                username,
-                                password,
-                                file_name,
-                                device_name,
-                                file_size,
-                            )
-                            .await
-                        }
-                        "FILE_DELETE_REQUEST" => {
-                            file_handler::process_file_delete_request(
-                                buffer,
-                                username,
-                                password,
-                                file_name,
-                                device_name,
-                                file_size,
-                            )
-                            .await
-                        }
-                        "FILE_DELETE_REQUEST_RESPONSE" => {
-                            file_handler::process_file_delete_request_response(
-                                buffer,
-                                username,
-                                password,
-                                file_name,
-                                device_name,
-                                file_size,
-                            )
-                            .await
-                        }
-                        "CHANGE_PROFILE_REQUEST" => {
-                            profile_handler::process_change_profile_request(
-                                buffer,
-                                username,
-                                password,
-                                file_name,
-                                device_name,
-                                file_size,
-                            )
-                            .await
-                        }
-                        "SMALL_PING_REQUEST_RESPONSE" => {
-                            ping_handler::process_small_ping_request_response(
-                                Arc::clone(&client),
-                                buffer,
-                            )
-                            .await
-                        }
-                        "PING_REQUEST_RESPONSE" => {
-                            println!("Received ping request response");
-                            let end_of_json = "END_OF_JSON";
-                            ping_handler::process_ping_request_response(
-                                buffer,
-                                username,
-                                password,
-                                file_name,
-                                device_name,
-                                file_size,
-                            )
-                            .await
-                        }
-                        _ => println!("Unknown file type: {}", file_type),
-                    }
-                } else {
-                    println!("Received unknown file type");
-                }
-            }
-            Err(e) => {
-                println!("Error reading message: {:?}", e);
-                break;
-            }
+// Define the function to be async and to return a Result
+// Function to read all bytes from the stream
+// Function to read all bytes from the stream and return them as a Vec<u8>
+async fn read_all_bytes(mut stream: MutexGuard<'_, TcpStream>) -> Result<Vec<u8>, Error> {
+    let mut buffer = vec![0; 4096];
+    let mut data = Vec::new();
+    while let Some(bytes_read) = stream.read(&mut buffer).await.ok() {
+        if bytes_read == 0 {
+            break;
         }
+        data.extend_from_slice(&buffer[..bytes_read]);
     }
+    Ok(data)
+}
 
-    // Remove the client from the list
-    remove_client_from_list(client_id, clients, client).await;
-    println!("Client disconnected");
+// Function to read and parse a message from a TcpStream
+async fn read_message(stream: Arc<Mutex<TcpStream>>) -> Result<String, Error> {
+    let mut stream_lock = stream.lock().await;
+    let data = read_all_bytes(stream_lock).await?;
+    String::from_utf8(data).map_err(|e| Error::new(tokio::io::ErrorKind::InvalidData, e))
+}
+pub async fn handle_connection(stream: TcpStream, clients: ClientList) -> io::Result<()> {
+    let (mut reader, writer) = split(stream);
+    let writer = Arc::new(Mutex::new(writer));
+    let mut buffer = [0; 4096];
+
+    loop {
+        let bytes_read;
+        {
+            bytes_read = reader.read(&mut buffer).await?;
+        }
+        if bytes_read == 0 {
+            return Ok(());
+        }
+        // Convert the message to a String
+        let message: String = String::from_utf8_lossy(&buffer[..bytes_read]).to_string();
+        println!("Received message: {}", message);
+
+        // Process the message
+        process_message(message, Arc::clone(&writer), Arc::clone(&clients)).await;
+
+        println!("Error reading message");
+    }
+}
+
+// Example function to process a message
+pub async fn process_message(
+    message: String,
+    stream: Arc<Mutex<WriteHalf<TcpStream>>>,
+    clients: ClientList,
+) {
+    // Placeholder for further processing, for example:
+    // Detect message type, handle accordingly.
+    let end_of_header = "END_OF_HEADER";
+
+    if message.contains(end_of_header) {
+        let parts: Vec<&str> = message.split(end_of_header).collect();
+        let header = parts[0];
+        let buffer = parts[1];
+        println!("Header: {}", header);
+
+        let header_parts: Vec<&str> = header.split(':').collect();
+        if header_parts.len() < 4 {
+            println!("Malformed header: {}", header);
+        }
+        let file_type = header_parts[0];
+        let file_name = header_parts[1];
+        let device_name = header_parts[1];
+        let file_size = header_parts[2];
+        let username = header_parts[3];
+        let password = header_parts[3];
+
+        match file_type {
+            "GREETINGS" => {
+                // println!("Received greetings from {}", client_id);
+                println!("1");
+                tokio::spawn(async move {
+                    ping_handler::begin_single_small_ping_loop(stream);
+                });
+            }
+
+            "MSG" => message_handler::process_message_request(buffer, username, password).await,
+
+            "REGISTRATION_REQUEST" => {
+                registration_handler::process_registration_request(buffer, username, password).await
+            }
+            "FILE" => {
+                file_handler::process_file(
+                    buffer,
+                    username,
+                    password,
+                    file_name,
+                    device_name,
+                    file_size,
+                )
+                .await
+            }
+            "FILE_REQUEST" => {
+                if let Err(e) = file_handler::process_file_request(
+                    buffer, stream, file_name, file_size, username,
+                )
+                .await
+                {
+                    println!("Error processing file request: {:?}", e);
+                }
+            }
+
+            "FILE_REQUEST_RESPONSE" => {
+                if let Err(e) = file_handler::process_file_request_response(
+                    // Arc::clone(&stream),
+                    stream,
+                    file_name,
+                    device_name,
+                    file_size,
+                    Arc::clone(&clients),
+                )
+                .await
+                {
+                    println!("File request failed: {}", e);
+                }
+            }
+            "DEVICE_DELETE_REQUEST" => {
+                device_handler::process_device_delete_request(
+                    buffer,
+                    username,
+                    password,
+                    file_name,
+                    device_name,
+                    file_size,
+                )
+                .await
+            }
+            "FILE_DELETE_REQUEST" => {
+                file_handler::process_file_delete_request(
+                    buffer,
+                    username,
+                    password,
+                    file_name,
+                    device_name,
+                    file_size,
+                )
+                .await
+            }
+            "FILE_DELETE_REQUEST_RESPONSE" => {
+                file_handler::process_file_delete_request_response(
+                    buffer,
+                    username,
+                    password,
+                    file_name,
+                    device_name,
+                    file_size,
+                )
+                .await
+            }
+            "CHANGE_PROFILE_REQUEST" => {
+                profile_handler::process_change_profile_request(
+                    buffer,
+                    username,
+                    password,
+                    file_name,
+                    device_name,
+                    file_size,
+                )
+                .await
+            }
+            "SMALL_PING_REQUEST_RESPONSE" => {
+                ping_handler::process_small_ping_request_response(stream, buffer).await
+            }
+            "PING_REQUEST_RESPONSE" => {
+                println!("Received ping request response");
+                let end_of_json = "END_OF_JSON";
+                ping_handler::process_ping_request_response(
+                    buffer,
+                    username,
+                    password,
+                    file_name,
+                    device_name,
+                    file_size,
+                )
+                .await
+            }
+            _ => println!("Unknown file type: {}", file_type),
+        }
+    } else {
+        println!("Received unknown file type");
+    }
 }
 
 async fn remove_client_from_list(

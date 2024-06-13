@@ -42,7 +42,7 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) {
     });
 
     loop {
-        let mut stream_guard = stream.lock().await;
+        // let mut stream_guard = stream.lock().await;
         match stream_guard.read(&mut buffer_size).await {
             Ok(bytes_read) => {
                 database_handler::update_total_data_processed(bytes_read).await;

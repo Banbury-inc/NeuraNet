@@ -45,7 +45,7 @@ import Login from './Login';
 import Profile from './Profile';
 import net from 'net';
 import * as receiver5 from '../../main/receiver5';
-import { receiver, send_login_request, connectToRelayServer, connectToRelayServer2 } from './scripts/receiver';
+import { receiver, send_login_request, connectToRelayServer } from './scripts/receiver';
 const { ipcRenderer } = window.require('electron');
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -133,17 +133,13 @@ export default function PermanentDrawerLeft() {
 
   useEffect(() => {
     async function setupConnection() {
-      let senderSocket;
       try {
         // Wait for the connection to be established
         console.log("connecting to relay server")
-        const senderSocket = await connectToRelayServer2();
+        let senderSocket = connectToRelayServer();
         console.log("Starting receiver")
         // Continue with using senderSocket in your receiver function
-        // Start the receiver function asynchronously and handle errors
-        receiver(username, senderSocket).catch((error) => {
-          console.error("Error in receiver:", error);
-        });
+        receiver(username, senderSocket);
         console.log("receiver has been started")
         // Handle the result as necessary
       } catch (error) {
