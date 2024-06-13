@@ -33,7 +33,7 @@ async fn main() {
     let clients = Arc::new(Mutex::new(HashMap::new()));
     loop {
         let (stream, address) = listener.accept().await.unwrap();
-        
+
         println!("Connection established");
         let clients = Arc::clone(&clients);
         println!("Client count: {}", clients.lock().await.len());

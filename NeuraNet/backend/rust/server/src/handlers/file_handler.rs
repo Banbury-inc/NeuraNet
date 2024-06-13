@@ -1,3 +1,4 @@
+use super::client_handler;
 use super::database_handler::{self, Users};
 use super::ping_handler::send_message;
 use mongodb::{bson::doc, options::ClientOptions, Client, Collection};
@@ -79,6 +80,8 @@ pub async fn process_file_request(
 pub async fn process_file_request_response(
     // stream: Arc<Mutex<TcpStream>>,
     stream: Arc<Mutex<WriteHalf<TcpStream>>>,
+    reader: &mut (impl AsyncReadExt + Unpin),
+    buffer: &mut [u8],
     file_name: &str,
     device_name: &str,
     file_size: &str,
@@ -101,8 +104,6 @@ pub async fn process_file_request_response(
 
     let mut file = File::create(&file_path).await?;
     println!("File size: {}", file_size);
-    let mut buffer = vec![0; 4096];
-    println!("Buffer size: {}", buffer.len());
     let mut total_bytes_read = 0;
     println!("Total bytes read: {}", total_bytes_read);
     let file_size = file_size.parse::<usize>().unwrap();
@@ -110,13 +111,14 @@ pub async fn process_file_request_response(
 
     while total_bytes_read < file_size {
         println!("Total bytes read: {}", total_bytes_read);
-        // let bytes_read = stream.read(&mut buffer).await?;
-        // if bytes_read == 0 {
-        // break; // Connection closed
-        // }
-        // total_bytes_read += bytes_read;
-        // file.write_all(&buffer[..bytes_read]).await?;
+        let bytes_read = reader.read(buffer).await?;
+        if bytes_read == 0 {
+            break; // Connection closed
+        }
+        total_bytes_read += bytes_read;
+        file.write_all(&buffer[..bytes_read]).await?;
     }
+    // file.write_all(buffer).await?;
     file.flush().await?;
 
     println!("File received and saved to {:?}", file_path);

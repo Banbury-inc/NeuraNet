@@ -43,15 +43,22 @@ async fn read_message(stream: Arc<Mutex<TcpStream>>) -> Result<String, Error> {
     let data = read_all_bytes(stream_lock).await?;
     String::from_utf8(data).map_err(|e| Error::new(tokio::io::ErrorKind::InvalidData, e))
 }
+pub async fn read_bytes(
+    reader: &mut (impl AsyncReadExt + Unpin),
+    buffer: &mut [u8],
+) -> Result<usize, Error> {
+    reader.read(buffer).await
+}
+
 pub async fn handle_connection(stream: TcpStream, clients: ClientList) -> io::Result<()> {
     let (mut reader, writer) = split(stream);
     let writer = Arc::new(Mutex::new(writer));
     let mut buffer = [0; 4096];
-
     loop {
         let bytes_read;
         {
-            bytes_read = reader.read(&mut buffer).await?;
+            // bytes_read = reader.read(&mut buffer).await?;
+            bytes_read = read_bytes(&mut reader, &mut buffer).await?;
         }
         if bytes_read == 0 {
             return Ok(());
@@ -61,13 +68,22 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) -> io::Re
         println!("Received message: {}", message);
 
         // Process the message
-        process_message(message, Arc::clone(&writer), Arc::clone(&clients)).await;
+        process_message(
+            message,
+            &mut buffer,
+            &mut reader,
+            Arc::clone(&writer),
+            Arc::clone(&clients),
+        )
+        .await;
     }
 }
 
 // Example function to process a message
 pub async fn process_message(
     message: String,
+    buffer: &mut [u8],
+    reader: &mut (impl AsyncReadExt + Unpin),
     stream: Arc<Mutex<WriteHalf<TcpStream>>>,
     clients: ClientList,
 ) {
@@ -78,7 +94,7 @@ pub async fn process_message(
     if message.contains(end_of_header) {
         let parts: Vec<&str> = message.split(end_of_header).collect();
         let header = parts[0];
-        let buffer = parts[1];
+        let buffer_str = parts[1];
         println!("Header: {}", header);
 
         let header_parts: Vec<&str> = header.split(':').collect();
@@ -106,14 +122,15 @@ pub async fn process_message(
                 });
             }
 
-            "MSG" => message_handler::process_message_request(buffer, username, password).await,
+            "MSG" => message_handler::process_message_request(buffer_str, username, password).await,
 
             "REGISTRATION_REQUEST" => {
-                registration_handler::process_registration_request(buffer, username, password).await
+                registration_handler::process_registration_request(buffer_str, username, password)
+                    .await
             }
             "FILE" => {
                 file_handler::process_file(
-                    buffer,
+                    buffer_str,
                     username,
                     password,
                     file_name,
@@ -124,7 +141,7 @@ pub async fn process_message(
             }
             "FILE_REQUEST" => {
                 if let Err(e) = file_handler::process_file_request(
-                    buffer, stream, file_name, file_size, username,
+                    buffer_str, stream, file_name, file_size, username,
                 )
                 .await
                 {
@@ -134,8 +151,9 @@ pub async fn process_message(
 
             "FILE_REQUEST_RESPONSE" => {
                 if let Err(e) = file_handler::process_file_request_response(
-                    // Arc::clone(&stream),
                     stream,
+                    reader,
+                    buffer,
                     file_name,
                     device_name,
                     file_size,
@@ -148,7 +166,7 @@ pub async fn process_message(
             }
             "DEVICE_DELETE_REQUEST" => {
                 device_handler::process_device_delete_request(
-                    buffer,
+                    buffer_str,
                     username,
                     password,
                     file_name,
@@ -159,7 +177,7 @@ pub async fn process_message(
             }
             "FILE_DELETE_REQUEST" => {
                 file_handler::process_file_delete_request(
-                    buffer,
+                    buffer_str,
                     username,
                     password,
                     file_name,
@@ -170,7 +188,7 @@ pub async fn process_message(
             }
             "FILE_DELETE_REQUEST_RESPONSE" => {
                 file_handler::process_file_delete_request_response(
-                    buffer,
+                    buffer_str,
                     username,
                     password,
                     file_name,
@@ -181,7 +199,7 @@ pub async fn process_message(
             }
             "CHANGE_PROFILE_REQUEST" => {
                 profile_handler::process_change_profile_request(
-                    buffer,
+                    buffer_str,
                     username,
                     password,
                     file_name,
@@ -191,12 +209,12 @@ pub async fn process_message(
                 .await
             }
             "SMALL_PING_REQUEST_RESPONSE" => {
-                ping_handler::process_small_ping_request_response(stream, buffer).await
+                ping_handler::process_small_ping_request_response(stream, buffer_str).await
             }
             "PING_REQUEST_RESPONSE" => {
                 ping_handler::process_ping_request_response(
                     stream,
-                    buffer,
+                    buffer_str,
                     username,
                     password,
                     file_name,
