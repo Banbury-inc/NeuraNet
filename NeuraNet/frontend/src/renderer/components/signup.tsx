@@ -19,6 +19,7 @@ import SignIn from './Login';
 import * as path from "path";
 import NeuraNet_Logo from '../../../static/NeuraNet_Icons/web/icon-512.png';
 import { register } from './scripts/register'
+import axios from 'axios';
 import { main } from './scripts/register'
 
 function Copyright(props: any) {
@@ -39,6 +40,32 @@ interface Message {
   content: string;
 }
 
+
+async function send_login_request(username: string, password: string) {
+  try {
+    const response = await axios.get<{
+      result: string;
+      username: string;
+      // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+    }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo3/' + username + '/' + password + '/');
+    // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+    const result = response.data.result;
+    if (result === 'success') {
+      console.log("login success");
+      return 'login success';
+    }
+    if (result === 'fail') {
+      console.log("login failed");
+      return 'login failed';
+    }
+    else {
+      console.log("login failed");
+      return 'login failed';
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
@@ -68,7 +95,7 @@ export default function SignUp() {
         data.get('username') as string,
         data.get('password') as string
       );
-      console.log (result);
+      console.log(result);
       if (result === 'success') {
         setregistration_success(true)
       }
@@ -97,7 +124,7 @@ export default function SignUp() {
             }}
           >
 
-          <img src={NeuraNet_Logo} alt="Logo" style={{ marginTop: 100, marginBottom: 20, width: 50, height: 50 }} />
+            <img src={NeuraNet_Logo} alt="Logo" style={{ marginTop: 100, marginBottom: 20, width: 50, height: 50 }} />
             <Typography component="h1" variant="h5">
               Sign up
             </Typography>
@@ -185,10 +212,10 @@ export default function SignUp() {
               <Grid container justifyContent="flex-end">
                 <Grid item>
                   {/* <Link href="/login" variant="body2"> */}
-                <Link variant="body2" onClick={() => {
-                setregistration_success(true);
-                }}>
- 
+                  <Link variant="body2" onClick={() => {
+                    setregistration_success(true);
+                  }}>
+
                     Already have an account? Sign in
                   </Link>
                 </Grid>

@@ -312,11 +312,14 @@ export default function EnhancedTable() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
 
-  const [Firstname, setFirstname] = useState<string>('');
-  const [Lastname, setLastname] = useState<string>('');
-  const { username } = useAuth();
+  const { username, first_name, last_name, devices, setFirstname, setLastname, setDevices, redirect_to_login, setredirect_to_login } = useAuth();
   console.log(username)
   useEffect(() => {
+      // if devices is not null
+      if (devices) {
+
+        setIsLoading(false); // Set loading to false once data is fetched or in case of an error
+      }
     const fetchData = async () => {
       try {
         const response = await axios.get<{
@@ -972,26 +975,27 @@ export default function EnhancedTable() {
                     rowCount={fileRows.length}
                   />
                   <TableBody>
-                    {isLoading ? (
-                      Array.from(new Array(rowsPerPage)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell padding="checkbox">
-                            <Skeleton variant="rectangular" width={24} height={24} />
-                          </TableCell>
-                          <TableCell>
-                            <Skeleton variant="text" width="100%" />
-                          </TableCell>
-                          <TableCell>
-                            <Skeleton variant="text" width="100%" />
-                          </TableCell>
-                          <TableCell>
-                            <Skeleton variant="text" width="100%" />
-                          </TableCell>
-                          <TableCell>
-                            <Skeleton variant="text" width="100%" />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      {
+                        isLoading?(
+                          Array.from(new Array(rowsPerPage)).map((_, index) => (
+                            <TableRow key={index}>
+                              <TableCell padding="checkbox">
+                                <Skeleton variant="rectangular" width={24} height={24} />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton variant="text" width="100%" />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton variant="text" width="100%" />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton variant="text" width="100%" />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton variant="text" width="100%" />
+                              </TableCell>
+                            </TableRow>
+                          ))
                     ) : (
                       stableSort(fileRows, getComparator(order, orderBy))
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

@@ -124,10 +124,6 @@ pub async fn process_message(
 
             "MSG" => message_handler::process_message_request(buffer_str, username, password).await,
 
-            "REGISTRATION_REQUEST" => {
-                registration_handler::process_registration_request(buffer_str, username, password)
-                    .await
-            }
             "FILE" => {
                 file_handler::process_file(
                     buffer_str,

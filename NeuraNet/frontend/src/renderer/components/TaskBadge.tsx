@@ -23,29 +23,26 @@ import Stack from '@mui/material';
 
 
 
-  import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CircularProgress, {
 
   CircularProgressProps,
 } from '@mui/material/CircularProgress';
 
 export default function TaskBadge() {
-  const [Firstname, setFirstname] = useState<string>('');
-  const [Lastname, setLastname] = useState<string>('');
-  const { username, redirect_to_login, setredirect_to_login } = useAuth();
+  const { username, password, first_name, last_name, redirect_to_login, setredirect_to_login, setFirstname, setLastname, } = useAuth();
   const [showLogin, setShowLogin] = useState<boolean>(false);
   const navigate = useNavigate();
-
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/${username}/`);
+        const response = await axios.get(`https://website2-v3xlkt54dq-uc.a.run.app/get_small_user_info/${username}/`);
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;
-        setFirstname(fetchedFirstname); 
-        setLastname(fetchedLastname); 
+        setFirstname(fetchedFirstname);
+        setLastname(fetchedLastname);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -64,33 +61,33 @@ export default function TaskBadge() {
     setAnchorEl(null);
   };
 
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number },
-) {
-  return (
-    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: 'absolute',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-      {/*   <Typography */}
-      {/*     variant="caption" */}
-      {/*     component="div" */}
-      {/*     color="text.secondary" */}
-      {/*   >{`${Math.round(props.value)}%`}</Typography> */}
+  function CircularProgressWithLabel(
+    props: CircularProgressProps & { value: number },
+  ) {
+    return (
+      <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+        <CircularProgress variant="determinate" {...props} />
+        <Box
+          sx={{
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            position: 'absolute',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {/*   <Typography */}
+          {/*     variant="caption" */}
+          {/*     component="div" */}
+          {/*     color="text.secondary" */}
+          {/*   >{`${Math.round(props.value)}%`}</Typography> */}
+        </Box>
       </Box>
-    </Box>
-  );
-}
+    );
+  }
 
 
   const [progress, setProgress] = useState(10); // Starting progress at 10%
@@ -120,26 +117,26 @@ function CircularProgressWithLabel(
 
 
     <Box mr={4}>
-<IconButton aria-label="cart">
+      <IconButton aria-label="cart">
         <Tooltip title="Activity">
-<Badge badgeContent={1}
-        onClick={handleClick}
-        color="primary"
-          sx={{
-            '& .MuiBadge-badge': {
-              transition: 'transform 0.3s ease',
-              border: `2px solid`,
-              padding: '0 4px',
-              '&:hover': {
-              }
+          <Badge badgeContent={1}
+            onClick={handleClick}
+            color="primary"
+            sx={{
+              '& .MuiBadge-badge': {
+                transition: 'transform 0.3s ease',
+                border: `2px solid`,
+                padding: '0 4px',
+                '&:hover': {
+                }
 
-            }
-          }}
-        >
-  <ShareIcon color="inherit"  />
-</Badge>
-</Tooltip>
-</IconButton>
+              }
+            }}
+          >
+            <ShareIcon color="inherit" />
+          </Badge>
+        </Tooltip>
+      </IconButton>
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -178,14 +175,14 @@ function CircularProgressWithLabel(
         <MenuItem onClick={handleClose}>
           <Typography style={{ paddingRight: '30px' }}>
 
-          Syncing files
+            Syncing files
           </Typography>
           <ListItemIcon style={{ paddingLeft: '30px' }}>
-           <CircularProgressWithLabel value={progress} size={20} /> 
+            <CircularProgressWithLabel value={progress} size={20} />
           </ListItemIcon>
         </MenuItem>
-     </Menu>
- 
+      </Menu>
+
     </Box>
   );
 }

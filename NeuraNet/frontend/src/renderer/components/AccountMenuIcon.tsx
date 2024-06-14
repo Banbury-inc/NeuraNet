@@ -20,9 +20,7 @@ import Login from './Login';
 import isAuthenticated from './Login';
 import setshowMain from './Login';
 export default function AccountMenuIcon() {
-  const [Firstname, setFirstname] = useState<string>('');
-  const [Lastname, setLastname] = useState<string>('');
-  const { username, redirect_to_login, setredirect_to_login } = useAuth();
+  const { username, first_name, last_name, setFirstname, setLastname, redirect_to_login, setredirect_to_login } = useAuth();
   const [showLogin, setShowLogin] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -32,8 +30,8 @@ export default function AccountMenuIcon() {
         const response = await axios.get(`https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/${username}/`);
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;
-        setFirstname(fetchedFirstname); 
-        setLastname(fetchedLastname); 
+        setFirstname(fetchedFirstname);
+        setLastname(fetchedLastname);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -55,7 +53,7 @@ export default function AccountMenuIcon() {
   const handleLogout = () => {
     setredirect_to_login(true);
 
-    
+
   };
 
   const handleSettingsClick = () => {
@@ -64,14 +62,16 @@ export default function AccountMenuIcon() {
     handleClose(); // Close the menu after clicking on settings
   };
 
- 
+
   return (
     <React.Fragment>
       <Box sx={{ mr: '20px', display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         <Tooltip title="Account">
-          <Chip 
-            avatar={<Avatar>{Firstname.charAt(0)}</Avatar>} 
-            label={`${Firstname} ${Lastname}`} 
+          <Chip
+            avatar={
+              <Avatar>{first_name?.charAt(0) || ''}</Avatar>
+            }
+            label={`${first_name || ''} ${last_name || ''}`}
             onClick={handleClick}
             aria-controls={open ? 'account-menu' : undefined}
             aria-haspopup="true"
@@ -130,7 +130,7 @@ export default function AccountMenuIcon() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={() => {setredirect_to_login(true)}}>
+        <MenuItem onClick={() => { setredirect_to_login(true) }}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>

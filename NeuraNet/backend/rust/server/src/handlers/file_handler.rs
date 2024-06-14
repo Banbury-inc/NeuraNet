@@ -123,18 +123,6 @@ pub async fn process_file_request_response(
 
     println!("File received and saved to {:?}", file_path);
 
-    println!("Broadcasting to other devices");
-
-    let file_content = tokio::fs::read(file_path).await?;
-
-    let header = format!("FILE:{}:{}:END_OF_HEADER", file_name, file_size);
-    send_message(stream, &header).await;
-
-    // stream.write_all(&file_content).await;
-    // stream.flush().await;
-    println!("Successfully sent file content to client");
-
-    // Broadcast the file to all connected clients
     Ok(())
 }
 

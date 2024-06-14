@@ -2,14 +2,24 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AuthContextType {
   username: string | null;
+  password: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  devices: any[] | null;
+  fileRows: any[];
   setUsername: (username: string | null) => void;
+  setPassword: (password: string | null) => void;
+  setFirstname: (first_name: string | null) => void;
+  setLastname: (last_name: string | null) => void;
+  setFileRows: (fileRows: any[]) => void;
+  setDevices: (devices: any[] | null) => void;
   isAuthenticated: boolean; // Change the type to boolean directly
   redirect_to_login: boolean;
-  setredirect_to_login: (redirect_to_login: boolean) => void;
-  run_receiver: boolean;
+  setredirect_to_login: (redict_to_login: boolean) => void;
+  run_receiver: boolean
+  files_is_loading: boolean
   setrun_receiver: (run_receiver: boolean) => void;
-
-
+  setFilesIsLoading: (files_is_loading: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,19 +30,56 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [username, setUser] = useState<string | null>(null);
+  const [password, setPass] = useState<string | null>(null);
+  const [first_name, setFirst] = useState<string | null>(null);
+  const [last_name, setLast] = useState<string | null>(null);
+  const [devices, setDev] = useState<any[] | null>(null);
+  const [fileRows, setFiles] = useState<any[]>([]);
   const [redirect_to_login, setredirect_to_login] = useState<boolean>(false); // Add redirect_to_login state
   const [run_receiver, setrun_receiver] = useState<boolean>(false); // Add redirect_to_login state
+  const [files_is_loading, setFilesIsLoading] = useState<boolean>(false); // Add redirect_to_login state
 
   const setUsername = (username: string | null) => {
     setUser(username);
   };
+  const setPassword = (password: string | null) => {
+    setPass(password);
+  };
+  const setFirstname = (first_name: string | null) => {
+    setFirst(first_name);
+  };
+  const setLastname = (last_name: string | null) => {
+    setLast(last_name);
+  };
+  const setDevices = (devices: any[] | null) => {
+    setDev(devices);
+  };
+  const setFileRows = (fileRows: any[] | []) => {
+    setFiles(fileRows);
+  };
+
+
+
+
 
   const isAuthenticated = !!username;
 
   return (
-    <AuthContext.Provider value={{ 
+    <AuthContext.Provider value={{
       username,
-      setUsername, 
+      password,
+      first_name,
+      last_name,
+      devices,
+      fileRows,
+      files_is_loading,
+      setUsername,
+      setPassword,
+      setFirstname,
+      setLastname,
+      setDevices,
+      setFileRows,
+      setFilesIsLoading,
       isAuthenticated,
       redirect_to_login,
       setredirect_to_login,
