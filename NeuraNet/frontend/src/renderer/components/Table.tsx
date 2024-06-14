@@ -315,11 +315,6 @@ export default function EnhancedTable() {
   const { username, first_name, last_name, devices, setFirstname, setLastname, setDevices, redirect_to_login, setredirect_to_login } = useAuth();
   console.log(username)
   useEffect(() => {
-      // if devices is not null
-      if (devices) {
-
-        setIsLoading(false); // Set loading to false once data is fetched or in case of an error
-      }
     const fetchData = async () => {
       try {
         const response = await axios.get<{
@@ -330,11 +325,12 @@ export default function EnhancedTable() {
         }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
         // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
 
-        const fetchedFirstname = response.data.first_name;
-        const fetchedLastname = response.data.last_name;
-        setFirstname(fetchedFirstname);
-        setLastname(fetchedLastname);
-        const files = response.data.devices.flatMap((device, index) =>
+        // const fetchedFirstname = response.data.first_name;
+        // const fetchedLastname = response.data.last_name;
+        const { first_name, last_name, devices } = response.data;
+        setFirstname(first_name);
+        setLastname(last_name);
+        const files = devices.flatMap((device, index) =>
           device.files.map((file: any, fileIndex: number): FileData => ({
             id: index * 1000 + fileIndex, // Generating unique IDs
             // id: device.id + fileIndex,
@@ -975,70 +971,70 @@ export default function EnhancedTable() {
                     rowCount={fileRows.length}
                   />
                   <TableBody>
-                      {
-                        isLoading?(
-                          Array.from(new Array(rowsPerPage)).map((_, index) => (
-                            <TableRow key={index}>
-                              <TableCell padding="checkbox">
-                                <Skeleton variant="rectangular" width={24} height={24} />
-                              </TableCell>
-                              <TableCell>
-                                <Skeleton variant="text" width="100%" />
-                              </TableCell>
-                              <TableCell>
-                                <Skeleton variant="text" width="100%" />
-                              </TableCell>
-                              <TableCell>
-                                <Skeleton variant="text" width="100%" />
-                              </TableCell>
-                              <TableCell>
-                                <Skeleton variant="text" width="100%" />
-                              </TableCell>
-                            </TableRow>
-                          ))
-                    ) : (
-                      stableSort(fileRows, getComparator(order, orderBy))
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((row, index) => {
-                          const isItemSelected = isSelected(row.id);
-                          const labelId = `enhanced-table-checkbox-${index}`;
+                    {
+                      isLoading ? (
+                        Array.from(new Array(rowsPerPage)).map((_, index) => (
+                          <TableRow key={index}>
+                            <TableCell padding="checkbox">
+                              <Skeleton variant="rectangular" width={24} height={24} />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton variant="text" width="100%" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton variant="text" width="100%" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton variant="text" width="100%" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton variant="text" width="100%" />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        stableSort(fileRows, getComparator(order, orderBy))
+                          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                          .map((row, index) => {
+                            const isItemSelected = isSelected(row.id);
+                            const labelId = `enhanced-table-checkbox-${index}`;
 
-                          return (
-                            <TableRow
-                              hover
-                              onClick={(event) => handleClick(event, row.id)}
-                              role="checkbox"
-                              aria-checked={isItemSelected}
-                              tabIndex={-1}
-                              key={row.id}
-                              selected={isItemSelected}
-                              onMouseEnter={() => setHoveredRowId(row.id)} // Track hover state
-                              onMouseLeave={() => setHoveredRowId(null)} // Clear hover state                onMouseEnter={() => setHoveredRowId(row.id)} // Track hover state
-                              sx={{
-                                '&:hover .checkbox': {
-                                  opacity: 1, // Show the checkbox on hover
-                                }
-                              }}
-                            >
-                              <TableCell sx={{ borderBottomColor: "#424242" }} padding="checkbox">
-                                {hoveredRowId === row.id ? ( // Only render Checkbox if row is hovered
-                                  <Checkbox
-                                    color="primary"
-                                    checked={isItemSelected}
-                                    inputProps={{ 'aria-labelledby': labelId }}
-                                  />
-                                ) : null}
-                              </TableCell>
-                              <TableCell component="th" sx={{ borderBottomColor: "#424242" }} id={labelId} scope="row" padding="none">
-                                {row.fileName}
-                              </TableCell>
-                              <TableCell align="left" sx={{ borderBottomColor: "#424242" }}>{row.fileSize}</TableCell>
-                              <TableCell align="left" sx={{ borderBottomColor: "#424242" }} >{row.deviceName}</TableCell>
-                              <TableCell align="right" sx={{ borderBottomColor: "#424242" }} >{row.dateUploaded}</TableCell>
-                            </TableRow>
-                          );
-                        })
-                    )}
+                            return (
+                              <TableRow
+                                hover
+                                onClick={(event) => handleClick(event, row.id)}
+                                role="checkbox"
+                                aria-checked={isItemSelected}
+                                tabIndex={-1}
+                                key={row.id}
+                                selected={isItemSelected}
+                                onMouseEnter={() => setHoveredRowId(row.id)} // Track hover state
+                                onMouseLeave={() => setHoveredRowId(null)} // Clear hover state                onMouseEnter={() => setHoveredRowId(row.id)} // Track hover state
+                                sx={{
+                                  '&:hover .checkbox': {
+                                    opacity: 1, // Show the checkbox on hover
+                                  }
+                                }}
+                              >
+                                <TableCell sx={{ borderBottomColor: "#424242" }} padding="checkbox">
+                                  {hoveredRowId === row.id ? ( // Only render Checkbox if row is hovered
+                                    <Checkbox
+                                      color="primary"
+                                      checked={isItemSelected}
+                                      inputProps={{ 'aria-labelledby': labelId }}
+                                    />
+                                  ) : null}
+                                </TableCell>
+                                <TableCell component="th" sx={{ borderBottomColor: "#424242" }} id={labelId} scope="row" padding="none">
+                                  {row.fileName}
+                                </TableCell>
+                                <TableCell align="left" sx={{ borderBottomColor: "#424242" }}>{row.fileSize}</TableCell>
+                                <TableCell align="left" sx={{ borderBottomColor: "#424242" }} >{row.deviceName}</TableCell>
+                                <TableCell align="right" sx={{ borderBottomColor: "#424242" }} >{row.dateUploaded}</TableCell>
+                              </TableRow>
+                            );
+                          })
+                      )}
                   </TableBody>
                 </Table>
               </TableContainer>

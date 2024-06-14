@@ -8,6 +8,7 @@ import axios from 'axios';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import CircularProgress from '@mui/material/CircularProgress';
 import Checkbox from '@mui/material/Checkbox';
 
 import * as receiver5 from '../../main/receiver5';
@@ -130,6 +131,7 @@ export default function SignIn() {
   // Move the useState hook outside of the handleSubmit function
   const [showMain, setShowMain] = useState<boolean>(false);
   const [showRegister, setShowRegister] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const handleSubmit1 = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log("sending login request")
@@ -155,6 +157,7 @@ export default function SignIn() {
   };
   // Move the useState hook outside of the handleSubmit function
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
     console.log("sending login request")
     const data = new FormData(event.currentTarget);
@@ -216,7 +219,15 @@ export default function SignIn() {
       console.error('Error fetching data:', error);
     }
   }
-
+  const handleClick = () => {
+    setLoading(true);
+    // Simulate a network request or any asynchronous operation
+    setTimeout(() => {
+      setLoading(false);
+      // Your scroll or any other logic goes here
+      // Example: scroll.scrollTo('targetSection', { duration: 800, smooth: 'easeInOutQuad' });
+    }, 2000); // Adjust the timeout duration as needed
+  };
 
 
 
@@ -294,8 +305,10 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              // onClick={handleClick}
+              disabled={loading} // Disable the button while loading
             >
-              Sign In
+              {loading ? <CircularProgress size={24} /> : 'Sign In'}
             </Button>
             <Grid container>
               <Grid item xs>
