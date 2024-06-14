@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Stack from '@mui/material/Stack';
 import { exec } from "child_process";
 import axios from 'axios';
+import ButtonBase from '@mui/material/ButtonBase';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
@@ -418,7 +419,9 @@ export default function EnhancedTable() {
     }
     setSelected([]);
   };
-
+  const handleFileNameClick = (id: number) => {
+    console.log('clicked')
+  }
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected: readonly number[] = [];
@@ -1026,7 +1029,15 @@ export default function EnhancedTable() {
                                   ) : null}
                                 </TableCell>
                                 <TableCell component="th" sx={{ borderBottomColor: "#424242" }} id={labelId} scope="row" padding="none">
-                                  {row.fileName}
+                                  <ButtonBase // Make filename text clickable
+                                    onClick={(event) => {
+                                      event.stopPropagation(); // Prevent row click event propagation
+                                      handleFileNameClick(row.id); // Handle filename click
+                                    }}
+                                    style={{ textDecoration: 'none' }} // Remove underline
+                                  >
+                                    {row.fileName}
+                                  </ButtonBase>
                                 </TableCell>
                                 <TableCell align="left" sx={{ borderBottomColor: "#424242" }}>{row.fileSize}</TableCell>
                                 <TableCell align="left" sx={{ borderBottomColor: "#424242" }} >{row.deviceName}</TableCell>
@@ -1051,7 +1062,7 @@ export default function EnhancedTable() {
           </CardContent>
         </Card>
       </Stack>
-    </Box>
+    </Box >
 
   );
 }
