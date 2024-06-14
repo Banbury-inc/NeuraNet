@@ -3,6 +3,7 @@ import axios from 'axios';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
+import Skeleton from '@mui/material/Skeleton';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
@@ -78,6 +79,7 @@ export default function DevicesTable() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [selectedDeviceNames, setSelectedDeviceNames] = useState<string[]>([]);
+  const [loading, setIsLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { username } = useAuth();
@@ -118,6 +120,9 @@ export default function DevicesTable() {
         setLastname(data.last_name);
       } catch (error) {
         console.error('Error fetching data:', error);
+      }
+      finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -317,71 +322,65 @@ export default function DevicesTable() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {(rowsPerPage > 0
-                    ? devices.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    : devices
-                  ).map((device) => {
-                    const isItemSelected = isSelected(device.device_number);
-                    const labelId = `enhanced-table-checkbox-${device.device_number}`;
+                  {(loading ? Array.from(new Array(rowsPerPage)) : devices.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage))
+                    .map((device, index) => {
+                      const isItemSelected = isSelected(device?.device_number);
 
-                    return (
-                      <TableRow
-                        hover
-                        onClick={(event) => handleClick(event, device.device_number)}
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={device.device_number}
-                        selected={isItemSelected}
-                      >
-                        <TableCell sx={{ borderBottomColor: "#424242" }} padding="checkbox">
-                          <Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{ 'aria-labelledby': labelId }}
-                          />
-                        </TableCell>
-                        <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
-                          {device.device_name}
-                        </TableCell>
+                      const labelId = `enhanced-table-checkbox-${index}`;
 
-                        <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
-                          {device.ip_address}
-                        </TableCell>
-
-                        <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
-                          {device.storage_capacity_gb}
-                        </TableCell>
-
-                        <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row" style={{ color: device.onlineStatus === "Online" ? "#1DB954" : "red" }}>
-                          {device.onlineStatus}
-                        </TableCell>
-
-                        {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
-                        {/*                          {device.average_upload_speed} */}
-                        {/*                        </TableCell> */}
-                        {/*  */}
-                        {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
-                        {/*                          {device.average_download_speed} */}
-                        {/*                        </TableCell> */}
-                        {/*  */}
-                        {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
-                        {/*                          {device.average_gpu_usage} */}
-                        {/*                        </TableCell> */}
-                        {/*  */}
-                        {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
-                        {/*                          {device.average_cpu_usage} */}
-                        {/*                        </TableCell> */}
-                        {/*  */}
-                        {/*                        <TableCell  sx={{ borderBottomColor: "#424242" }} align='right'component="th" id={labelId} scope="row"> */}
-                        {/*                          {device.average_ram_usage} */}
-                        {/*                        </TableCell> */}
-                        {/*   */}
-
-                        {/* Render other device details here */}
-                      </TableRow>
-                    );
-                  })}
+                      return (
+                        <TableRow
+                          key={device ? device.device_number : `skeleton-${index}`}
+                          hover
+                          onClick={(event) => handleClick(event, device?.device_number)}
+                          role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          selected={isItemSelected}
+                        >
+                          <TableCell sx={{ borderBottomColor: "#424242" }} padding="checkbox">
+                            {loading ? (
+                              <Skeleton variant="rectangular" width={24} height={24} />
+                            ) : (
+                              <Checkbox
+                                color="primary"
+                                checked={isItemSelected}
+                                inputProps={{ 'aria-labelledby': labelId }}
+                              />
+                            )}
+                          </TableCell>
+                          <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
+                            {loading ? (
+                              <Skeleton variant="text" width={120} />
+                            ) : (
+                              device.device_name
+                            )}
+                          </TableCell>
+                          <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
+                            {loading ? (
+                              <Skeleton variant="text" width={120} />
+                            ) : (
+                              device.ip_address
+                            )}
+                          </TableCell>
+                          <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
+                            {loading ? (
+                              <Skeleton variant="text" width={80} />
+                            ) : (
+                              device.storage_capacity_gb
+                            )}
+                          </TableCell>
+                          <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row" style={{ color: device?.onlineStatus === "Online" ? "#1DB954" : "red" }}>
+                            {loading ? (
+                              <Skeleton variant="text" width={60} />
+                            ) : (
+                              device.onlineStatus
+                            )}
+                          </TableCell>
+                          {/* Add other TableCell components for additional device details */}
+                        </TableRow>
+                      );
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>
