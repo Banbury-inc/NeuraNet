@@ -180,6 +180,7 @@ export default function SignIn() {
         if (result === 'login failed') {
           console.log('Result: Login failed.');
           setincorrect_login(true);
+          setLoading(false);
         }
         else {
           console.log('Result: Login failed.');
@@ -267,13 +268,15 @@ export default function SignIn() {
               label="Username"
               name="email"
               autoComplete="email"
-              size='small'
+              size='medium'
               autoFocus
               InputProps={{
-                style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+                // style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+
               }}
               InputLabelProps={{
-                style: { fontSize: '1.3rem' }, // Adjusts the label font size
+                required: false, // Remove the asterisk
+                // style: { fontSize: '1.7rem' }, // Adjusts the label font size
               }}
             />
             <TextField
@@ -283,14 +286,15 @@ export default function SignIn() {
               name="password"
               label="Password"
               type="password"
-              size='small'
+              size='medium'
               id="password"
               autoComplete="current-password"
               InputProps={{
-                style: { fontSize: '1.7rem' }, // Adjusts text font size inside the input box
+                // style: { fontSize: '1.3rem' }, // Adjusts text font size inside the input box
               }}
               InputLabelProps={{
-                style: { fontSize: '1.3rem' }, // Adjusts the label font size
+                required: false, // Remove the asterisk
+                // style: { fontSize: '1.3rem' }, // Adjusts the label font size
               }}
 
             />

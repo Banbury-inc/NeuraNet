@@ -34,7 +34,7 @@ const { spawn } = require("child_process");
 interface Device {
   device_number: number;
   device_name: string;
-  storage_capacity_GB: any;
+  storage_capacity_gb: any;
   average_cpu_usage: number;
   average_download_speed: number;
   average_gpu_usage: number;
@@ -102,13 +102,13 @@ export default function DevicesTable() {
         // Processing data for the frontend, assuming your API returns data directly usable by the UI
         const roundedDevices = data.devices.map(device => ({
           ...device,
-          average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
-          storage_capacity_GB: formatBytes(device.storage_capacity_GB),
-          average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
-          average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
-          average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
-          average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
-          date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
+          // average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
+          storage_capacity_gb: formatBytes(device.storage_capacity_gb),
+          // average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
+          // average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
+          // average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
+          // average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
+          // date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
           onlineStatus: device.online ? "Online" : "Offline"
         }));
 
@@ -151,13 +151,13 @@ export default function DevicesTable() {
           // Processing data for the frontend, assuming your API returns data directly usable by the UI
           const roundedDevices = data.devices.map(device => ({
             ...device,
-            average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
-            storage_capacity_GB: formatBytes(device.storage_capacity_GB),
-            average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
-            average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
-            average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
-            average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
-            date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
+            // average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
+            storage_capacity_gb: formatBytes(device.storage_capacity_gb),
+            // average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
+            // average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
+            // average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
+            // average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
+            // date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
             onlineStatus: device.online ? "Online" : "Offline"
           }));
 
@@ -350,7 +350,7 @@ export default function DevicesTable() {
                         </TableCell>
 
                         <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row">
-                          {device.storage_capacity_GB}
+                          {device.storage_capacity_gb}
                         </TableCell>
 
                         <TableCell sx={{ borderBottomColor: "#424242" }} align='left' component="th" id={labelId} scope="row" style={{ color: device.onlineStatus === "Online" ? "#1DB954" : "red" }}>
