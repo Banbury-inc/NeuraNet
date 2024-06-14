@@ -1,7 +1,11 @@
 
-import { app, BrowserWindow, ipcMain } from "electron";
+
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
 import * as path from "path";
 import * as url from "url";
+import { shell } from "electron";
+const fs = require('fs').promises;
+
 import { exec } from "child_process";
 const { spawn } = require("child_process");
 import axios from 'axios'; // Adjusted import for axios
@@ -120,7 +124,22 @@ ipcMain.on('update-username', (event, username) => {
   console.log('Updated username:', GlobalUsername);
 });
 
-
+// Handle 'open-file' event from Renderer process
+ipcMain.on('open-file', async (event, filePath) => {
+  try {
+    // Example: Check if file exists and open it
+    const fileExists = await fs.access(filePath);
+    if (fileExists) {
+      // Perform actions with the file here, e.g., open it
+      // Example: Open file dialog
+      shell.openPath(filePath);
+    } else {
+      dialog.showErrorBox('Error', `File '${filePath}' not found.`);
+    }
+  } catch (error) {
+    dialog.showErrorBox('Error', `Error accessing file '${filePath}`);
+  }
+});
 // Enable logging and disable sandbox for all processes:
 //
 //app.commandLine.appendSwitch('enable-logging');

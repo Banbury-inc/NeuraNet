@@ -1,10 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
+import os from 'os';
+import { ipcRenderer } from 'electron';
 import Stack from '@mui/material/Stack';
 import { exec } from "child_process";
+import { join } from 'path';
+import { shell } from 'electron';
 import axios from 'axios';
 import ButtonBase from '@mui/material/ButtonBase';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import { readdir, stat } from 'fs/promises';
 import Table from '@mui/material/Table';
 import DownloadIcon from '@mui/icons-material/Download';
 import TableBody from '@mui/material/TableBody';
@@ -419,9 +424,63 @@ export default function EnhancedTable() {
     }
     setSelected([]);
   };
-  const handleFileNameClick = (id: number) => {
-    console.log('clicked')
-  }
+  const handleFileNameClick = async (id: number) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected: readonly number[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+
+    const fileName = fileRows.find(file => file.id === id)?.fileName;
+    const newSelectedFileNames = newSelected
+      .map(id => fileRows.find(file => file.id === id)?.fileName)
+      .filter(name => name !== undefined) as string[];
+
+    console.log(newSelectedFileNames);
+
+    // Assuming the directory structure is based on `BCloud` in user's home directory
+    const directoryName = "BCloud";
+    const directoryPath = join(os.homedir(), directoryName);
+
+    let fileFound = false;
+    let filePath = '';
+
+    try {
+      const files = await readdir(directoryPath);
+
+      for (const file of files) {
+        const fullPath = join(directoryPath, file);
+        const fileStat = await stat(fullPath);
+
+        if (fileStat.isFile() && file === fileName) {
+          fileFound = true;
+          console.log(`File '${fileName}' found in directory.`);
+          filePath = fullPath;
+          break;
+        }
+      }
+
+      if (fileFound) {
+        // Send an IPC message to the main process to handle opening the file
+        console.log(`Opening file '${fileName}'...`);
+        shell.openPath(filePath);
+      } else {
+        console.error(`File '${fileName}' not found in directory.`);
+      }
+    } catch (err) {
+      console.error('Error searching for file:', err);
+    }
+  };
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected: readonly number[] = [];
