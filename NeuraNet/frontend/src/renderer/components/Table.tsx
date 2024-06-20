@@ -92,11 +92,10 @@ interface FileData {
   deviceName: string;
 }
 
-// Define head cells according to FileData
-const headCells = [
+const headCells: HeadCell[] = [
   { id: 'fileName', numeric: false, label: 'Name' },
   { id: 'fileSize', numeric: false, label: 'Size' },
-  { id: 'location', numeric: false, label: 'Location' },
+  { id: 'deviceName', numeric: false, label: 'Location' },
   { id: 'dateUploaded', numeric: true, label: 'Date Uploaded' },
 ];
 
@@ -189,6 +188,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -657,55 +657,6 @@ export default function EnhancedTable() {
           >{`${Math.round(props.value)}%`}</Typography>
         </Box>
       </Box>
-    );
-  }
-
-
-  function MyApp() {
-
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const [progress, setProgress] = useState(0);
-    const [trigger, setTrigger] = useState(false); // State to trigger re-renders
-    const timerRef = useRef<number | null>(null); // Ref to store timer
-
-    useEffect(() => {
-      timerRef.current = window.setInterval(() => {
-        setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
-        setTrigger((prevTrigger) => !prevTrigger); // Toggle trigger to force re-render
-      }, 1000);
-      return () => {
-        if (timerRef.current !== null) {
-          clearInterval(timerRef.current);
-        }
-      };
-    }, []);
-
-    const handleClick = async () => {
-
-      enqueueSnackbar('Downloading' + { selectedFileNames }, {
-        variant: 'default' as VariantType,
-        autoHideDuration: null, // Snackbar will not automatically close
-        action: (
-          <React.Fragment>
-            <CircularProgress value={progress} />
-            <Button color="inherit" size="small" onClick={handleClose}>
-              Close
-            </Button>
-          </React.Fragment>
-        ),
-      });
-
-      await handleDownloadClick();
-    };
-
-    const handleClose = () => {
-      closeSnackbar();
-    };
-
-    return (
-      <React.Fragment>
-        <Button variant='outlined' size='small' onClick={handleClick}>Download</Button>
-      </React.Fragment>
     );
   }
 
