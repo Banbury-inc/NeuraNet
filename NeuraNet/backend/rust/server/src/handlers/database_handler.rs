@@ -70,6 +70,8 @@ pub struct Files {
     #[serde(default)]
     pub file_priority: i64,
     #[serde(default)]
+    pub file_path: String,
+    #[serde(default)]
     pub original_device: String,
 }
 

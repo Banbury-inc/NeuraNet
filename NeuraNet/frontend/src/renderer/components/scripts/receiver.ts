@@ -72,6 +72,7 @@ interface FileInfo {
   Date_Uploaded: string;
   File_Size: number;
   File_Priority: number;
+  File_Path: string;
   Original_Device: string;
 }
 
@@ -425,7 +426,7 @@ function get_current_date_and_time(): string {
   return formattedDateTime;
 }
 
-function get_directory_info() {
+function old_get_directory_info() {
   const directoryName = "BCloud";
   const directoryPath = os.homedir() + `/${directoryName}`;
   const filesInfo: any[] = [];
@@ -456,6 +457,7 @@ function get_directory_info() {
         "date_uploaded": DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
         "file_size": stats.size,
         "file_priority": 5,
+        "file_path": filePath,
         "original_device": filename,
       };
       filesInfo.push(fileInfo);
@@ -464,6 +466,56 @@ function get_directory_info() {
 
   return filesInfo;
 }
+
+function get_directory_info() {
+  const directoryName = "BCloud";
+  const directoryPath = os.homedir() + `/${directoryName}`;
+  const filesInfo: any[] = [];
+
+  // Check if the directory exists, create if it does not and create a welcome text file
+  if (!fs.existsSync(directoryPath)) {
+    fs.mkdirSync(directoryPath, { recursive: true });
+    const welcomeFilePath = path.join(directoryPath, "welcome.txt");
+    fs.writeFileSync(welcomeFilePath,
+      "Welcome to Banbury Cloud! This is the directory that will contain all of the files " +
+      "that you would like to have in the cloud and streamed throughout all of your devices. " +
+      "You may place as many files in here as you would like, and they will appear on all of " +
+      "your other devices."
+    );
+  }
+
+  // Recursive function to get file info
+  function traverseDirectory(currentPath: string) {
+    const files = fs.readdirSync(currentPath);
+    for (const filename of files) {
+      const filePath = path.join(currentPath, filename);
+
+      // If it's a directory, recurse into it
+      if (fs.statSync(filePath).isDirectory()) {
+        traverseDirectory(filePath);
+      } else {
+        // Get file stats
+        const stats = fs.statSync(filePath);
+        const fileInfo = {
+          "file_name": filename,
+          "file_path": filePath,
+          "date_uploaded": DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
+          "file_size": stats.size,
+          "file_priority": 5,
+          "original_device": filename,
+        };
+        filesInfo.push(fileInfo);
+      }
+    }
+  }
+
+  // Start traversing from the root directory
+  traverseDirectory(directoryPath);
+  console.log(filesInfo)
+  return filesInfo;
+}
+
+
 
 async function sendSmallDeviceInfo(sender_socket: net.Socket, device_info: SmallDeviceInfo): Promise<void> {
   const date_time: string = get_current_date_and_time();
