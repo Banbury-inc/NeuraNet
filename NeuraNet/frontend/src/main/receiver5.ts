@@ -74,6 +74,7 @@ interface FileInfo {
   File_Name: string;
   Date_Uploaded: string;
   File_Size: number;
+  File_Path: string;
   File_Priority: number;
   Original_Device: string;
 }
@@ -536,7 +537,7 @@ if (!fs.existsSync(CONFIG_FILE)) {
   fs.writeFileSync(CONFIG_FILE, config.toString());
 }
 
-function get_directory_info() {
+function old_get_directory_info() {
   const directoryName = "BCloud"
   const directoryPath = os.homedir() + `/${directoryName}`;
   const filesInfo: any[] = [];
@@ -576,7 +577,53 @@ function get_directory_info() {
   return filesInfo;
 }
 
+function get_directory_info() {
+  const directoryName = "BCloud";
+  const directoryPath = os.homedir() + `/${directoryName}`;
+  const filesInfo: any[] = [];
 
+  // Check if the directory exists, create if it does not and create a welcome text file
+  if (!fs.existsSync(directoryPath)) {
+    fs.mkdirSync(directoryPath, { recursive: true });
+    const welcomeFilePath = path.join(directoryPath, "welcome.txt");
+    fs.writeFileSync(welcomeFilePath,
+      "Welcome to Banbury Cloud! This is the directory that will contain all of the files " +
+      "that you would like to have in the cloud and streamed throughout all of your devices. " +
+      "You may place as many files in here as you would like, and they will appear on all of " +
+      "your other devices."
+    );
+  }
+
+  // Recursive function to get file info
+  function traverseDirectory(currentPath: string) {
+    const files = fs.readdirSync(currentPath);
+    for (const filename of files) {
+      const filePath = path.join(currentPath, filename);
+
+      // If it's a directory, recurse into it
+      if (fs.statSync(filePath).isDirectory()) {
+        traverseDirectory(filePath);
+      } else {
+        // Get file stats
+        const stats = fs.statSync(filePath);
+        const fileInfo = {
+          "file_name": filename,
+          "file_path": 1,
+          "date_uploaded": DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
+          "file_size": stats.size,
+          "file_priority": 5,
+          "original_device": filename,
+        };
+        filesInfo.push(fileInfo);
+      }
+    }
+  }
+
+  // Start traversing from the root directory
+  traverseDirectory(directoryPath);
+  console.log(filesInfo)
+  return filesInfo;
+}
 // function main(): Promise<void> {
 //   // const SERVER_HOST = '34.28.13.79'
 //   const SERVER_HOST = '0.0.0.0 '

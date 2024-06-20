@@ -88,6 +88,7 @@ interface FileData {
   fileName: string;
   dateUploaded: string;
   fileSize: string;
+  filePath: string;
   deviceID: string;
   deviceName: string;
 }
@@ -343,6 +344,7 @@ export default function EnhancedTable() {
             fileName: file["file_name"],
             // fileSize: file["File Size"],
             fileSize: formatBytes(file["file_size"]),
+            filePath: file["file_path"],
             dateUploaded: file["date_uploaded"],
             deviceID: device.device_number,
             deviceName: device.device_name
@@ -383,6 +385,7 @@ export default function EnhancedTable() {
               fileName: file["file_name"],
               // fileSize: file["File Size"],
               fileSize: formatBytes(file["file_size"]),
+              filePath: file["file_path"],
               dateUploaded: file["date_uploaded"],
               deviceID: device.device_number,
               deviceName: device.device_name
