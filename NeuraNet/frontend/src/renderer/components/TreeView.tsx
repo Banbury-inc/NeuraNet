@@ -12,12 +12,83 @@ import MovieOutlinedIcon from '@mui/icons-material/MovieOutlined';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import FolderIcon from '@mui/icons-material/Folder';
 import HomeIcon from '@mui/icons-material/Home';
+import axios from 'axios';
+import { useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useState } from 'react';
+
+// Simplified data interface to match your file structure
+interface FileData {
+  id: number;
+  fileName: string;
+  dateUploaded: string;
+  fileSize: string;
+  filePath: string;
+  deviceID: string;
+  deviceName: string;
+}
+
+
+function formatBytes(bytes: number, decimals: number = 2): string {
+  const [fileRows, setFileRows] = useState<FileData[]>([]); // State for storing fetched file data
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+const { username, first_name, last_name, devices, setFirstname, setLastname, setDevices, redirect_to_login, setredirect_to_login } = useAuth();
+console.log(username)
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get<{
+        devices: any[]
+        first_name: string;
+        last_name: string;
+        // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+      }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+      // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
+
+      // const fetchedFirstname = response.data.first_name;
+      // const fetchedLastname = response.data.last_name;
+      const { first_name, last_name, devices } = response.data;
+      const [fileRows, setFileRows] = useState<FileData[]>([]); // State for storing fetched file data
+      setFirstname(first_name);
+      setLastname(last_name);
+      const files = devices.flatMap((device, index) =>
+        device.files.map((file: any, fileIndex: number): FileData => ({
+          id: index * 1000 + fileIndex, // Generating unique IDs
+          fileName: file["file_name"],
+          fileSize: formatBytes(file["file_size"]),
+          filePath: file["file_path"],
+          dateUploaded: file["date_uploaded"],
+          deviceID: device.device_number,
+          deviceName: device.device_name
+        }))
+      );
+
+      setFileRows(files);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  fetchData();
+
+},
+
+  []);
+
 
 
 
 export default function CustomizedTreeView() {
   return (
-    <Box sx={{ width: '100%', height: '100%', mr: 4 }}> 
+    <Box sx={{ width: '100%', height: '100%', mr: 4 }}>
       <TreeView
         aria-label="file system navigator"
         defaultCollapseIcon={<ExpandMoreIcon />}
@@ -26,20 +97,20 @@ export default function CustomizedTreeView() {
       >
         <TreeItem nodeId="1" label={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <HomeIcon style={{ marginRight: 5 }} fontSize="inherit" />
+            <HomeIcon style={{ marginRight: 5 }} fontSize="inherit" />
             <Typography variant="inherit" sx={{ ml: 1, fontWeight: 'medium' }}>All files</Typography>
           </Box>
         }>
           <TreeItem nodeId="2" label={
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Folder style={{ marginRight: 5 }} fontSize="inherit" />
+              <Folder style={{ marginRight: 5 }} fontSize="inherit" />
               <Typography variant="inherit" sx={{ ml: 1 }}>chamonix</Typography>
             </Box>
           } />
         </TreeItem>
         <TreeItem nodeId="5" label={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <ArticleOutlinedIcon style={{ marginRight: 5 }} fontSize="inherit" />
+            <ArticleOutlinedIcon style={{ marginRight: 5 }} fontSize="inherit" />
             <Typography variant="inherit" sx={{ ml: 1, fontWeight: 'medium' }}>Documents</Typography>
           </Box>
         }>
@@ -57,7 +128,7 @@ export default function CustomizedTreeView() {
           }>
             <TreeItem nodeId="8" label={
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Folder style={{ marginRight: 5 }} fontSize="inherit" />
+                <Folder style={{ marginRight: 5 }} fontSize="inherit" />
                 <Typography variant="inherit" sx={{ ml: 1 }}>index.js</Typography>
               </Box>
             } />
@@ -65,7 +136,7 @@ export default function CustomizedTreeView() {
         </TreeItem>
         <TreeItem nodeId="3" label={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <MovieOutlinedIcon style={{ marginRight: 5 }} fontSize="inherit" />
+            <MovieOutlinedIcon style={{ marginRight: 5 }} fontSize="inherit" />
             <Typography variant="inherit" sx={{ ml: 1, fontWeight: 'medium' }}>Videos</Typography>
           </Box>
         }>
@@ -79,7 +150,7 @@ export default function CustomizedTreeView() {
         <TreeItem nodeId="9" label={
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
-              <AutoAwesomeIcon style={{ marginRight: 5 }} fontSize="inherit" />
+            <AutoAwesomeIcon style={{ marginRight: 5 }} fontSize="inherit" />
             <Typography variant="inherit" sx={{ ml: 1, fontWeight: 'medium' }}>AI</Typography>
           </Box>
         }>
