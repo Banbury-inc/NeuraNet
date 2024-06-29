@@ -41,49 +41,6 @@ function formatBytes(bytes: number, decimals: number = 2): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-const { username, first_name, last_name, devices, setFirstname, setLastname, setDevices, redirect_to_login, setredirect_to_login } = useAuth();
-console.log(username)
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await axios.get<{
-        devices: any[]
-        first_name: string;
-        last_name: string;
-        // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
-      }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
-      // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
-
-      // const fetchedFirstname = response.data.first_name;
-      // const fetchedLastname = response.data.last_name;
-      const { first_name, last_name, devices } = response.data;
-      const [fileRows, setFileRows] = useState<FileData[]>([]); // State for storing fetched file data
-      setFirstname(first_name);
-      setLastname(last_name);
-      const files = devices.flatMap((device, index) =>
-        device.files.map((file: any, fileIndex: number): FileData => ({
-          id: index * 1000 + fileIndex, // Generating unique IDs
-          fileName: file["file_name"],
-          fileSize: formatBytes(file["file_size"]),
-          filePath: file["file_path"],
-          dateUploaded: file["date_uploaded"],
-          deviceID: device.device_number,
-          deviceName: device.device_name
-        }))
-      );
-
-      setFileRows(files);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-  fetchData();
-
-},
-
-  []);
-
-
 
 
 export default function CustomizedTreeView() {

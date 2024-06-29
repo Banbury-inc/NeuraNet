@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef  } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Stack from '@mui/material/Stack';
 import { exec } from "child_process";
 import axios from 'axios';
@@ -62,7 +62,7 @@ import CircularProgress, {
   CircularProgressProps,
 } from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
-import delete_file from './scripts/delete'; 
+import delete_file from './scripts/delete';
 import upload_file from './scripts/upload';
 import DataManagementCard from './TreeView';
 import CustomizedTreeView from './TreeView';
@@ -119,13 +119,13 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     onRequestSort(event, property);
   };
 
-function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-  event.preventDefault();
-  console.info('You clicked a breadcrumb.');
-}
+  function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    event.preventDefault();
+    console.info('You clicked a breadcrumb.');
+  }
 
 
-    
+
   return (
 
     <TableHead>
@@ -161,7 +161,7 @@ function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
             </Breadcrumbs>
           </div>
         </TableCell>
-        </TableRow>
+      </TableRow>
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
@@ -232,7 +232,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-       </Typography>
+        </Typography>
       )}
       {numSelected > 0 ? (
         <Tooltip title="Delete">
@@ -271,46 +271,48 @@ export default function AI() {
       return file ? file.fileName : null;
     }).filter(fileName => fileName !== null); // Filter out any null values if a file wasn't found
   };
+  const [messages, setMessages] = useState([
+    { id: 0, text: 'Hello! How can I assist you today?', sender: 'bot' }
+  ]);
+  const handleApiCall = async () => {
+    const selectedFileNames = getSelectedFileNames();
 
-const handleApiCall = async () => {
-  const selectedFileNames = getSelectedFileNames();
+    // Prepare the request options for fetch
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Include other headers as needed
+      },
+      body: JSON.stringify({
+        files: selectedFileNames,
+      }),
+    };
 
-  // Prepare the request options for fetch
-  const requestOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      // Include other headers as needed
-    },
-    body: JSON.stringify({
-      files: selectedFileNames,
-    }),
+    try {
+      const response = await fetch('http://localhost:5000/request_file_test', requestOptions);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('API Response:', data);
+      // Handle your response here
+    } catch (error) {
+      console.error('API call error:', error);
+    }
   };
 
-  try {
-    const response = await fetch('http://localhost:5000/request_file_test', requestOptions);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    console.log('API Response:', data);
-    // Handle your response here
-  } catch (error) {
-    console.error('API call error:', error);
+
+  function formatBytes(bytes: number, decimals: number = 2): string {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
-};
-
-
-function formatBytes(bytes: number, decimals: number = 2): string {
-  if (bytes === 0) return '0 Bytes';
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-}
 
   const [Firstname, setFirstname] = useState<string>('');
   const [Lastname, setLastname] = useState<string>('');
@@ -320,17 +322,17 @@ function formatBytes(bytes: number, decimals: number = 2): string {
     const fetchData = async () => {
       try {
         const response = await axios.get<{
-          devices: any[] 
+          devices: any[]
           first_name: string;
           last_name: string;
-        // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+          // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
         }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
         // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
 
         const fetchedFirstname = response.data.first_name;
         const fetchedLastname = response.data.last_name;
-        setFirstname(fetchedFirstname); 
-        setLastname(fetchedLastname); 
+        setFirstname(fetchedFirstname);
+        setLastname(fetchedLastname);
         const files = response.data.devices.flatMap((device, index) =>
           device.files.map((file: any, fileIndex: number): FileData => ({
             id: index * 1000 + fileIndex, // Generating unique IDs
@@ -353,188 +355,85 @@ function formatBytes(bytes: number, decimals: number = 2): string {
 
   },
 
-  []);
+    []);
 
 
 
   useEffect(() => {
     const interval = setInterval(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get<{
-          devices: any[] 
-          first_name: string;
-          last_name: string;
-        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+      const fetchData = async () => {
+        try {
+          const response = await axios.get<{
+            devices: any[]
+            first_name: string;
+            last_name: string;
+          }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
 
-        const fetchedFirstname = response.data.first_name;
-        const fetchedLastname = response.data.last_name;
-        setFirstname(fetchedFirstname); 
-        setLastname(fetchedLastname); 
-        const files = response.data.devices.flatMap((device, index) =>
-          device.files.map((file: any, fileIndex: number): FileData => ({
-            id: index * 1000 + fileIndex, // Generating unique IDs
-            // id: device.id + fileIndex,
-            fileName: file["File Name"],
-            // fileSize: file["File Size"],
-            fileSize: formatBytes(file["File Size"]),
-            dateUploaded: file["Date Uploaded"],
-            deviceID: device.device_number,
-            deviceName: device.device_name
-          }))
-        );
+          const fetchedFirstname = response.data.first_name;
+          const fetchedLastname = response.data.last_name;
+          setFirstname(fetchedFirstname);
+          setLastname(fetchedLastname);
+          const files = response.data.devices.flatMap((device, index) =>
+            device.files.map((file: any, fileIndex: number): FileData => ({
+              id: index * 1000 + fileIndex, // Generating unique IDs
+              // id: device.id + fileIndex,
+              fileName: file["File Name"],
+              // fileSize: file["File Size"],
+              fileSize: formatBytes(file["File Size"]),
+              dateUploaded: file["Date Uploaded"],
+              deviceID: device.device_number,
+              deviceName: device.device_name
+            }))
+          );
 
-        setFileRows(files);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    finally {
-    setIsLoading(false); // Set loading to false once data is fetched or in case of an error
-    }
-    };
-    fetchData();
-  }, 1000); 
+          setFileRows(files);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+        finally {
+          setIsLoading(false); // Set loading to false once data is fetched or in case of an error
+        }
+      };
+      fetchData();
+    }, 1000);
 
-  return () => clearInterval(interval);
+    return () => clearInterval(interval);
   },
 
-  []);
+    []);
 
 
 
-  const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: keyof FileData,
-  ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = fileRows.map((n) => n.id);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly number[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
-    }
-    setSelected(newSelected);
-
-    const fileName = fileRows.find(file => file.id === id)?.fileName;
-    const deviceName = fileRows.find(file => file.id === id)?.deviceName;
-    const newSelectedFileNames = newSelected.map(id => fileRows.find(file => file.id === id)?.fileName).filter(name => name !== undefined) as string[];
-    const newSelectedDeviceNames = newSelected.map(id => fileRows.find(file => file.id === id)?.deviceName).filter(name => name !== undefined) as string[];
-    setSelectedFileNames(newSelectedFileNames);
-    setSelectedDeviceNames(newSelectedDeviceNames);
-    console.log(newSelectedFileNames)
-    console.log(selectedFileNames)
-
-  };
-
-
-  const [buttonText, setButtonText] = useState('Download');
-  const [selectedfiles, setSelectedFiles] = useState<readonly number[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const handleDownloadClick = async () => {
+  const [deleteloading, setdeleteLoading] = useState<boolean>(false);
+  const handleDeleteClick = async () => {
+    setdeleteLoading(true);
+    delete_file(selectedFileNames, selectedDeviceNames);
+    setdeleteLoading(false);
+    return;
+  }
+  const handleUploadClick = async () => {
     try {
-      setLoading(true);
 
-      if (selectedfiles.length === 0) {
-        setLoading(false);
-        return; // If no files are selected, exit the function
-      }
-
-
-      // const scriptPath = 'src/main/download.py'; // Update this to the path of your Python script
-      
       const env = process.env.NODE_ENV || 'development';
       let baseDir = '';
       let filename = '';
       let command = '';
-      let devbaseDir = 'python';
+      let devbaseDir = '';
       let prodbaseDir = path.join(process.resourcesPath, 'python');
       if (env === 'development') {
         baseDir = devbaseDir;
-        filename = 'python/prod-signin2.py';
+        filename = 'python/upload.py';
         command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
       } else if (env === 'production') {
         baseDir = prodbaseDir;
-        filename = 'prod-signin2.py';
+        filename = 'upload.py';
         command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
+
       }
- 
+      // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
 
-    const exactcommand  = path.join(baseDir, command);
-  const scriptPath = path.join(baseDir, filename);
-
-
-
-
-      exec(`${exactcommand} "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-        }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-        }
-        setLoading(false);
-      });
-    } catch (error) {
-      console.error('There was an error!', error);
-    }
-  };
-
-  const [deleteloading, setdeleteLoading] = useState<boolean>(false);
-  const handleDeleteClick = async () => {
-      setdeleteLoading(true);
-      delete_file(selectedFileNames, selectedDeviceNames);
-      setdeleteLoading(false);
-      return;
-  }
-  const handleUploadClick = async () => {
-    try{
-
-  const env = process.env.NODE_ENV || 'development';
-  let baseDir = '';
-  let filename = '';
-  let command = '';
-  let devbaseDir = '';
-  let prodbaseDir = path.join(process.resourcesPath, 'python');
-  if (env === 'development') {
-    baseDir = devbaseDir;
-    filename = 'python/upload.py';
-    command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-  } else if (env === 'production') {
-    baseDir = prodbaseDir;
-    filename = 'upload.py';
-    command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-  
-  }
-  // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
-
-    const exactcommand  = path.join(baseDir, command);
-  const scriptPath = path.join(baseDir, filename);
+      const exactcommand = path.join(baseDir, command);
+      const scriptPath = path.join(baseDir, filename);
 
 
 
@@ -558,8 +457,8 @@ function formatBytes(bytes: number, decimals: number = 2): string {
       });
     } catch (error) {
       console.error('There was an error!', error);
- 
-    } 
+
+    }
   };
 
 
@@ -583,113 +482,112 @@ function formatBytes(bytes: number, decimals: number = 2): string {
   // Calculate empty rows for pagination
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - fileRows.length) : 0;
 
-function stableSort<T>(array: T[], comparator: (a: T, b: T) => number): T[] {
-  return array
-    .map((el, index) => ({ el, index })) // Attach the original index to each element
-    .sort((a, b) => {
-      const order = comparator(a.el, b.el);
-      if (order !== 0) return order; // If elements are not equal, sort them according to `comparator`
-      return a.index - b.index; // If elements are equal, sort them according to their original position
-    })
-    .map(({ el }) => el); // Extract the sorted elements
-}
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key,
-): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
+  function stableSort<T>(array: T[], comparator: (a: T, b: T) => number): T[] {
+    return array
+      .map((el, index) => ({ el, index })) // Attach the original index to each element
+      .sort((a, b) => {
+        const order = comparator(a.el, b.el);
+        if (order !== 0) return order; // If elements are not equal, sort them according to `comparator`
+        return a.index - b.index; // If elements are equal, sort them according to their original position
+      })
+      .map(({ el }) => el); // Extract the sorted elements
   }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
 
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number },
-) {
-  return (
-    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: 'absolute',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography
-          variant="caption"
-          component="div"
-          color="text.secondary"
-        >{`${Math.round(props.value)}%`}</Typography>
+  function getComparator<Key extends keyof any>(
+    order: Order,
+    orderBy: Key,
+  ): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
+    return order === 'desc'
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  }
+
+  function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
+  }
+
+  function CircularProgressWithLabel(
+    props: CircularProgressProps & { value: number },
+  ) {
+    return (
+      <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+        <CircularProgress variant="determinate" {...props} />
+        <Box
+          sx={{
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            position: 'absolute',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Typography
+            variant="caption"
+            component="div"
+            color="text.secondary"
+          >{`${Math.round(props.value)}%`}</Typography>
+        </Box>
       </Box>
-    </Box>
-  );
-}
+    );
+  }
 
 
-function MyApp() {
+  function MyApp() {
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const [progress, setProgress] = useState(0);
-  const [trigger, setTrigger] = useState(false); // State to trigger re-renders
-  const [showAgents, setShowAgents] = useState(false); // State to trigger re-renders
-  const timerRef = useRef<number | null>(null); // Ref to store timer
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const [progress, setProgress] = useState(0);
+    const [trigger, setTrigger] = useState(false); // State to trigger re-renders
+    const [showAgents, setShowAgents] = useState(false); // State to trigger re-renders
+    const timerRef = useRef<number | null>(null); // Ref to store timer
 
-  useEffect(() => {
-    timerRef.current = window.setInterval(() => {
-      setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
-      setTrigger((prevTrigger) => !prevTrigger); // Toggle trigger to force re-render
-    }, 1000);
-    return () => {
-      if (timerRef.current !== null) {
-        clearInterval(timerRef.current);
-      }
+    useEffect(() => {
+      timerRef.current = window.setInterval(() => {
+        setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+        setTrigger((prevTrigger) => !prevTrigger); // Toggle trigger to force re-render
+      }, 1000);
+      return () => {
+        if (timerRef.current !== null) {
+          clearInterval(timerRef.current);
+        }
+      };
+    }, []);
+
+    const handleClick = async () => {
+
+      enqueueSnackbar('Downloading' + { selectedFileNames }, {
+        variant: 'default' as VariantType,
+        autoHideDuration: null, // Snackbar will not automatically close
+        action: (
+          <React.Fragment>
+            <CircularProgress value={progress} />
+            <Button color="inherit" size="small" onClick={handleClose}>
+              Close
+            </Button>
+          </React.Fragment>
+        ),
+      });
+
     };
-  }, []);
 
-  const handleClick = async () => {
+    const handleClose = () => {
+      closeSnackbar();
+    };
 
-     enqueueSnackbar('Downloading' + {selectedFileNames}, {
-      variant: 'default' as VariantType,
-      autoHideDuration: null, // Snackbar will not automatically close
-      action: (
-        <React.Fragment>
-          <CircularProgress value={progress} />
-          <Button color="inherit" size="small" onClick={handleClose}>
-            Close
-          </Button>
-        </React.Fragment>
-      ),
-    });
-
-    await handleDownloadClick();
-  };
-
-  const handleClose = () => {
-    closeSnackbar();
-  };
-
-  return (
-    <React.Fragment>
-      <Button variant='outlined' size='small' onClick={handleClick}>Download</Button>
-    </React.Fragment>
-  );
-}
+    return (
+      <React.Fragment>
+        <Button variant='outlined' size='small' onClick={handleClick}>Download</Button>
+      </React.Fragment>
+    );
+  }
 
 
 
@@ -698,12 +596,12 @@ function MyApp() {
 
 
   return (
-      // <Box sx={{ width: '100%', height: '100%', flexGrow: 1 , pl: 4, pr: 4, mt: 0, pt: 5 }}>
-      <Box sx={{ 
-      width: '100%', 
-      height: '100vh', 
-      display: 'flex', 
-      flexDirection: 'column', 
+    // <Box sx={{ width: '100%', height: '100%', flexGrow: 1 , pl: 4, pr: 4, mt: 0, pt: 5 }}>
+    <Box sx={{
+      width: '100%',
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
       justifyContent: 'space-between',
       pl: 4,
       pr: 4,
@@ -711,63 +609,69 @@ function MyApp() {
       pt: 5,
 
     }}>
-        <Stack spacing={2}>
-         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
-            <Grid item>
-          <Typography variant="h2" textAlign="left">
-            Athena
-          </Typography>
-            </Grid>
-
-           <Grid item>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-                <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
-                  <TaskBadge />
-                  <AccountMenuIcon />
-                </Stack>
-              </Box>
-            </Grid>
+      <Stack spacing={2}>
+        <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+          <Grid item>
+            <Typography variant="h2" textAlign="left">
+              Athena
+            </Typography>
           </Grid>
- 
+
+          <Grid item>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+              <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
+                <TaskBadge />
+                <AccountMenuIcon />
+              </Stack>
+            </Box>
+          </Grid>
+        </Grid>
+
+        <Card variant='outlined' sx={{ flexGrow: 0 }}>
+          <CardContent>
+            <Box sx={{ flex: 1, overflowY: 'auto', mt: 3 }}>
+              {messages.map(message => (
+                <Typography key={message.id} align={message.sender === 'bot' ? 'left' : 'right'} paragraph>
+                  {message.text}
+                </Typography>
+              ))}
+            </Box>
+          </CardContent>
+        </Card >
+
+      </Stack>
+
+      <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
+      </Stack>
 
 
-
-
-
-
-       </Stack>
-<Stack direction="row" spacing={0} sx={{ width: '100%' }}>
-
-       </Stack>
-
-
-    <Grid container alignItems={"flex-end"} sx={{mb: 4, pl: 20, pr: 20}}>
-    <Agents /> 
-    </Grid>
-
-    <Grid container alignItems={"flex-end"} sx={{mb: 4, pl: 20, pr: 20}}>
-         <TextField
-            fullWidth
-            label="Message Athena"
-            size='small'
-            InputProps={{
-              type: 'search',
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => console.log('Search icon clicked')}
-                    edge="end"
-                  >
-                    <SendIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-
-
-          />
+      <Grid container alignItems={"flex-end"} sx={{ mb: 4, pl: 20, pr: 20 }}>
+        {/* <Agents />  */}
       </Grid>
-      </Box>
+
+      <Grid container alignItems={"flex-end"} sx={{ mb: 4, pl: 20, pr: 20 }}>
+        <TextField
+          fullWidth
+          label="Message Athena"
+          size='small'
+          InputProps={{
+            type: 'search',
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => console.log('Search icon clicked')}
+                  edge="end"
+                >
+                  <SendIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+
+
+        />
+      </Grid>
+    </Box>
 
   );
 }
