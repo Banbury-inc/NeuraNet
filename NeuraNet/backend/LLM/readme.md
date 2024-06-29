@@ -27,3 +27,23 @@ Pruning: Remove unimportant connections in the model to reduce the number of
 parameters and computations.
 
 Distillation: Train a smaller model to mimic the behavior of a larger model,
+
+
+# CLI Commands That Work
+
+ ./llama-cli --interactive-first --model ./models/Llama3-8B.gguf
+
+
+# In order to distribute workload
+
+first we need to start the rpc server
+
+bin/rpc-server
+
+
+next, we need to run the main command and designate all of the rpc-serveer addresses
+
+bin/llama-cli -m ../models/Llama3-8B.gguf -p "Who is andre agassi?" -n 64 --r
+pc 0.0.0.0:50052 -ngl 99
+
+
