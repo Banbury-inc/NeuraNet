@@ -300,6 +300,7 @@ pub async fn update_devices(
         "devices.$.device_number": device_number,
         "devices.$.files": files_bson,
         "devices.$.date_added": date_added,
+        "devices.$.online": true,
     };
 
     println!("Checking if device already exists");

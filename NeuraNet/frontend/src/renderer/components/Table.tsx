@@ -79,6 +79,7 @@ import TaskBadge from './TaskBadge';
 interface Device {
   id: string;
   name: string;
+  online: boolean;
   files: File[];
 }
 
@@ -92,7 +93,7 @@ interface FileData {
   filePath: string;
   deviceID: string;
   deviceName: string;
-  helpers: string;
+  helpers: number;
   available: string;
 }
 
@@ -357,8 +358,8 @@ export default function EnhancedTable() {
             dateUploaded: file["date_uploaded"],
             deviceID: device.device_number,
             deviceName: device.device_name,
-            helpers: 'Download',
-            available: "Available"
+            helpers: 0,
+            available: device.online || 0 > 1 ? "Available" : "Unavailable",
           }))
         );
         // const filteredFiles = files.filter(file => file.filePath.startsWith(global_file_path || ''));
@@ -391,6 +392,8 @@ export default function EnhancedTable() {
         setFirstname(first_name);
         setLastname(last_name);
 
+        const helpersCount: Record<string, number> = {};
+
         const files = devices.flatMap((device, index) =>
           device.files.map((file: any, fileIndex: number): FileData => ({
             id: index * 1000 + fileIndex,
@@ -401,8 +404,8 @@ export default function EnhancedTable() {
             dateUploaded: file["date_uploaded"],
             deviceID: device.device_number,
             deviceName: device.device_name,
-            helpers: 'Macbook',
-            available: "Available"
+            helpers: 0,
+            available: device.online || 0 > 1 ? "Available" : "Unavailable",
           }))
         );
 
@@ -1121,15 +1124,17 @@ export default function EnhancedTable() {
                                   }} >{row.helpers}</TableCell>
                                 <TableCell
                                   padding="normal"
-                                  align="right" sx={{
-
+                                  align="right"
+                                  sx={{
                                     borderBottomColor: "#424242",
                                     whiteSpace: 'nowrap',
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
-                                  }} >{row.available}</TableCell>
-
-
+                                    color: row.available === "Available" ? '#1DB954' : row.available === "Unavailable" ? 'red' : 'inherit',  // Default color is 'inherit'
+                                  }}
+                                >
+                                  {row.available}
+                                </TableCell>
                                 <TableCell
 
                                   padding="normal"
