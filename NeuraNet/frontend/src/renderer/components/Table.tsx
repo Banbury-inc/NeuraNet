@@ -15,6 +15,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import TableBody from '@mui/material/TableBody';
 import LoadingButton from '@mui/lab/LoadingButton';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import DevicesIcon from '@mui/icons-material/Devices';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import { Skeleton } from '@mui/material';
@@ -138,39 +139,59 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   }
 
 
+  const { global_file_path, global_file_path_device } = useAuth();  // Assuming global_file_path is available via context
+
+  const pathSegments = global_file_path ? global_file_path.split('/').filter(Boolean) : []; // Split and remove empty segments safely
+
+  // Function to handle breadcrumb click, might need more logic to actually navigate
+  const handleBreadcrumbClick = (path: string) => {
+    console.info(`Navigate to: ${path}`);
+    // Set global_file_path or navigate logic here
+  };
 
   return (
-
     <TableHead>
       <TableRow>
-        <TableCell colSpan={headCells.length + 1} style={{ padding: 0 }}> {/* Ensure this TableCell spans all columns */}
-          <div role="presentation" onClick={handleClick} style={{ display: 'flex', width: '100%' }}>
+        <TableCell colSpan={headCells.length + 1} style={{ padding: 0 }}>
+          <div style={{ display: 'flex', width: '100%' }}>
             <Breadcrumbs aria-label="breadcrumb" style={{ flexGrow: 1 }}>
               <Link
                 underline="hover"
                 color="inherit"
-                href="/"
-                style={{ display: 'flex', alignItems: 'center' }}
-              >
-                <HomeIcon style={{ marginRight: 5 }} fontSize="inherit" />
-                Home
-              </Link>
-              <Link
-                underline="hover"
-                color="inherit"
-                href="/material-ui/getting-started/installation/"
-                style={{ display: 'flex', alignItems: 'center' }}
-              >
-                <WhatshotIcon style={{ marginRight: 5 }} fontSize="inherit" />
-                Core
-              </Link>
-              <Typography
-                color="text.primary"
+                href="#"
+                onClick={() => handleBreadcrumbClick('/')}
                 style={{ display: 'flex', alignItems: 'center' }}
               >
                 <GrainIcon style={{ marginRight: 5 }} fontSize="inherit" />
-                All Files
-              </Typography>
+                Core
+              </Link>
+              {global_file_path_device && (  // Only render if global_file_path_device has a value
+                <Link
+                  underline="hover"
+                  color="inherit"
+                  href="#"
+                  onClick={() => handleBreadcrumbClick(global_file_path_device)}  // Pass the device path to the handler
+                  style={{ display: 'flex', alignItems: 'center' }}
+                >
+                  <DevicesIcon style={{ marginRight: 5 }} fontSize="inherit" />
+                  {global_file_path_device}
+                </Link>
+              )}
+              {pathSegments.map((segment, index) => {
+                const pathUpToSegment = '/' + pathSegments.slice(0, index + 1).join('/');
+                return (
+                  <Link
+                    key={index}
+                    underline="hover"
+                    color="inherit"
+                    href="#"
+                    onClick={() => handleBreadcrumbClick(pathUpToSegment)}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                  >
+                    {segment}
+                  </Link>
+                );
+              })}
             </Breadcrumbs>
           </div>
         </TableCell>

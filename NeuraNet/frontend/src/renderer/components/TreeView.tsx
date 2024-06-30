@@ -72,7 +72,7 @@ function buildTree(files: FileData[]): FileData[] {
 }
 
 export default function CustomizedTreeView() {
-  const { global_file_path, username, setFirstname, setLastname, setGlobal_file_path } = useAuth();
+  const { global_file_path, global_file_path_device, username, setFirstname, setLastname, setGlobal_file_path, setGlobal_file_path_device } = useAuth();
   const [fileRows, setFileRows] = useState<FileData[]>([]);
 
   useEffect(() => {
@@ -126,6 +126,7 @@ export default function CustomizedTreeView() {
     const selectedNode = findNodeById(fileRows, nodeId);
     if (selectedNode) {
       setGlobal_file_path(selectedNode.filePath);
+      setGlobal_file_path_device(selectedNode.deviceName);
     }
   };
 

@@ -8,11 +8,13 @@ interface AuthContextType {
   devices: any[] | null;
   fileRows: any[];
   global_file_path: string | null;
+  global_file_path_device: string | null;
   setUsername: (username: string | null) => void;
   setPassword: (password: string | null) => void;
   setFirstname: (first_name: string | null) => void;
   setLastname: (last_name: string | null) => void;
   setGlobal_file_path: (global_file_path: string | null) => void;
+  setGlobal_file_path_device: (global_file_path_device: string | null) => void;
   setFileRows: (fileRows: any[]) => void;
   setDevices: (devices: any[] | null) => void;
   isAuthenticated: boolean; // Change the type to boolean directly
@@ -38,6 +40,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [devices, setDev] = useState<any[] | null>(null);
   const [fileRows, setFiles] = useState<any[]>([]);
   const [global_file_path, setFile] = useState<string | null>(null);
+  const [global_file_path_device, setFile_Device] = useState<string | null>(null);
   const [redirect_to_login, setredirect_to_login] = useState<boolean>(false); // Add redirect_to_login state
   const [run_receiver, setrun_receiver] = useState<boolean>(false); // Add redirect_to_login state
   const [files_is_loading, setFilesIsLoading] = useState<boolean>(false); // Add redirect_to_login state
@@ -53,6 +56,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
   const setGlobal_file_path = (global_file_path: string | null) => {
     setFile(global_file_path);
+  };
+  const setGlobal_file_path_device = (global_file_path_device: string | null) => {
+    setFile_Device(global_file_path_device);
   };
   const setLastname = (last_name: string | null) => {
     setLast(last_name);
@@ -79,6 +85,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       devices,
       fileRows,
       global_file_path,
+      global_file_path_device,
       files_is_loading,
       setUsername,
       setPassword,
@@ -87,6 +94,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setDevices,
       setFileRows,
       setGlobal_file_path,
+      setGlobal_file_path_device,
       setFilesIsLoading,
       isAuthenticated,
       redirect_to_login,
