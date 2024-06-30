@@ -1043,7 +1043,15 @@ export default function EnhancedTable() {
                                     />
                                   ) : null}
                                 </TableCell>
-                                <TableCell component="th" sx={{ borderBottomColor: "#424242" }} id={labelId} scope="row" padding="none">
+                                <TableCell
+                                  component="th" sx={{
+                                    borderBottomColor: "#424242",
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    mr: 2
+                                  }}
+                                  id={labelId} scope="row" padding="none">
                                   <ButtonBase // Make filename text clickable
                                     onClick={(event) => {
                                       event.stopPropagation(); // Prevent row click event propagation
@@ -1054,9 +1062,33 @@ export default function EnhancedTable() {
                                     {row.fileName}
                                   </ButtonBase>
                                 </TableCell>
-                                <TableCell align="left" sx={{ borderBottomColor: "#424242" }}>{row.fileSize}</TableCell>
-                                <TableCell align="left" sx={{ borderBottomColor: "#424242" }} >{row.deviceName}</TableCell>
-                                <TableCell align="right" sx={{ borderBottomColor: "#424242" }} >{row.dateUploaded}</TableCell>
+                                <TableCell
+                                  align="left"
+                                  padding="normal"
+
+                                  sx={{
+                                    borderBottomColor: "#424242",
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                  }}>{row.fileSize}</TableCell>
+                                <TableCell align="left" sx={{
+                                  borderBottomColor: "#424242",
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+
+
+                                }} >{row.deviceName}</TableCell>
+                                <TableCell
+                                  padding="normal"
+                                  align="right" sx={{
+
+                                    borderBottomColor: "#424242",
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                  }} >{row.dateUploaded}</TableCell>
                               </TableRow>
                             );
                           })
