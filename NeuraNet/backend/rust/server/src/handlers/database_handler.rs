@@ -62,7 +62,11 @@ pub struct Devices {
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Files {
     #[serde(default)]
+    pub file_type: String,
+    #[serde(default)]
     pub file_name: String,
+    #[serde(default)]
+    pub file_path: String,
     #[serde(default)]
     pub date_uploaded: String,
     #[serde(default)]
@@ -70,7 +74,7 @@ pub struct Files {
     #[serde(default)]
     pub file_priority: i64,
     #[serde(default)]
-    pub file_path: String,
+    pub file_parent: String,
     #[serde(default)]
     pub original_device: String,
 }

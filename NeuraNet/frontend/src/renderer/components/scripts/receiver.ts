@@ -68,6 +68,7 @@ interface SmallDeviceInfo {
 }
 
 interface FileInfo {
+  File_Type: string;
   File_Name: string;
   Date_Uploaded: string;
   File_Size: number;
@@ -485,33 +486,36 @@ function get_directory_info() {
   }
 
   // Recursive function to get file info
-  function traverseDirectory(currentPath: string) {
+  function traverseDirectory(currentPath: any) {
     const files = fs.readdirSync(currentPath);
     for (const filename of files) {
       const filePath = path.join(currentPath, filename);
+      const stats = fs.statSync(filePath);
+
+      // Determine if it is a file or directory and push appropriate info to filesInfo
+      const fileInfo = {
+        "file_type": stats.isDirectory() ? "directory" : "file",
+        "file_name": filename,
+        "file_path": filePath,
+        "date_uploaded": DateTime.fromMillis(stats.birthtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
+        "date_modified": DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
+        "file_size": stats.isDirectory() ? 0 : stats.size,  // Size is 0 for directories
+        "file_priority": 1,
+        "file_parent": path.dirname(filePath),
+        "original_device": os.hostname(),  // Assuming the current device name as the original device
+      };
+      filesInfo.push(fileInfo);
 
       // If it's a directory, recurse into it
-      if (fs.statSync(filePath).isDirectory()) {
+      if (stats.isDirectory()) {
         traverseDirectory(filePath);
-      } else {
-        // Get file stats
-        const stats = fs.statSync(filePath);
-        const fileInfo = {
-          "file_name": filename,
-          "file_path": filePath,
-          "date_uploaded": DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
-          "file_size": stats.size,
-          "file_priority": 5,
-          "original_device": filename,
-        };
-        filesInfo.push(fileInfo);
       }
     }
   }
 
   // Start traversing from the root directory
   traverseDirectory(directoryPath);
-  console.log(filesInfo)
+  console.log(filesInfo);
   return filesInfo;
 }
 

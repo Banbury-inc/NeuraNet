@@ -55,17 +55,53 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) -> io::Re
     let writer = Arc::new(Mutex::new(writer));
     let mut buffer = [0; 4096];
     loop {
-        let bytes_read;
-        {
-            // bytes_read = reader.read(&mut buffer).await?;
-            bytes_read = read_bytes(&mut reader, &mut buffer).await?;
-        }
+        let bytes_read = read_bytes(&mut reader, &mut buffer).await?;
         if bytes_read == 0 {
             return Ok(());
         }
-        // Convert the message to a String
+
         let message: String = String::from_utf8_lossy(&buffer[..bytes_read]).to_string();
         println!("Received message: {}", message);
+
+        let end_of_header = "END_OF_HEADER";
+
+        if message.contains(end_of_header) {
+            let parts: Vec<&str> = message.split(end_of_header).collect();
+            let header = parts[0];
+            let buffer_str = parts[1];
+            println!("Header: {}", header);
+
+            let header_parts: Vec<&str> = header.split(':').collect();
+            if header_parts.len() < 4 {
+                println!("Malformed header: {}", header);
+                continue;
+            }
+            let file_type = header_parts[0];
+
+            if file_type == "SMALL_PING_REQUEST_RESPONSE" {
+                let mut complete_data = buffer_str.to_string();
+                loop {
+                    let bytes_read = reader.read(&mut buffer).await?;
+                    if bytes_read == 0 {
+                        break;
+                    }
+                    let data_chunk = String::from_utf8_lossy(&buffer[..bytes_read]);
+                    complete_data.push_str(&data_chunk);
+
+                    if complete_data.contains("END_OF_JSON") {
+                        println!("complete message: {}", complete_data);
+                        break;
+                    }
+                }
+                // Process the complete data
+                ping_handler::process_small_ping_request_response(
+                    Arc::clone(&writer),
+                    &complete_data,
+                )
+                .await;
+                continue;
+            }
+        }
 
         // Process the message
         process_message(
