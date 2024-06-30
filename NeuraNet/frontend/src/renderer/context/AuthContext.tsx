@@ -7,10 +7,12 @@ interface AuthContextType {
   last_name: string | null;
   devices: any[] | null;
   fileRows: any[];
+  global_file_path: string | null;
   setUsername: (username: string | null) => void;
   setPassword: (password: string | null) => void;
   setFirstname: (first_name: string | null) => void;
   setLastname: (last_name: string | null) => void;
+  setGlobal_file_path: (global_file_path: string | null) => void;
   setFileRows: (fileRows: any[]) => void;
   setDevices: (devices: any[] | null) => void;
   isAuthenticated: boolean; // Change the type to boolean directly
@@ -35,6 +37,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [last_name, setLast] = useState<string | null>(null);
   const [devices, setDev] = useState<any[] | null>(null);
   const [fileRows, setFiles] = useState<any[]>([]);
+  const [global_file_path, setFile] = useState<string | null>(null);
   const [redirect_to_login, setredirect_to_login] = useState<boolean>(false); // Add redirect_to_login state
   const [run_receiver, setrun_receiver] = useState<boolean>(false); // Add redirect_to_login state
   const [files_is_loading, setFilesIsLoading] = useState<boolean>(false); // Add redirect_to_login state
@@ -47,6 +50,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
   const setFirstname = (first_name: string | null) => {
     setFirst(first_name);
+  };
+  const setGlobal_file_path = (global_file_path: string | null) => {
+    setFile(global_file_path);
   };
   const setLastname = (last_name: string | null) => {
     setLast(last_name);
@@ -72,6 +78,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       last_name,
       devices,
       fileRows,
+      global_file_path,
       files_is_loading,
       setUsername,
       setPassword,
@@ -79,6 +86,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setLastname,
       setDevices,
       setFileRows,
+      setGlobal_file_path,
       setFilesIsLoading,
       isAuthenticated,
       redirect_to_login,

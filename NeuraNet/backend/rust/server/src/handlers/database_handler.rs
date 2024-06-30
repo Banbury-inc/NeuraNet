@@ -19,7 +19,9 @@ pub struct Server {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Users {
+    #[serde(default)]
     pub _id: ObjectId,
+    #[serde(default)]
     pub username: String,
     #[serde(default)]
     pub first_name: String,
@@ -81,11 +83,17 @@ pub struct Files {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UsageStats {
+    #[serde(default)]
     pub upload_network_speed: f64,
+    #[serde(default)]
     pub download_network_speed: f64,
+    #[serde(default)]
     pub gpu_usage: f64,
+    #[serde(default)]
     pub cpu_usage: f64,
+    #[serde(default)]
     pub ram_usage: f64,
+    #[serde(default)]
     pub timestamp: String,
 }
 
@@ -163,7 +171,7 @@ pub async fn get_total_requests_processed() -> Result<Option<i64>> {
 
 pub async fn initialize() -> Result<()> {
     let client = get_client().await?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
 
     let mut cursor = collection.find(None, None).await?;
 
@@ -245,7 +253,7 @@ pub async fn update_number_of_requests_processed() -> mongodb::error::Result<()>
 
 pub async fn get_user(user: &str) -> mongodb::error::Result<Option<Users>> {
     let client = get_client().await?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
 
     let result = collection.find_one(doc! { "username": user }, None).await?;
 
@@ -254,7 +262,7 @@ pub async fn get_user(user: &str) -> mongodb::error::Result<Option<Users>> {
 
 pub async fn get_username(user: &str) -> mongodb::error::Result<Option<Users>> {
     let client = get_client().await?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
 
     let result = collection.find_one(doc! { "username": user }, None).await?;
 
@@ -263,7 +271,7 @@ pub async fn get_username(user: &str) -> mongodb::error::Result<Option<Users>> {
 
 pub async fn get_devices(user: &str) -> mongodb::error::Result<Option<Vec<Devices>>> {
     let client = get_client().await?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
 
     let result = collection.find_one(doc! { "username": user }, None).await?;
     let devices = result.map(|user| user.devices);
@@ -280,7 +288,7 @@ pub async fn update_devices(
     date_added: &str,
 ) -> mongodb::error::Result<Option<Users>> {
     let client = get_client().await?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
 
     let result = collection.find_one(doc! { "username": user }, None).await?;
 
@@ -343,7 +351,7 @@ pub async fn append_device_info(
 ) -> mongodb::error::Result<Option<Users>> {
     println!("Appending device info for user: {}", user);
     let client = get_client().await?;
-    let collection: Collection<Users> = client.database("myDatabase").collection("users-dev");
+    let collection: Collection<Users> = client.database("myDatabase").collection("users");
 
     let files_bson = bson::to_bson(&files).map_err(|e| mongodb::error::Error::from(e))?;
 
