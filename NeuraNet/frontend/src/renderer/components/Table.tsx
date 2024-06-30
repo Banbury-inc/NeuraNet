@@ -86,17 +86,23 @@ interface Device {
 interface FileData {
   id: number;
   fileName: string;
+  kind: string;
   dateUploaded: string;
   fileSize: string;
   filePath: string;
   deviceID: string;
   deviceName: string;
+  helpers: string;
+  available: string;
 }
 
 const headCells: HeadCell[] = [
   { id: 'fileName', numeric: false, label: 'Name' },
   { id: 'fileSize', numeric: false, label: 'Size' },
+  { id: 'dateUploaded', numeric: false, label: 'Kind' },
   { id: 'deviceName', numeric: false, label: 'Location' },
+  { id: 'helpers', numeric: true, label: 'Helpers' },
+  { id: 'available', numeric: true, label: 'Status' },
   { id: 'dateUploaded', numeric: true, label: 'Date Uploaded' },
 ];
 
@@ -345,11 +351,14 @@ export default function EnhancedTable() {
             // id: device.id + fileIndex,
             fileName: file["file_name"],
             // fileSize: file["File Size"],
+            kind: file["kind"],
             fileSize: formatBytes(file["file_size"]),
             filePath: file["file_path"],
             dateUploaded: file["date_uploaded"],
             deviceID: device.device_number,
-            deviceName: device.device_name
+            deviceName: device.device_name,
+            helpers: 'Download',
+            available: "Available"
           }))
         );
         // const filteredFiles = files.filter(file => file.filePath.startsWith(global_file_path || ''));
@@ -387,10 +396,13 @@ export default function EnhancedTable() {
             id: index * 1000 + fileIndex,
             fileName: file["file_name"],
             fileSize: formatBytes(file["file_size"]),
+            kind: file["kind"],
             filePath: file["file_path"],
             dateUploaded: file["date_uploaded"],
             deviceID: device.device_number,
-            deviceName: device.device_name
+            deviceName: device.device_name,
+            helpers: 'Macbook',
+            available: "Available"
           }))
         );
 
@@ -1008,6 +1020,15 @@ export default function EnhancedTable() {
                             <TableCell>
                               <Skeleton variant="text" width="100%" />
                             </TableCell>
+                            <TableCell>
+                              <Skeleton variant="text" width="100%" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton variant="text" width="100%" />
+                            </TableCell>
+
+
+
                           </TableRow>
                         ))
                       ) : (
@@ -1079,7 +1100,16 @@ export default function EnhancedTable() {
                                   textOverflow: 'ellipsis',
 
 
+                                }} >{row.kind}</TableCell>
+                                <TableCell align="left" sx={{
+                                  borderBottomColor: "#424242",
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+
+
                                 }} >{row.deviceName}</TableCell>
+
                                 <TableCell
                                   padding="normal"
                                   align="right" sx={{
@@ -1088,7 +1118,33 @@ export default function EnhancedTable() {
                                     whiteSpace: 'nowrap',
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
+                                  }} >{row.helpers}</TableCell>
+                                <TableCell
+                                  padding="normal"
+                                  align="right" sx={{
+
+                                    borderBottomColor: "#424242",
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                  }} >{row.available}</TableCell>
+
+
+                                <TableCell
+
+                                  padding="normal"
+                                  align="right" sx={{
+
+                                    borderBottomColor: "#424242",
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
                                   }} >{row.dateUploaded}</TableCell>
+
+
+
+
+
                               </TableRow>
                             );
                           })

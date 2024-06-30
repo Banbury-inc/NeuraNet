@@ -79,6 +79,8 @@ pub struct Files {
     pub file_parent: String,
     #[serde(default)]
     pub original_device: String,
+    #[serde(default)]
+    pub kind: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

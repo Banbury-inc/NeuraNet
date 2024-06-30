@@ -70,6 +70,7 @@ interface SmallDeviceInfo {
 interface FileInfo {
   File_Type: string;
   File_Name: string;
+  Kind: string;
   Date_Uploaded: string;
   File_Size: number;
   File_Priority: number;
@@ -484,7 +485,60 @@ function get_directory_info() {
       "your other devices."
     );
   }
-
+  function getFileKind(filename: string) {
+    const ext = path.extname(filename).toLowerCase();
+    const fileTypes: { [key: string]: string } = {
+      '.png': 'image',
+      '.jpg': 'image',
+      '.JPG': 'image',
+      '.jpeg': 'image',
+      '.gif': 'image',
+      '.bmp': 'image',
+      '.svg': 'image',
+      '.mp4': 'video',
+      '.mov': 'video',
+      '.webm': 'video',
+      '.avi': 'video',
+      '.mkv': 'video',
+      '.wmv': 'video',
+      '.flv': 'video',
+      '.mp3': 'audio',
+      '.wav': 'audio',
+      '.aac': 'audio',
+      '.flac': 'audio',
+      '.ogg': 'audio',
+      '.wma': 'audio',
+      '.pdf': 'document',
+      '.doc': 'document',
+      '.docx': 'document',
+      '.xls': 'document',
+      '.xlsx': 'document',
+      '.ppt': 'document',
+      '.pptx': 'document',
+      '.txt': 'text',
+      '.csv': 'data',
+      '.json': 'data',
+      '.xml': 'data',
+      '.zip': 'archive',
+      '.rar': 'archive',
+      '.7z': 'archive',
+      '.tar': 'archive',
+      '.gz': 'archive',
+      '.exe': 'executable',
+      '.dll': 'executable',
+      '.sh': 'script',
+      '.cpp': 'script',
+      '.ts': 'script',
+      '.bat': 'script',
+      '.rs': 'script',
+      '.py': 'script',
+      '.js': 'script',
+      '.html': 'web',
+      '.css': 'web',
+      // Add more file extensions as needed
+    };
+    return fileTypes[ext] || 'unknown';
+  }
   // Recursive function to get file info
   function traverseDirectory(currentPath: any) {
     const files = fs.readdirSync(currentPath);
@@ -503,6 +557,8 @@ function get_directory_info() {
         "file_priority": 1,
         "file_parent": path.dirname(filePath),
         "original_device": os.hostname(),  // Assuming the current device name as the original device
+        "kind": stats.isDirectory() ? 'directory' : getFileKind(filename),
+
       };
       filesInfo.push(fileInfo);
 
