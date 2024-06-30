@@ -12,7 +12,9 @@ import FolderIcon from '@mui/icons-material/Folder';
 import ImageIcon from '@mui/icons-material/Image';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
+import DevicesIcon from '@mui/icons-material/Devices';
 import DescriptionIcon from '@mui/icons-material/Description';
+import GrainIcon from '@mui/icons-material/Grain';
 import { InsertDriveFile } from '@mui/icons-material';
 
 
@@ -34,9 +36,10 @@ interface FileData {
 
 function getIconForKind(kind: string) {
   switch (kind) {
+    case 'Core':
+      return <GrainIcon style={{ marginRight: 5 }} fontSize="inherit" />
     case 'Folder':
       return <FolderIcon style={{ marginRight: 5 }} fontSize="inherit" />
-
     case 'Image':
       return <ImageIcon style={{ marginRight: 5 }} fontSize="inherit" />
     case 'Video':
@@ -46,7 +49,7 @@ function getIconForKind(kind: string) {
     case 'Document':
       return <DescriptionIcon style={{ marginRight: 5 }} fontSize="inherit" />
     default:
-      return <InsertDriveFileIcon style={{ marginRight: 5 }} fontSize="inherit" />
+      return <DevicesIcon style={{ marginRight: 5 }} fontSize="inherit" />
   }
 }
 function formatBytes(bytes: number, decimals: number = 2): string {
@@ -62,6 +65,23 @@ function buildTree(files: FileData[]): FileData[] {
   const deviceMap = new Map<string, FileData>();
   const roots: FileData[] = [];
 
+  // Create the "Core" node that will act as the parent for all device nodes
+  const coreNode: FileData = {
+    id: 'core',
+    fileType: 'directory',
+    fileName: 'Core',
+    dateUploaded: '',
+    fileSize: '',
+    filePath: '',
+    kind: 'Core',
+    fileParent: '',
+    deviceID: '',
+    deviceName: '',
+    children: [],  // Explicitly initializing as an empty array
+    original_device: '',
+  };
+
+  // Iterate over files to create device nodes and populate the tree
   files.forEach(file => {
     if (!deviceMap.has(file.original_device)) {
       const deviceNode: FileData = {
@@ -72,36 +92,38 @@ function buildTree(files: FileData[]): FileData[] {
         fileSize: '',
         filePath: '',
         kind: file.kind,
-        fileParent: '',
+        fileParent: 'core',  // Parent set to 'core' for all device nodes
         deviceID: file.deviceID,
         deviceName: file.deviceName,
-        children: [],
+        children: [],  // Explicitly initializing as an empty array
         original_device: file.original_device,
       };
       deviceMap.set(file.original_device, deviceNode);
-      roots.push(deviceNode);
+      coreNode.children!.push(deviceNode);  // Safely add device nodes under the "Core" node
     }
   });
 
+  // Iterate over files again to assign files to the correct parent node
   files.forEach(file => {
     const deviceNode = deviceMap.get(file.original_device);
     if (deviceNode) {
-      const parent = files.find(f => f.filePath === file.fileParent);
-      if (parent) {
-        parent.children = parent.children || [];
-        parent.children.push(file);
-      } else {
-        deviceNode.children?.push(file);
-      }
+      // Find parent by file path or default to the device node
+      const parent = files.find(f => f.filePath === file.fileParent) || deviceNode;
+      parent.children = parent.children || [];  // Ensure children is defined
+      parent.children.push(file);  // Push file to the parent's children array
     }
   });
 
+  roots.push(coreNode);  // Add the "Core" node as the only root
   return roots;
 }
+
+
 
 export default function CustomizedTreeView() {
   const { global_file_path, global_file_path_device, username, setFirstname, setLastname, setGlobal_file_path, setGlobal_file_path_device } = useAuth();
   const [fileRows, setFileRows] = useState<FileData[]>([]);
+  const [expanded, setExpanded] = useState<string[]>(['core']);
 
   useEffect(() => {
     const fetchData = async () => {
