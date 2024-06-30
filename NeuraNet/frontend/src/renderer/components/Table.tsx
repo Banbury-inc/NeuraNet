@@ -406,7 +406,7 @@ export default function EnhancedTable() {
   }, [username, setFirstname, setLastname]);
 
   useEffect(() => {
-    const pathToShow = global_file_path || '/home/mmills/BCloud/Screencasts';
+    const pathToShow = global_file_path || '/home/mmills/BCloud';
     const filteredFiles = allFiles.filter(file => file.filePath.startsWith(pathToShow));
     setFileRows(filteredFiles);
   }, [global_file_path, allFiles]);
