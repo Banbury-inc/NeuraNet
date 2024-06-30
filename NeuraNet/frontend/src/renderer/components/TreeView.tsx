@@ -7,6 +7,15 @@ import Folder from '@mui/icons-material/Folder';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import FolderIcon from '@mui/icons-material/Folder';
+import ImageIcon from '@mui/icons-material/Image';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import AudiotrackIcon from '@mui/icons-material/Audiotrack';
+import DescriptionIcon from '@mui/icons-material/Description';
+import { InsertDriveFile } from '@mui/icons-material';
+
+
 
 interface FileData {
   id: string;
@@ -16,12 +25,30 @@ interface FileData {
   fileSize: string;
   filePath: string;
   fileParent: string;
+  kind: string;
   deviceID: string;
   deviceName: string;
   children?: FileData[];
   original_device: string;
 }
 
+function getIconForKind(kind: string) {
+  switch (kind) {
+    case 'Folder':
+      return <FolderIcon style={{ marginRight: 5 }} fontSize="inherit" />
+
+    case 'Image':
+      return <ImageIcon style={{ marginRight: 5 }} fontSize="inherit" />
+    case 'Video':
+      return <VideocamIcon style={{ marginRight: 5 }} fontSize="inherit" />
+    case 'Audio':
+      return <AudiotrackIcon style={{ marginRight: 5 }} fontSize="inherit" />
+    case 'Document':
+      return <DescriptionIcon style={{ marginRight: 5 }} fontSize="inherit" />
+    default:
+      return <InsertDriveFileIcon style={{ marginRight: 5 }} fontSize="inherit" />
+  }
+}
 function formatBytes(bytes: number, decimals: number = 2): string {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
@@ -44,6 +71,7 @@ function buildTree(files: FileData[]): FileData[] {
         dateUploaded: '',
         fileSize: '',
         filePath: '',
+        kind: file.kind,
         fileParent: '',
         deviceID: file.deviceID,
         deviceName: file.deviceName,
@@ -90,6 +118,7 @@ export default function CustomizedTreeView() {
             fileName: file["file_name"],
             fileSize: formatBytes(file["file_size"]),
             filePath: file["file_path"],
+            kind: file["kind"],
             dateUploaded: file["date_uploaded"],
             deviceID: device.device_number,
             deviceName: device.device_name,
@@ -141,7 +170,8 @@ export default function CustomizedTreeView() {
             alignItems: 'center',
             overflow: 'hidden', // Hide overflow
           }}>
-            <Folder style={{ marginRight: 5 }} fontSize="inherit" />
+            {/* <Folder style={{ marginRight: 5 }} fontSize="inherit" /> */}
+            {getIconForKind(node.kind)}
             <Typography
               variant="inherit"
               sx={{
