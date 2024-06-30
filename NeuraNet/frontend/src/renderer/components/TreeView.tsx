@@ -151,16 +151,11 @@ export default function CustomizedTreeView() {
         aria-label="file system navigator"
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
-        sx={{ width: '100%', height: 240, flexGrow: 1, overflowY: 'auto' }}
+        sx={{ width: '100%', flexGrow: 1, overflowY: 'auto' }}
         onNodeSelect={handleNodeSelect}
       >
         {renderTreeItems(fileRows)}
       </TreeView>
-      {global_file_path && (
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          Selected Directory: {global_file_path}
-        </Typography>
-      )}
     </Box>
   );
 }
