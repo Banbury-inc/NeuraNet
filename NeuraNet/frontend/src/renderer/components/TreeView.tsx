@@ -38,6 +38,8 @@ function getIconForKind(kind: string) {
   switch (kind) {
     case 'Core':
       return <GrainIcon style={{ marginRight: 5 }} fontSize="inherit" />
+    case 'Device':
+      return <DevicesIcon style={{ marginRight: 5 }} fontSize="inherit" />
     case 'Folder':
       return <FolderIcon style={{ marginRight: 5 }} fontSize="inherit" />
     case 'Image':
@@ -49,7 +51,7 @@ function getIconForKind(kind: string) {
     case 'Document':
       return <DescriptionIcon style={{ marginRight: 5 }} fontSize="inherit" />
     default:
-      return <DevicesIcon style={{ marginRight: 5 }} fontSize="inherit" />
+      return <FolderIcon style={{ marginRight: 5 }} fontSize="inherit" />
   }
 }
 function formatBytes(bytes: number, decimals: number = 2): string {
@@ -91,7 +93,7 @@ function buildTree(files: FileData[]): FileData[] {
         dateUploaded: '',
         fileSize: '',
         filePath: '',
-        kind: file.kind,
+        kind: 'Device',
         fileParent: 'core',  // Parent set to 'core' for all device nodes
         deviceID: file.deviceID,
         deviceName: file.deviceName,
