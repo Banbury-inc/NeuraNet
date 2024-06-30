@@ -95,6 +95,7 @@ export default function CustomizedTreeView() {
             deviceName: device.device_name,
             fileParent: file["file_parent"],
             original_device: file["original_device"]
+
           }))
         );
 
@@ -134,9 +135,25 @@ export default function CustomizedTreeView() {
         key={node.id}
         nodeId={node.id}
         label={
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            overflow: 'hidden', // Hide overflow
+          }}>
             <Folder style={{ marginRight: 5 }} fontSize="inherit" />
-            <Typography variant="inherit" sx={{ ml: 1 }}>{node.fileName}</Typography>
+            <Typography
+              variant="inherit"
+              sx={{
+                ml: 1,
+                mt: 0.5,
+                whiteSpace: 'nowrap', // Prevent wrapping
+                overflow: 'hidden', // Hide overflow
+                textOverflow: 'ellipsis', // Add ellipsis
+                maxWidth: 'calc(100% - 24px)', // Calculate max width to account for icon
+              }}
+            >
+              {node.fileName}
+            </Typography>
           </Box>
         }
       >
@@ -146,12 +163,19 @@ export default function CustomizedTreeView() {
   };
 
   return (
-    <Box sx={{ width: '100%', height: '100%', mr: 4 }}>
+    <Box sx={{ width: 250, height: '100%', overflow: 'hidden' }}>
       <TreeView
         aria-label="file system navigator"
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
-        sx={{ width: '100%', flexGrow: 1, overflowY: 'auto' }}
+        sx={{
+          width: '100%',
+          flexGrow: 1,
+          // overflowY: 'auto',
+          overflow: 'hidden',
+
+
+        }}
         onNodeSelect={handleNodeSelect}
       >
         {renderTreeItems(fileRows)}

@@ -976,8 +976,8 @@ export default function EnhancedTable() {
 
         </CardContent>
       </Card>
-      <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
-        <Card variant='outlined' sx={{ flexGrow: 0 }}>
+      <Stack direction="row" spacing={0} sx={{ width: '100%', overflow: 'hidden' }}>
+        <Card variant='outlined' sx={{ overflow: 'hidden' }}>
           <CardContent>
             <Grid container spacing={4}>
               <Grid item>
