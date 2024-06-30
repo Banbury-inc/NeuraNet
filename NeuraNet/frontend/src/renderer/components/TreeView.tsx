@@ -55,8 +55,9 @@ function buildTree(files: FileData[]): FileData[] {
 }
 
 export default function CustomizedTreeView() {
-  const { username, first_name, last_name, global_file_path, devices, setFirstname, setLastname, setGlobal_file_path, setDevices, redirect_to_login, setredirect_to_login } = useAuth();
+  const { username, first_name, last_name, devices, setFirstname, setLastname, setDevices, redirect_to_login, setredirect_to_login } = useAuth();
   const [fileRows, setFileRows] = useState<FileData[]>([]); // State for storing fetched file data
+  const { global_file_path, setGlobal_file_path } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {

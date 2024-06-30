@@ -272,6 +272,8 @@ export default function EnhancedTable() {
   const [dense, setDense] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [fileRows, setFileRows] = useState<FileData[]>([]); // State for storing fetched file data
+  const [allFiles, setAllFiles] = useState<FileData[]>([]);
+  const { global_file_path } = useAuth();
   const getSelectedFileNames = () => {
     return selected.map(id => {
       const file = fileRows.find(file => file.id === id);
@@ -350,8 +352,11 @@ export default function EnhancedTable() {
             deviceName: device.device_name
           }))
         );
-
-        setFileRows(files);
+        // const filteredFiles = files.filter(file => file.filePath.startsWith(global_file_path || ''));
+        const screencastsPath = '/home/mmills/BCloud/Screencasts';
+        const filteredFiles = files.filter(file => file.filePath.startsWith(screencastsPath));
+        // setFileRows(files);
+        setFileRows(filteredFiles);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -365,49 +370,46 @@ export default function EnhancedTable() {
 
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get<{
-            devices: any[]
-            first_name: string;
-            last_name: string;
-          }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+    const fetchData = async () => {
+      try {
+        const response = await axios.get<{
+          devices: any[];
+          first_name: string;
+          last_name: string;
+        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
 
-          const fetchedFirstname = response.data.first_name;
-          const fetchedLastname = response.data.last_name;
-          setFirstname(fetchedFirstname);
-          setLastname(fetchedLastname);
-          const files = response.data.devices.flatMap((device, index) =>
-            device.files.map((file: any, fileIndex: number): FileData => ({
-              id: index * 1000 + fileIndex, // Generating unique IDs
-              // id: device.id + fileIndex,
-              fileName: file["file_name"],
-              // fileSize: file["File Size"],
-              fileSize: formatBytes(file["file_size"]),
-              filePath: file["file_path"],
-              dateUploaded: file["date_uploaded"],
-              deviceID: device.device_number,
-              deviceName: device.device_name
-            }))
-          );
+        const { first_name, last_name, devices } = response.data;
+        setFirstname(first_name);
+        setLastname(last_name);
 
-          setFileRows(files);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-        finally {
-          setIsLoading(false); // Set loading to false once data is fetched or in case of an error
-        }
-      };
-      fetchData();
-    }, 1000);
+        const files = devices.flatMap((device, index) =>
+          device.files.map((file: any, fileIndex: number): FileData => ({
+            id: index * 1000 + fileIndex,
+            fileName: file["file_name"],
+            fileSize: formatBytes(file["file_size"]),
+            filePath: file["file_path"],
+            dateUploaded: file["date_uploaded"],
+            deviceID: device.device_number,
+            deviceName: device.device_name
+          }))
+        );
 
-    return () => clearInterval(interval);
-  },
+        setAllFiles(files);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    []);
+    fetchData();
+  }, [username, setFirstname, setLastname]);
 
+  useEffect(() => {
+    const pathToShow = global_file_path || '/home/mmills/BCloud/Screencasts';
+    const filteredFiles = allFiles.filter(file => file.filePath.startsWith(pathToShow));
+    setFileRows(filteredFiles);
+  }, [global_file_path, allFiles]);
 
 
   const handleRequestSort = (
