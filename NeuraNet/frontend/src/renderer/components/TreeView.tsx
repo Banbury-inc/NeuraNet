@@ -227,7 +227,8 @@ export default function CustomizedTreeView() {
           width: '100%',
           flexGrow: 1,
           // overflowY: 'auto',
-          overflow: 'hidden',
+          overflow: 'auto',
+          maxHeight: 500
 
 
         }}
