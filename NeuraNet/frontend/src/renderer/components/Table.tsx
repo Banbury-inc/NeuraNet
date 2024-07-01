@@ -301,7 +301,7 @@ export default function EnhancedTable() {
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [fileRows, setFileRows] = useState<FileData[]>([]); // State for storing fetched file data
   const [allFiles, setAllFiles] = useState<FileData[]>([]);
-  const { global_file_path } = useAuth();
+  const { global_file_path, global_file_path_device } = useAuth();
   const getSelectedFileNames = () => {
     return selected.map(id => {
       const file = fileRows.find(file => file.id === id);
@@ -443,9 +443,26 @@ export default function EnhancedTable() {
 
   useEffect(() => {
     const pathToShow = global_file_path || '/';
-    const filteredFiles = allFiles.filter(file => file.filePath.startsWith(pathToShow));
+    const pathSegments = pathToShow.split('/').filter(Boolean).length;
+
+    const filteredFiles = allFiles.filter(file => {
+      if (!global_file_path && !global_file_path_device) {
+        return true; // Show all files
+      }
+
+      if (!global_file_path && global_file_path_device) {
+        return file.deviceName === global_file_path_device; // Show all files for the specified device
+      }
+
+      const fileSegments = file.filePath.split('/').filter(Boolean).length;
+      const isInSameDirectory = file.filePath.startsWith(pathToShow) && fileSegments === pathSegments + 1;
+      const isFile = file.filePath === pathToShow && file.kind !== 'Folder';
+
+      return isInSameDirectory || isFile;
+    });
+
     setFileRows(filteredFiles);
-  }, [global_file_path, allFiles]);
+  }, [global_file_path, global_file_path_device, allFiles]);
 
 
   const handleRequestSort = (
