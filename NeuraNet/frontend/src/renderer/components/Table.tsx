@@ -103,7 +103,7 @@ const headCells: HeadCell[] = [
   { id: 'fileSize', numeric: false, label: 'Size' },
   { id: 'dateUploaded', numeric: false, label: 'Kind' },
   { id: 'deviceName', numeric: false, label: 'Location' },
-  { id: 'helpers', numeric: true, label: 'Helpers' },
+  // { id: 'helpers', numeric: true, label: 'Helpers' },
   { id: 'available', numeric: true, label: 'Status' },
   { id: 'dateUploaded', numeric: true, label: 'Date Uploaded' },
 ];
@@ -1029,9 +1029,10 @@ export default function EnhancedTable() {
         <Card variant='outlined' sx={{ flexGrow: 1 }}>
           <CardContent>
 
-            <Box my={0}>
+            {/* <Box my={0}> */}
+            <Box my={0} sx={{ width: '65vw' }}>
               {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
-              <TableContainer>
+              <TableContainer sx={{ maxHeight: 500, overflowY: 'auto', overflowX: 'auto' }}>
                 <Table aria-labelledby="tableTitle" size="small">
                   <EnhancedTableHead
                     numSelected={selected.length}
@@ -1151,15 +1152,18 @@ export default function EnhancedTable() {
 
                                 }} >{row.deviceName}</TableCell>
 
-                                <TableCell
-                                  padding="normal"
-                                  align="right" sx={{
+                                {/* <TableCell */}
+                                {/*   padding="normal" */}
+                                {/*   align="right" sx={{ */}
 
-                                    borderBottomColor: "#424242",
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                  }} >{row.helpers}</TableCell>
+                                {/*     borderBottomColor: "#424242", */}
+                                {/*     whiteSpace: 'nowrap', */}
+                                {/*     overflow: 'hidden', */}
+                                {/*     textOverflow: 'ellipsis', */}
+                                {/*   }} >{row.helpers}</TableCell> */}
+
+
+
                                 <TableCell
                                   padding="normal"
                                   align="right"

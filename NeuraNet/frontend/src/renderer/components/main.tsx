@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
@@ -18,26 +18,20 @@ import ListItemButton from '@mui/material/ListItemButton';
 import AI from './AI';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import Files from './files';
 import DevicesIcon from '@mui/icons-material/Devices';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import FolderIcon from '@mui/icons-material/Folder';
-import EnhancedTable from "./Table"
+import EnhancedTable from "./Table";
 import Dashboard from './Dashboard';
-import Devices from "./Devices"
-import DifferentLength from "./LineChart"
-import { Stack } from '@mui/material';
-const drawerWidth = 200;
-import { Chip } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import Devices from "./Devices";
+import DifferentLength from "./LineChart";
+import { Stack, Chip, Grid } from '@mui/material';
 import axios from 'axios';
 import DevicesTable from './DeviceTable';
 import Settings from './Settings';
-
 import { useAuth } from '../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 import AccountMenuIcon from './AccountMenuIcon';
@@ -46,7 +40,10 @@ import Profile from './Profile';
 import net from 'net';
 import * as receiver5 from '../../main/receiver5';
 import { receiver, send_login_request, connectToRelayServer } from './scripts/receiver';
+
 const { ipcRenderer } = window.require('electron');
+
+const drawerWidth = 240;  // Change the width as needed
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -56,7 +53,6 @@ const openedMixin = (theme: Theme): CSSObject => ({
   }),
   overflowX: 'hidden',
 });
-
 
 const closedMixin = (theme: Theme): CSSObject => ({
   transition: theme.transitions.create('width', {
@@ -75,16 +71,12 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'flex-end',
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
-
-
-
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -103,7 +95,6 @@ const AppBar = styled(MuiAppBar, {
     }),
   }),
 }));
-
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -127,31 +118,24 @@ export default function PermanentDrawerLeft() {
   const theme = useTheme();
   const initialActiveTab = location.state?.activeTab || 'Files';
   const [activeTab, setActiveTab] = React.useState(initialActiveTab);
-  const { username, redirect_to_login, setredirect_to_login } = useAuth();
+  const { username, redirect_to_login } = useAuth();
   const [open, setOpen] = React.useState(false);
-
 
   useEffect(() => {
     async function setupConnection() {
       try {
-        // Wait for the connection to be established
-        console.log("connecting to relay server")
+        console.log("connecting to relay server");
         let senderSocket = connectToRelayServer();
-        console.log("Starting receiver")
-        // Continue with using senderSocket in your receiver function
+        console.log("Starting receiver");
         receiver(username, senderSocket);
-        console.log("receiver has been started")
-        // Handle the result as necessary
+        console.log("receiver has been started");
       } catch (error) {
-        // Handle errors (e.g., connection failed)
         console.error("Failed to setup connection:", error);
       }
     }
 
     setupConnection();
-
-  }, [username]); // Ensure useEffect runs again if username changes
-
+  }, [username]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -162,29 +146,25 @@ export default function PermanentDrawerLeft() {
   };
 
   const toggleDrawer = () => {
-    setOpen(!open); // This will set 'open' to the opposite of its current value
+    setOpen(!open);
   };
-
 
   if (redirect_to_login) {
     return <Login />;
   }
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    // <Box sx={{ display: 'flex', width: '100vw' }}>
+    <Box sx={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <CssBaseline />
-      {/* <AppBar */}
-      {/*   position="fixed" */}
-      {/*   sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }} */}
-      {/* > */}
-      {/* </AppBar> */}
       <Drawer
         sx={{
           '& .MuiDrawer-paper': {
-            marginTop: '42px'
+            marginTop: '42px',
           },
         }}
-        variant="permanent" open={open}
+        variant="permanent"
+        open={open}
         anchor="left"
       >
         <DrawerHeader>
@@ -195,41 +175,31 @@ export default function PermanentDrawerLeft() {
             edge="start"
             sx={{
               marginRight: 0,
-              ...(open && {}),
             }}
           >
             <MenuIcon />
           </IconButton>
-
-          {/* <IconButton onClick={toggleDrawer}> */}
-          {/* {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />} */}
-          {/* </IconButton> */}
         </DrawerHeader>
-
         <List>
-
           {['Dashboard', 'Files', 'Devices', 'AI', 'Profile'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
-                  flexDirection: open ? 'row' : 'column',  // Change here
+                  flexDirection: open ? 'row' : 'column',
                   px: 2.5,
                 }}
-                onClick={() => setActiveTab(text)}>
-
+                onClick={() => setActiveTab(text)}
+              >
                 <ListItemIcon
-                  color='inherit'
-                  aria-label='open drawer'
+                  color="inherit"
+                  aria-label="open drawer"
                   sx={{
                     minWidth: 0,
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
                   }}
-
-
-
                 >
                   {(() => {
                     switch (index % 5) {
@@ -243,67 +213,63 @@ export default function PermanentDrawerLeft() {
                         return <AutoAwesomeIcon />;
                       case 4:
                         return <AccountBoxIcon />;
-
                       default:
-                        return null; // Just in case
+                        return null;
                     }
                   })()}
                 </ListItemIcon>
-                {/* <ListItemText primary={text} */}
-                <ListItemText secondary={text} sx={{
-                  opacity: open ? 1 : 1,
-                  display: open ? 'block' : 'block', // Always display block
-                  textAlign: 'center',  // Center text
-                }} />
+                <ListItemText
+                  secondary={text}
+                  sx={{
+                    opacity: open ? 1 : 1,
+                    display: 'block',
+                    textAlign: 'center',
+                  }}
+                />
               </ListItemButton>
             </ListItem>
-
           ))}
-
         </List>
         <Divider />
         <List>
-          {['Settings'].map((text, index) => (
+          {['Settings'].map((text) => (
             <ListItem key={text} disablePadding>
               <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
-                  flexDirection: open ? 'row' : 'column',  // Change here
+                  flexDirection: open ? 'row' : 'column',
                   px: 2.5,
                 }}
-
-                onClick={() => setActiveTab(text)}>
+                onClick={() => setActiveTab(text)}
+              >
                 <ListItemIcon
-                  color='inherit'
-                  aria-label='open drawer'
+                  color="inherit"
+                  aria-label="open drawer"
                   sx={{
                     minWidth: 0,
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
                   }}
-
-
                 >
-
-                  {index % 2 === 0 ? <SettingsIcon /> : <SettingsIcon />}
+                  <SettingsIcon />
                 </ListItemIcon>
-                <ListItemText secondary={text} sx={{
-                  opacity: open ? 1 : 1,
-                  display: open ? 'block' : 'block', // Always display block
-                  textAlign: 'center',  // Center text
-
-
-                }} />
+                <ListItemText
+                  secondary={text}
+                  sx={{
+                    opacity: open ? 1 : 1,
+                    display: 'block',
+                    textAlign: 'center',
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
-
         </List>
       </Drawer>
       <Box
         component="main"
-        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 0 }}
+        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 0, width: 'calc(100vw - 240px)' }}
       >
         {(() => {
           switch (activeTab) {
@@ -319,17 +285,12 @@ export default function PermanentDrawerLeft() {
               return <Profile />;
             case 'Settings':
               return <Settings />;
-              // Replace <Typography> with your settings component
-              return <Typography paragraph>Settings Component Here</Typography>;
             default:
               return <Typography paragraph>Select a tab to display its content.</Typography>;
           }
         })()}
       </Box>
-
-
     </Box>
   );
 }
-
 
