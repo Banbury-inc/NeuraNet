@@ -470,14 +470,21 @@ function old_get_directory_info() {
 }
 
 function get_directory_info() {
+  const bclouddirectoryName = "BCloud";
+  const bclouddirectoryPath = os.homedir() + `/${bclouddirectoryName}`;
+
   const directoryName = "BCloud";
   const directoryPath = os.homedir() + `/${directoryName}`;
+
+
+
+
   const filesInfo: any[] = [];
 
   // Check if the directory exists, create if it does not and create a welcome text file
-  if (!fs.existsSync(directoryPath)) {
-    fs.mkdirSync(directoryPath, { recursive: true });
-    const welcomeFilePath = path.join(directoryPath, "welcome.txt");
+  if (!fs.existsSync(bclouddirectoryPath)) {
+    fs.mkdirSync(bclouddirectoryPath, { recursive: true });
+    const welcomeFilePath = path.join(bclouddirectoryPath, "welcome.txt");
     fs.writeFileSync(welcomeFilePath,
       "Welcome to Banbury Cloud! This is the directory that will contain all of the files " +
       "that you would like to have in the cloud and streamed throughout all of your devices. " +
@@ -546,25 +553,30 @@ function get_directory_info() {
       const filePath = path.join(currentPath, filename);
       const stats = fs.statSync(filePath);
 
-      // Determine if it is a file or directory and push appropriate info to filesInfo
-      const fileInfo = {
-        "file_type": stats.isDirectory() ? "directory" : "file",
-        "file_name": filename,
-        "file_path": filePath,
-        "date_uploaded": DateTime.fromMillis(stats.birthtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
-        "date_modified": DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
-        "file_size": stats.isDirectory() ? 0 : stats.size,  // Size is 0 for directories
-        "file_priority": 1,
-        "file_parent": path.dirname(filePath),
-        "original_device": os.hostname(),  // Assuming the current device name as the original device
-        "kind": stats.isDirectory() ? 'Folder' : getFileKind(filename),
+      try {
+        // Determine if it is a file or directory and push appropriate info to filesInfo
+        const fileInfo = {
+          "file_type": stats.isDirectory() ? "directory" : "file",
+          "file_name": filename,
+          "file_path": filePath,
+          "date_uploaded": DateTime.fromMillis(stats.birthtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
+          "date_modified": DateTime.fromMillis(stats.mtimeMs).toFormat('yyyy-MM-dd HH:mm:ss'),
+          "file_size": stats.isDirectory() ? 0 : stats.size,  // Size is 0 for directories
+          "file_priority": 1,
+          "file_parent": path.dirname(filePath),
+          "original_device": os.hostname(),  // Assuming the current device name as the original device
+          "kind": stats.isDirectory() ? 'Folder' : getFileKind(filename),
 
-      };
-      filesInfo.push(fileInfo);
+        };
+        filesInfo.push(fileInfo);
 
-      // If it's a directory, recurse into it
-      if (stats.isDirectory()) {
-        traverseDirectory(filePath);
+        // If it's a directory, recurse into it
+        if (stats.isDirectory()) {
+          traverseDirectory(filePath);
+        }
+      }
+      catch (error) {
+        console.error('Error reading file:', error);
       }
     }
   }
