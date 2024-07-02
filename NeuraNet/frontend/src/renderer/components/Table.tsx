@@ -302,6 +302,8 @@ export default function EnhancedTable() {
   const [fileRows, setFileRows] = useState<FileData[]>([]); // State for storing fetched file data
   const [allFiles, setAllFiles] = useState<FileData[]>([]);
   const { global_file_path, global_file_path_device } = useAuth();
+  const [isAddingFolder, setIsAddingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
   const getSelectedFileNames = () => {
     return selected.map(id => {
       const file = fileRows.find(file => file.id === id);
@@ -589,6 +591,30 @@ export default function EnhancedTable() {
     setdeleteLoading(false);
     return;
   }
+  const handleAddFolderClick = async () => {
+
+    console.log("Add folder clicked")
+    setIsAddingFolder(true);
+    setFileRows((prevFileRows) => [
+      ...prevFileRows,
+      {
+        id: prevFileRows.length + 1, // Assign a unique ID for the new folder
+        fileName: "",
+        fileSize: "",
+        kind: "Folder",
+        dateUploaded: new Date().toISOString(),
+        filePath: "",
+        deviceID: "",
+        deviceName: "",
+        helpers: 0,
+        available: "Available",
+      },
+    ]);
+  };
+
+
+
+
   const handleUploadClick = async () => {
     try {
 
@@ -927,7 +953,7 @@ export default function EnhancedTable() {
                 loading={deleteloading}
                 loadingPosition="end"
                 endIcon={<AddIcon />}
-                onClick={handleDeleteClick} size="small">
+                onClick={handleAddFolderClick} size="small">
                 {/* {buttonText} */}
                 {deleteloading ? 'Loading...' : "Folder"}
               </LoadingButton>
@@ -1106,25 +1132,41 @@ export default function EnhancedTable() {
                                     />
                                   ) : null}
                                 </TableCell>
+
                                 <TableCell
-                                  component="th" sx={{
-                                    borderBottomColor: "#424242",
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    mr: 2
-                                  }}
-                                  id={labelId} scope="row" padding="none">
-                                  <ButtonBase // Make filename text clickable
-                                    onClick={(event) => {
-                                      event.stopPropagation(); // Prevent row click event propagation
-                                      handleFileNameClick(row.id); // Handle filename click
-                                    }}
-                                    style={{ textDecoration: 'none' }} // Remove underline
-                                  >
-                                    {row.fileName}
-                                  </ButtonBase>
+                                  sx={{ borderBottomColor: "#424242" }}
+                                  component="th"
+                                  id={labelId}
+                                  scope="row"
+                                  padding="normal"
+                                >
+                                  {row.kind === "Folder" && isAddingFolder && row.fileName === "" ? (
+                                    <TextField
+                                      value={newFolderName}
+                                      size="small"
+                                      onChange={(e) => setNewFolderName(e.target.value)}
+                                      onBlur={() => {
+                                        setIsAddingFolder(false);
+                                        // Handle folder creation logic here, such as updating the fileRows state with the new folder name
+                                      }}
+                                      placeholder="Enter folder name"
+                                      fullWidth
+                                      autoFocus
+                                    />
+                                  ) : (
+                                    <ButtonBase
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        handleFileNameClick(row.id);
+                                      }}
+                                      style={{ textDecoration: 'none' }}
+                                    >
+                                      {row.fileName}
+                                    </ButtonBase>
+                                  )}
                                 </TableCell>
+
+
                                 <TableCell
                                   align="left"
                                   padding="normal"
