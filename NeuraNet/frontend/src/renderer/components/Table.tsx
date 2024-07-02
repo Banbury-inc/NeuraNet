@@ -12,6 +12,7 @@ import Box from '@mui/material/Box';
 import { readdir, stat } from 'fs/promises';
 import Table from '@mui/material/Table';
 import DownloadIcon from '@mui/icons-material/Download';
+import fs from 'fs';
 import TableBody from '@mui/material/TableBody';
 import LoadingButton from '@mui/lab/LoadingButton';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
@@ -595,6 +596,7 @@ export default function EnhancedTable() {
 
     console.log("Add folder clicked")
     setIsAddingFolder(true);
+    setNewFolderName(""); // Reset folder name input
     setFileRows((prevFileRows) => [
       ...prevFileRows,
       {
@@ -612,6 +614,51 @@ export default function EnhancedTable() {
     ]);
   };
 
+
+  const handleFolderNameSave = () => {
+    if (newFolderName.trim() === "") return;
+
+    const currentPath = global_file_path ?? ''; // Provide a default value if global_file_path is null
+
+    // Update the fileRows state with the new folder name
+    setFileRows((prevFileRows) =>
+      prevFileRows.map((row) =>
+        row.fileName === "" && row.kind === "Folder"
+          ? { ...row, fileName: newFolderName, filePath: path.join(currentPath, newFolderName) }
+          : row
+      )
+    );
+
+    setIsAddingFolder(false);
+    setNewFolderName("");
+
+    const stats = fs.statSync(currentPath);
+
+    if (stats.isFile()) {
+      // If the current path is a file, get the directory of the file
+      let newcurrentPath = path.dirname(currentPath);
+      let folderPath = path.join(newcurrentPath, newFolderName);
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath);
+      }
+    }
+    else {
+      let folderPath = path.join(currentPath, newFolderName);
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath);
+      }
+    }
+
+
+    // Logic to create the folder in the current directory
+    ipcRenderer.invoke('create-folder', path.join(currentPath, newFolderName))
+      .then(() => {
+        console.log('Folder created successfully');
+      })
+      .catch((error) => {
+        console.error('Error creating folder:', error);
+      });
+  };
 
 
 
@@ -1149,7 +1196,13 @@ export default function EnhancedTable() {
                                         setIsAddingFolder(false);
                                         // Handle folder creation logic here, such as updating the fileRows state with the new folder name
                                       }}
+                                      onKeyPress={(e) => {
+                                        if (e.key === "Enter") {
+                                          handleFolderNameSave();
+                                        }
+                                      }}
                                       placeholder="Enter folder name"
+
                                       fullWidth
                                       autoFocus
                                     />
