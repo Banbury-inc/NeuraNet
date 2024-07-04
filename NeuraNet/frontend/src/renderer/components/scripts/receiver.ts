@@ -2,6 +2,7 @@
 import * as os from 'os';
 import * as fs from 'fs';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 import * as path from 'path';
 import si from '../../../../dependency/systeminformation';
 import { DateTime } from 'luxon';
@@ -127,6 +128,8 @@ interface SpeedTestResult {
 const homeDirectory = os.homedir();
 const BANBURY_FOLDER = path.join(homeDirectory, '.banbury');
 const CONFIG_FILE = path.join(BANBURY_FOLDER, '.banbury_config.ini');
+
+
 
 if (!fs.existsSync(BANBURY_FOLDER)) {
   fs.mkdirSync(BANBURY_FOLDER);

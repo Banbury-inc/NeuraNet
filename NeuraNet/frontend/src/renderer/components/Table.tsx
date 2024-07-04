@@ -305,6 +305,7 @@ export default function EnhancedTable() {
   const [isAddingFolder, setIsAddingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [disableFetch, setDisableFetch] = useState(false);
+  const { updates, setUpdates, username, first_name, last_name, devices, setFirstname, setLastname, setDevices, redirect_to_login, setredirect_to_login } = useAuth();
   const getSelectedFileNames = () => {
     return selected.map(id => {
       const file = fileRows.find(file => file.id === id);
@@ -352,7 +353,6 @@ export default function EnhancedTable() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
 
-  const { username, first_name, last_name, devices, setFirstname, setLastname, setDevices, redirect_to_login, setredirect_to_login } = useAuth();
   console.log(username)
 
   useEffect(() => {
@@ -399,7 +399,7 @@ export default function EnhancedTable() {
     };
 
     fetchData();
-  }, []);
+  }, [updates]);
 
   useEffect(() => {
     const pathToShow = global_file_path || '/';
@@ -579,6 +579,14 @@ export default function EnhancedTable() {
   const handleFolderNameSave = async () => {
     if (newFolderName.trim() === "") {
       setIsAddingFolder(false);
+      if (updates === null) {
+        setUpdates(1);
+        console.log(updates)
+      }
+      else {
+        setUpdates(updates + 1);
+      }
+
       return; // Exit if the folder name is empty
     }
 
@@ -601,10 +609,19 @@ export default function EnhancedTable() {
     } catch (error) {
       console.error('Error creating folder:', error);
     }
-
+    console.log(updates)
     setIsAddingFolder(false);
     setNewFolderName("");
     setDisableFetch(false);
+    if (updates === null) {
+      setUpdates(1);
+      console.log(updates)
+    }
+    else {
+      setUpdates(updates + 1);
+    }
+    console.log(updates)
+
   };
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -992,7 +1009,7 @@ export default function EnhancedTable() {
         </CardContent>
       </Card>
       <Stack direction="row" spacing={0} sx={{ width: '100%', height: '85vh', overflow: 'hidden' }}>
-        <Card variant="outlined" sx={{ overflow: 'hidden' }}>
+        <Card variant="outlined" sx={{ overflow: 'auto' }}>
           <CardContent>
             <Grid container spacing={4}>
               <Grid item>

@@ -5,11 +5,13 @@ interface AuthContextType {
   password: string | null;
   first_name: string | null;
   last_name: string | null;
+  updates: number | null;
   devices: any[] | null;
   fileRows: any[];
   global_file_path: string | null;
   global_file_path_device: string | null;
   setUsername: (username: string | null) => void;
+  setUpdates: (updates: number | null) => void;
   setPassword: (password: string | null) => void;
   setFirstname: (first_name: string | null) => void;
   setLastname: (last_name: string | null) => void;
@@ -37,6 +39,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [password, setPass] = useState<string | null>(null);
   const [first_name, setFirst] = useState<string | null>(null);
   const [last_name, setLast] = useState<string | null>(null);
+  const [updates, setUp] = useState<number | null>(null);
   const [devices, setDev] = useState<any[] | null>(null);
   const [fileRows, setFiles] = useState<any[]>([]);
   const [global_file_path, setFile] = useState<string | null>(null);
@@ -63,6 +66,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const setLastname = (last_name: string | null) => {
     setLast(last_name);
   };
+  const setUpdates = (updates: number | null) => {
+    setUp(updates);
+  };
   const setDevices = (devices: any[] | null) => {
     setDev(devices);
   };
@@ -87,6 +93,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       global_file_path,
       global_file_path_device,
       files_is_loading,
+      updates,
       setUsername,
       setPassword,
       setFirstname,
@@ -94,6 +101,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setDevices,
       setFileRows,
       setGlobal_file_path,
+      setUpdates,
       setGlobal_file_path_device,
       setFilesIsLoading,
       isAuthenticated,

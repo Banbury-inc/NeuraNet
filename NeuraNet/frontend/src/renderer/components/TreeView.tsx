@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import fs from 'fs';
 import FolderIcon from '@mui/icons-material/Folder';
 import ImageIcon from '@mui/icons-material/Image';
 import VideocamIcon from '@mui/icons-material/Videocam';
@@ -123,7 +124,7 @@ function buildTree(files: FileData[]): FileData[] {
 
 
 export default function CustomizedTreeView() {
-  const { global_file_path, global_file_path_device, username, setFirstname, setLastname, setGlobal_file_path, setGlobal_file_path_device } = useAuth();
+  const { updates, setUpdates, global_file_path, global_file_path_device, username, setFirstname, setLastname, setGlobal_file_path, setGlobal_file_path_device } = useAuth();
   const [fileRows, setFileRows] = useState<FileData[]>([]);
   const [expanded, setExpanded] = useState<string[]>(['core']);
 
@@ -158,7 +159,14 @@ export default function CustomizedTreeView() {
       }
     };
     fetchData();
-  }, [username, setFirstname, setLastname]);
+
+    // Set up an interval to call fetchData every 3000 milliseconds (3 seconds)
+    const intervalId = setInterval(fetchData, 3000);
+
+    // Return a clean-up function that clears the interval when the component unmounts
+    return () => clearInterval(intervalId);
+
+  }, [updates]);
 
   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
     const findNodeById = (nodes: FileData[], id: string): FileData | null => {
@@ -218,7 +226,7 @@ export default function CustomizedTreeView() {
   };
 
   return (
-    <Box sx={{ width: 250, height: '100%', overflow: 'hidden' }}>
+    <Box sx={{ width: 300, height: '100%', overflow: 'auto' }}>
       <TreeView
         aria-label="file system navigator"
         defaultCollapseIcon={<ExpandMoreIcon />}
@@ -228,7 +236,7 @@ export default function CustomizedTreeView() {
           flexGrow: 1,
           // overflowY: 'auto',
           overflow: 'auto',
-          maxHeight: 500
+          // maxHeight: '90%'
 
 
         }}
