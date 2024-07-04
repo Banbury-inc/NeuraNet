@@ -102,9 +102,8 @@ interface FileData {
 const headCells: HeadCell[] = [
   { id: 'fileName', numeric: false, label: 'Name' },
   { id: 'fileSize', numeric: false, label: 'Size' },
-  { id: 'dateUploaded', numeric: false, label: 'Kind' },
+  { id: 'kind', numeric: false, label: 'Kind' },
   { id: 'deviceName', numeric: false, label: 'Location' },
-  // { id: 'helpers', numeric: true, label: 'Helpers' },
   { id: 'available', numeric: true, label: 'Status' },
   { id: 'dateUploaded', numeric: true, label: 'Date Uploaded' },
 ];
@@ -305,6 +304,7 @@ export default function EnhancedTable() {
   const { global_file_path, global_file_path_device } = useAuth();
   const [isAddingFolder, setIsAddingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const [disableFetch, setDisableFetch] = useState(false);
   const getSelectedFileNames = () => {
     return selected.map(id => {
       const file = fileRows.find(file => file.id === id);
@@ -354,54 +354,6 @@ export default function EnhancedTable() {
 
   const { username, first_name, last_name, devices, setFirstname, setLastname, setDevices, redirect_to_login, setredirect_to_login } = useAuth();
   console.log(username)
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get<{
-          devices: any[]
-          first_name: string;
-          last_name: string;
-          // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
-        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
-        // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo/');
-
-        // const fetchedFirstname = response.data.first_name;
-        // const fetchedLastname = response.data.last_name;
-        const { first_name, last_name, devices } = response.data;
-        setFirstname(first_name);
-        setLastname(last_name);
-        const files = devices.flatMap((device, index) =>
-          device.files.map((file: any, fileIndex: number): FileData => ({
-            id: index * 1000 + fileIndex, // Generating unique IDs
-            // id: device.id + fileIndex,
-            fileName: file["file_name"],
-            // fileSize: file["File Size"],
-            kind: file["kind"],
-            fileSize: formatBytes(file["file_size"]),
-            filePath: file["file_path"],
-            dateUploaded: file["date_uploaded"],
-            deviceID: device.device_number,
-            deviceName: device.device_name,
-            helpers: 0,
-            available: device.online || 0 > 1 ? "Available" : "Unavailable",
-          }))
-        );
-        // const filteredFiles = files.filter(file => file.filePath.startsWith(global_file_path || ''));
-        const screencastsPath = '/home/mmills/BCloud/Screencasts';
-        const filteredFiles = files.filter(file => file.filePath.startsWith(screencastsPath));
-        // setFileRows(files);
-        setFileRows(filteredFiles);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-
-  },
-
-    []);
-
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -433,7 +385,12 @@ export default function EnhancedTable() {
           }))
         );
 
-        setAllFiles(files);
+        if (disableFetch) {
+          return;
+        }
+        else {
+          setAllFiles(files);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -442,7 +399,7 @@ export default function EnhancedTable() {
     };
 
     fetchData();
-  }, [username, setFirstname, setLastname]);
+  }, []);
 
   useEffect(() => {
     const pathToShow = global_file_path || '/';
@@ -592,15 +549,19 @@ export default function EnhancedTable() {
     setdeleteLoading(false);
     return;
   }
-  const handleAddFolderClick = async () => {
 
+
+
+  const handleAddFolderClick = async () => {
     console.log("Add folder clicked")
+    setDisableFetch(true);
     setIsAddingFolder(true);
     setNewFolderName(""); // Reset folder name input
     setFileRows((prevFileRows) => [
       ...prevFileRows,
       {
-        id: prevFileRows.length + 1, // Assign a unique ID for the new folder
+        // id: prevFileRows.length + 1, // Assign a unique ID for the new folder
+        id: Date.now(), // Assign a unique ID for the new folder
         fileName: "",
         fileSize: "",
         kind: "Folder",
@@ -615,105 +576,36 @@ export default function EnhancedTable() {
   };
 
 
-  const handleFolderNameSave = () => {
-    if (newFolderName.trim() === "") return;
+  const handleFolderNameSave = async () => {
+    if (newFolderName.trim() === "") {
+      setIsAddingFolder(false);
+      return; // Exit if the folder name is empty
+    }
 
-    const currentPath = global_file_path ?? ''; // Provide a default value if global_file_path is null
+    const currentPath = global_file_path ?? '';
+    const newFolderPath = path.join(currentPath, newFolderName);
 
-    // Update the fileRows state with the new folder name
-    setFileRows((prevFileRows) =>
-      prevFileRows.map((row) =>
-        row.fileName === "" && row.kind === "Folder"
-          ? { ...row, fileName: newFolderName, filePath: path.join(currentPath, newFolderName) }
-          : row
-      )
-    );
+    // Attempt to create the folder on the filesystem or backend here
+    try {
+      if (!fs.existsSync(newFolderPath)) {
+        fs.mkdirSync(newFolderPath);
+        console.log(`Folder created at ${newFolderPath}`);
+
+        // Update the temporary folder row to reflect the new folder
+        setFileRows(prevFileRows => prevFileRows.map(row =>
+          row.kind === "Folder" && row.fileName === ""
+            ? { ...row, fileName: newFolderName, filePath: newFolderPath }
+            : row
+        ));
+      }
+    } catch (error) {
+      console.error('Error creating folder:', error);
+    }
 
     setIsAddingFolder(false);
     setNewFolderName("");
-
-    const stats = fs.statSync(currentPath);
-
-    if (stats.isFile()) {
-      // If the current path is a file, get the directory of the file
-      let newcurrentPath = path.dirname(currentPath);
-      let folderPath = path.join(newcurrentPath, newFolderName);
-      if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath);
-      }
-    }
-    else {
-      let folderPath = path.join(currentPath, newFolderName);
-      if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath);
-      }
-    }
-
-
-    // Logic to create the folder in the current directory
-    ipcRenderer.invoke('create-folder', path.join(currentPath, newFolderName))
-      .then(() => {
-        console.log('Folder created successfully');
-      })
-      .catch((error) => {
-        console.error('Error creating folder:', error);
-      });
+    setDisableFetch(false);
   };
-
-
-
-  const handleUploadClick = async () => {
-    try {
-
-      const env = process.env.NODE_ENV || 'development';
-      let baseDir = '';
-      let filename = '';
-      let command = '';
-      let devbaseDir = '';
-      let prodbaseDir = path.join(process.resourcesPath, 'python');
-      if (env === 'development') {
-        baseDir = devbaseDir;
-        filename = 'python/upload.py';
-        command = process.platform === 'win32' ? 'venv\\Scripts\\python.exe' : 'venv/bin/python3';
-      } else if (env === 'production') {
-        baseDir = prodbaseDir;
-        filename = 'upload.py';
-        command = process.platform === 'win32' ? 'Scripts\\python.exe' : 'bin/python3';
-
-      }
-      // const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
-
-      const exactcommand = path.join(baseDir, command);
-      const scriptPath = path.join(baseDir, filename);
-
-
-
-
-
-      exec(`${exactcommand} "${scriptPath}" "${selectedFileNames}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`Python Script Error: ${stderr}`);
-          return
-        }
-        if (stdout) {
-          console.log(`Python Script Message: ${stdout}`);
-          return
-        }
-        console.log(`Python Script Message: ${stdout}`);
-
-      });
-    } catch (error) {
-      console.error('There was an error!', error);
-
-    }
-  };
-
-
-
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -940,8 +832,20 @@ export default function EnhancedTable() {
     { title: 'Monty Python and the Holy Grail', year: 1975 },
   ];
 
+  const handleBlur = async () => {
+    if (newFolderName.trim() !== "") {
+      await handleFolderNameSave();
+    }
+    setIsAddingFolder(false);
+  };
 
-
+  const handleKeyPress = async (e: any) => {
+    if (e.key === "Enter") {
+      await handleFolderNameSave();
+      setIsAddingFolder(false);
+      console.log(isAddingFolder);
+    }
+  };
   return (
     <Box sx={{ width: '100%', pl: 4, pr: 4, mt: 0, pt: 5 }}>
       <Stack spacing={2}>
@@ -1097,7 +1001,6 @@ export default function EnhancedTable() {
             </Grid>
           </CardContent>
         </Card>
-
         <Card variant="outlined" sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
           <CardContent sx={{ height: '100%', overflow: 'auto' }}>
             <Box my={0} sx={{ width: '85vw', height: '100%' }}>
@@ -1136,9 +1039,6 @@ export default function EnhancedTable() {
                             <TableCell>
                               <Skeleton variant="text" width="100%" />
                             </TableCell>
-
-
-
                           </TableRow>
                         ))
                       ) : (
@@ -1187,17 +1087,14 @@ export default function EnhancedTable() {
                                       value={newFolderName}
                                       size="small"
                                       onChange={(e) => setNewFolderName(e.target.value)}
-                                      onBlur={() => {
-                                        setIsAddingFolder(false);
-                                        // Handle folder creation logic here, such as updating the fileRows state with the new folder name
-                                      }}
-                                      onKeyPress={(e) => {
+                                      onBlur={handleFolderNameSave}
+                                      onKeyPress={e => {
                                         if (e.key === "Enter") {
+                                          e.preventDefault();
                                           handleFolderNameSave();
                                         }
                                       }}
                                       placeholder="Enter folder name"
-
                                       fullWidth
                                       autoFocus
                                     />
@@ -1225,6 +1122,7 @@ export default function EnhancedTable() {
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                   }}>{row.fileSize}</TableCell>
+
                                 <TableCell align="left" sx={{
                                   borderBottomColor: "#424242",
                                   whiteSpace: 'nowrap',
