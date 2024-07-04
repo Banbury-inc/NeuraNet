@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
 import Checkbox from '@mui/material/Checkbox';
-
+import Store from 'electron-store';
 import * as receiver5 from '../../main/receiver5';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
@@ -42,6 +42,16 @@ interface Message {
   content: string;
 }
 
+// Define the type for the return value of send_login_request
+interface LoginSuccess {
+  result: 'login success';
+  token: string;
+}
+
+interface LoginFailure {
+  result: 'login failed';
+}
+
 
 process.on('uncaughtException', (err: Error & { code?: string }) => {
   switch (err.code) {
@@ -70,10 +80,12 @@ function Copyright(props: any) {
   );
 }
 
-const path = require('path');
 
 
 dotenv.config();
+
+const path = require('path');
+
 
 const homeDirectory = os.homedir();
 const BANBURY_FOLDER = path.join(homeDirectory, '.banbury');
@@ -126,7 +138,14 @@ export default function SignIn() {
     content: 'Server is offline. Please try again later.',
   };
 
-
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      setUsername(token);
+      setIsAuthenticated(true);
+      setShowMain(true); // Set showMain to true when login is successful
+    }
+  }, []);
 
   // Move the useState hook outside of the handleSubmit function
   const [showMain, setShowMain] = useState<boolean>(false);
@@ -163,8 +182,11 @@ export default function SignIn() {
     const data = new FormData(event.currentTarget);
     const email = data.get('email') as string | null;
     const password = data.get('password') as string | null;
+    const token = data.get('token') as string | null;
 
-    if (email && password) {
+    // if (email && password) {
+    if (typeof email === 'string' && typeof password === 'string') {
+
       try {
 
 
@@ -173,6 +195,7 @@ export default function SignIn() {
         if (result === 'login success') {
           console.log(result);
           setUsername(email);
+          localStorage.setItem('authToken', email);
           setIsAuthenticated(true);
           console.log('Result: Login successful.');
           setShowMain(true); // Set showMain to true when login is successful
@@ -194,11 +217,11 @@ export default function SignIn() {
   };
 
 
-
   async function send_login_request(username: string, password: string) {
     try {
       const response = await axios.get<{
         result: string;
+        token: string;
         username: string;
         // }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
       }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo3/' + username + '/' + password + '/');
@@ -231,6 +254,15 @@ export default function SignIn() {
   };
 
 
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      setUsername(token);
+      setIsAuthenticated(true);
+      setShowMain(true); // Set showMain to true when login is successful
+    }
+  }, []);
 
   if (isAuthenticated || showMain) { // Render Main component if authenticated or showMain is true
     return <Main />;

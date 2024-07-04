@@ -299,7 +299,7 @@ export default function EnhancedTable() {
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [dense, setDense] = useState(false);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [rowsPerPage, setRowsPerPage] = useState(100);
   const [fileRows, setFileRows] = useState<FileData[]>([]); // State for storing fetched file data
   const [allFiles, setAllFiles] = useState<FileData[]>([]);
   const { global_file_path, global_file_path_device } = useAuth();
@@ -1087,28 +1087,23 @@ export default function EnhancedTable() {
 
         </CardContent>
       </Card>
-      <Stack direction="row" spacing={0} sx={{ width: '100%', overflow: 'hidden' }}>
-        <Card variant='outlined' sx={{ overflow: 'hidden' }}>
+      <Stack direction="row" spacing={0} sx={{ width: '100%', height: '85vh', overflow: 'hidden' }}>
+        <Card variant="outlined" sx={{ overflow: 'hidden' }}>
           <CardContent>
             <Grid container spacing={4}>
               <Grid item>
                 <CustomizedTreeView />
               </Grid>
             </Grid>
-
           </CardContent>
         </Card>
 
-        <Card variant='outlined' sx={{ flexGrow: 1 }}>
-          <CardContent>
-
-            {/* <Box my={0}> */}
-            <Box my={0} sx={{ width: '65vw' }}>
-              {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
-              <TableContainer sx={{ maxHeight: 500, overflowY: 'auto', overflowX: 'auto' }}>
+        <Card variant="outlined" sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
+          <CardContent sx={{ height: '100%', overflow: 'auto' }}>
+            <Box my={0} sx={{ width: '85vw', height: '100%' }}>
+              <TableContainer sx={{ maxHeight: '90%', overflowY: 'auto', overflowX: 'auto' }}>
                 <Table aria-labelledby="tableTitle" size="small">
-                  <EnhancedTableHead
-                    numSelected={selected.length}
+                  <EnhancedTableHead numSelected={selected.length}
                     order={order}
                     orderBy={orderBy}
                     onSelectAllClick={handleSelectAllClick}
@@ -1295,7 +1290,7 @@ export default function EnhancedTable() {
                 </Table>
               </TableContainer>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[5, 10, 25, 50, 100]}
                 component="div"
                 count={fileRows.length}
                 rowsPerPage={rowsPerPage}
