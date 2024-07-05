@@ -412,11 +412,11 @@ async function receiver(username: any, senderSocket: net.Socket): Promise<void> 
   });
 }
 
-function get_device_name(): string {
+export function get_device_name(): string {
   return os.hostname();
 }
 
-function get_current_date_and_time(): string {
+export function get_current_date_and_time(): string {
   const now: Date = new Date();
   const year: number = now.getFullYear();
   const month: number = now.getMonth() + 1; // Month is zero-based, so we add 1
@@ -472,7 +472,7 @@ function old_get_directory_info() {
   return filesInfo;
 }
 
-function get_directory_info() {
+export function get_directory_info() {
   const bclouddirectoryName = "BCloud";
   const bclouddirectoryPath = os.homedir() + `/${bclouddirectoryName}`;
 

@@ -28,7 +28,7 @@ pub fn begin_single_small_ping_loop(stream: Arc<Mutex<WriteHalf<TcpStream>>>) {
         loop {
             println!("Sending small ping request");
             send_message(stream.clone(), "SMALL_PING_REQUEST:::END_OF_HEADER").await;
-            sleep(Duration::from_secs(30)).await;
+            sleep(Duration::from_secs(60)).await;
         }
     });
 }

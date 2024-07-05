@@ -152,20 +152,14 @@ export default function CustomizedTreeView() {
 
           }))
         );
-
+        setFileRows([]);
         setFileRows(buildTree(files));
+        console.log("file tree rebuilt")
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
     fetchData();
-
-    // Set up an interval to call fetchData every 3000 milliseconds (3 seconds)
-    const intervalId = setInterval(fetchData, 3000);
-
-    // Return a clean-up function that clears the interval when the component unmounts
-    return () => clearInterval(intervalId);
-
   }, [updates]);
 
   const handleNodeSelect = (event: React.SyntheticEvent, nodeId: string) => {
