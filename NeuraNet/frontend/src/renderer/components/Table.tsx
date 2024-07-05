@@ -301,7 +301,7 @@ export default function EnhancedTable() {
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [fileRows, setFileRows] = useState<FileData[]>([]); // State for storing fetched file data
   const [allFiles, setAllFiles] = useState<FileData[]>([]);
-  const { global_file_path, global_file_path_device } = useAuth();
+  const { global_file_path, global_file_path_device, setGlobal_file_path } = useAuth();
   const [isAddingFolder, setIsAddingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [disableFetch, setDisableFetch] = useState(false);
@@ -538,8 +538,6 @@ export default function EnhancedTable() {
     console.log("handling download click")
     let result = download_file(selectedFileNames, selectedDeviceNames);
     console.log(result)
-
-
   };
 
   const [deleteloading, setdeleteLoading] = useState<boolean>(false);
@@ -550,8 +548,41 @@ export default function EnhancedTable() {
     return;
   }
 
+  const oldhandleBackClick = async () => {
+    // Check if global_file_path is defined and not null
+    if (global_file_path) {
+      const newPath = global_file_path.substring(0, global_file_path.lastIndexOf('/'));
+      setGlobal_file_path(newPath);
+    } else {
+      console.warn("Global file path is not defined or is null");
+    }
+  };
 
+  const [backHistory, setBackHistory] = useState<any[]>([]);
+  const [forwardHistory, setForwardHistory] = useState<any[]>([]);
 
+  const handleBackClick = async () => {
+    if (global_file_path) {
+      const newPath = global_file_path.substring(0, global_file_path.lastIndexOf('/'));
+      setBackHistory([...backHistory, global_file_path]); // Add current path to back history
+      setGlobal_file_path(newPath);
+      setForwardHistory([]); // Clear forward history
+      console.log(backHistory);
+    } else {
+      console.warn("Global file path is not defined or is null");
+    }
+  };
+
+  const handleForwardClick = async () => {
+    if (backHistory.length > 0) {
+      const lastBackPath = backHistory[backHistory.length - 1];
+      setBackHistory(backHistory.slice(0, -1)); // Remove the last back path
+      setForwardHistory([global_file_path, ...forwardHistory]); // Add current path to forward history
+      setGlobal_file_path(lastBackPath);
+    } else {
+      console.warn("No back history available");
+    }
+  };
   const handleAddFolderClick = async () => {
     console.log("Add folder clicked")
     setDisableFetch(true);
@@ -897,7 +928,7 @@ export default function EnhancedTable() {
                 loading={deleteloading}
                 loadingPosition="end"
                 // endIcon={<NavigateBeforeOutlinedIcon />}
-                onClick={handleDeleteClick} size="small">
+                onClick={handleBackClick} size="small">
                 {/* {buttonText} */}
                 {deleteloading ? '' : "<"}
               </LoadingButton>
@@ -909,7 +940,7 @@ export default function EnhancedTable() {
                 loading={deleteloading}
                 loadingPosition="end"
                 // endIcon={<NavigateNextOutlinedIcon />}
-                onClick={handleDeleteClick} size="small">
+                onClick={handleForwardClick} size="small">
                 {/* {buttonText} */}
                 {deleteloading ? '' : ">"}
               </LoadingButton>
