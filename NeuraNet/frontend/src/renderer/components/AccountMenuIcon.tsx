@@ -52,7 +52,7 @@ export default function AccountMenuIcon() {
 
   const handleLogout = () => {
     setredirect_to_login(true);
-
+    localStorage.removeItem('authToken');
 
   };
 
@@ -130,7 +130,7 @@ export default function AccountMenuIcon() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={() => { setredirect_to_login(true) }}>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>
