@@ -67,6 +67,7 @@ import Snackbar from '@mui/material/Snackbar';
 import delete_file from './scripts/delete';
 import { download_file } from './scripts/download_file';
 import { get_current_date_and_time, get_device_name, get_directory_info } from './scripts/receiver';
+import { UpdateDevices } from './scripts/update_devices';
 import upload_file from './scripts/upload';
 import DataManagementCard from './TreeView';
 import CustomizedTreeView from './TreeView';
@@ -250,59 +251,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-interface EnhancedTableToolbarProps {
-  numSelected: number;
-}
-
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected } = props;
-
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        }),
-      }}
-    >
-      {numSelected > 0 ? (
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-        </Typography>
-      )}
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
-  );
-}
-
 
 
 export default function EnhancedTable() {
@@ -328,34 +276,6 @@ export default function EnhancedTable() {
       const file = fileRows.find(file => file.id === id);
       return file ? file.fileName : null;
     }).filter(fileName => fileName !== null); // Filter out any null values if a file wasn't found
-  };
-
-  const handleApiCall = async () => {
-    const selectedFileNames = getSelectedFileNames();
-
-    // Prepare the request options for fetch
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Include other headers as needed
-      },
-      body: JSON.stringify({
-        files: selectedFileNames,
-      }),
-    };
-
-    try {
-      const response = await fetch('http://localhost:5000/request_file_test', requestOptions);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log('API Response:', data);
-      // Handle your response here
-    } catch (error) {
-      console.error('API call error:', error);
-    }
   };
 
 
@@ -558,21 +478,68 @@ export default function EnhancedTable() {
   };
 
   const [deleteloading, setdeleteLoading] = useState<boolean>(false);
+
   const handleDeleteClick = async () => {
     setdeleteLoading(true);
-    delete_file(selectedFileNames, selectedDeviceNames);
-    setdeleteLoading(false);
-    return;
-  }
+    const deletePromises: Promise<void>[] = [];  // Array to hold promises for deletion operations
 
-  const oldhandleBackClick = async () => {
-    // Check if global_file_path is defined and not null
-    if (global_file_path) {
-      const newPath = global_file_path.substring(0, global_file_path.lastIndexOf('/'));
-      setGlobal_file_path(newPath);
-    } else {
-      console.warn("Global file path is not defined or is null");
+    selectedFileNames.forEach((fileName: string) => {
+      const currentPath: string = global_file_path ?? '';
+      const filePath: string = path.join(currentPath, fileName);
+      console.log(filePath);
+
+      // Create a promise for each file operation and push it to the array
+      const deletePromise = new Promise<void>((resolve, reject) => {
+        fs.stat(filePath, (err: NodeJS.ErrnoException | null, stats: fs.Stats) => {
+          if (err) {
+            console.error(`Error reading file stats: ${err}`);
+            reject(err);
+            return;
+          }
+          if (stats.isDirectory()) {
+            fs.rmdir(filePath, { recursive: true }, (err: NodeJS.ErrnoException | null) => {
+              if (err) {
+                console.error(`Error deleting directory: ${err}`);
+                reject(err);
+              } else {
+                console.log(`Directory '${fileName}' deleted successfully at ${filePath}`);
+                resolve();
+              }
+            });
+          } else if (stats.isFile()) {
+            fs.unlink(filePath, (err: NodeJS.ErrnoException | null) => {
+              if (err) {
+                console.error(`Error deleting file: ${err}`);
+                reject(err);
+              } else {
+                console.log(`File '${fileName}' deleted successfully at ${filePath}`);
+                resolve();
+              }
+            });
+          }
+        });
+      });
+
+      deletePromises.push(deletePromise);
+    });
+
+    try {
+      // Wait for all delete operations to complete
+      await Promise.all(deletePromises);
+      console.log('All files deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting files:', error);
     }
+
+    setdeleteLoading(false);
+    setIsAddingFolder(false);
+    setNewFolderName("");
+    setDisableFetch(false);
+
+    // Run update devices function after all deletions are complete
+    const update_result = await UpdateDevices(username);
+    console.log(update_result);
+    setUpdates(updates + 1);
   };
 
   const [backHistory, setBackHistory] = useState<any[]>([]);
@@ -627,14 +594,7 @@ export default function EnhancedTable() {
   const handleFolderNameSave = async () => {
     if (newFolderName.trim() === "") {
       setIsAddingFolder(false);
-      if (updates === null) {
-        setUpdates(1);
-        console.log(updates)
-      }
-      else {
-        setUpdates(updates + 1);
-      }
-
+      setUpdates(updates + 1);
       return; // Exit if the folder name is empty
     }
 
@@ -662,54 +622,9 @@ export default function EnhancedTable() {
     setNewFolderName("");
     setDisableFetch(false);
 
-    let user = username || "user";
-    let device_number = 0;
-    let device_name = get_device_name();
-    let files = get_directory_info();
-    let date_added = get_current_date_and_time();
-
-    const device_info_json: SmallDeviceInfo = {
-      user,
-      device_number,
-      device_name,
-      files,
-      date_added,
-    };
-
-    console.log(device_info_json);
-
-    const response = await axios.post(`https://website2-v3xlkt54dq-uc.a.run.app/update_devices/${username}/`, device_info_json);
-
-    if (response.status === 200) {
-      if (response.data.response === 'success') {
-        console.log("Successfully updated devices");
-        if (updates === null) {
-          setUpdates(1);
-        }
-        else {
-          setUpdates(updates + 1);
-        }
-        if (updates === null) {
-          setUpdates(1);
-        }
-        else {
-          setUpdates(updates + 1);
-        }
-
-      }
-      else {
-        console.log("Failed to update devices");
-        console.log(response.data)
-      }
-    }
-    if (response.status === 400) {
-      console.log("Bad request");
-    }
-    if (response.status === 404) {
-      console.log("error");
-    }
-
-
+    const update_result = await UpdateDevices(username);
+    console.log(update_result)
+    setUpdates(updates + 1);
   };
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
