@@ -403,32 +403,45 @@ export default function EnhancedTable() {
 
     console.log(newSelectedFileNames);
 
+    const newSelectedFilePaths = newSelected
+      .map(id => fileRows.find(file => file.id === id)?.filePath)
+      .filter(name => name !== undefined) as string[];
+
+    console.log(newSelectedFilePaths[0]);
+
+
+
+
     // Assuming the directory structure is based on `BCloud` in user's home directory
+    //
     const directoryName = "BCloud";
     const directoryPath = join(os.homedir(), directoryName);
 
+
     let fileFound = false;
+    let folderFound = false;
     let filePath = '';
 
     try {
-      const files = await readdir(directoryPath);
 
-      for (const file of files) {
-        const fullPath = join(directoryPath, file);
-        const fileStat = await stat(fullPath);
-
-        if (fileStat.isFile() && file === fileName) {
-          fileFound = true;
-          console.log(`File '${fileName}' found in directory.`);
-          filePath = fullPath;
-          break;
-        }
+      const fileStat = await stat(newSelectedFilePaths[0]);
+      if (fileStat.isFile()) {
+        fileFound = true;
+        console.log(`File '${fileName}' found in directory.`);
       }
-
+      if (fileStat.isDirectory()) {
+        folderFound = true;
+        setGlobal_file_path(newSelectedFilePaths[0]);
+      }
       if (fileFound) {
         // Send an IPC message to the main process to handle opening the file
         console.log(`Opening file '${fileName}'...`);
-        shell.openPath(filePath);
+        shell.openPath(newSelectedFilePaths[0]);
+      }
+      if (folderFound) {
+        // Send an IPC message to the main process to handle opening the file
+        console.log(`Opening folder '${fileName}'...`);
+        // shell.openPath(newSelectedFilePaths[0]);
       } else {
         console.error(`File '${fileName}' not found in directory.`);
       }
