@@ -101,6 +101,29 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) -> io::Re
                 .await;
                 continue;
             }
+            if file_type == "PING_REQUEST_RESPONSE" {
+                let mut complete_data = buffer_str.to_string();
+                loop {
+                    let bytes_read = reader.read(&mut buffer).await?;
+                    if bytes_read == 0 {
+                        break;
+                    }
+                    let data_chunk = String::from_utf8_lossy(&buffer[..bytes_read]);
+                    complete_data.push_str(&data_chunk);
+
+                    if complete_data.contains("END_OF_JSON") {
+                        println!("complete message: {}", complete_data);
+                        break;
+                    }
+                }
+                // Process the complete data
+                ping_handler::process_new_ping_request_response(
+                    Arc::clone(&writer),
+                    &complete_data,
+                )
+                .await;
+                continue;
+            }
         }
 
         // Process the message

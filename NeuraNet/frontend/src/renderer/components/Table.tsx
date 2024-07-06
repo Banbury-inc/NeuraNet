@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 import { exec } from "child_process";
 import { join } from 'path';
 import { shell } from 'electron';
+import isEqual from 'lodash/isEqual';
 import axios from 'axios';
 import ButtonBase from '@mui/material/ButtonBase';
 import { alpha } from '@mui/material/styles';
@@ -339,6 +340,58 @@ export default function EnhancedTable() {
   }, [updates]);
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    const fetchData = async () => {
+      try {
+        const response = await axios.get<{
+          devices: any[];
+          first_name: string;
+          last_name: string;
+        }>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
+
+        const { first_name, last_name, devices } = response.data;
+        setFirstname(first_name);
+        setLastname(last_name);
+
+        const newFiles = devices.flatMap((device, index) =>
+          device.files.map((file: any, fileIndex: number) => ({
+            id: index * 1000 + fileIndex,
+            fileName: file["file_name"],
+            fileSize: formatBytes(file["file_size"]),
+            kind: file["kind"],
+            filePath: file["file_path"],
+            dateUploaded: file["date_uploaded"],
+            deviceID: device.device_number,
+            deviceName: device.device_name,
+            helpers: 0,
+            available: device.online || 0 > 1 ? "Available" : "Unavailable",
+          }))
+        );
+
+        if (!disableFetch) {
+          if (!isEqual(newFiles, allFiles)) {
+            console.log("Updating files...");
+            setAllFiles(newFiles);
+
+
+          } else {
+            console.log("No changes in files.");
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+    intervalId = setInterval(fetchData, 5000);
+    return () => clearInterval(intervalId);
+  }, [username, disableFetch, allFiles]); // Include allFiles in the dependency array
+
+
+  useEffect(() => {
     const pathToShow = global_file_path || '/';
     const pathSegments = pathToShow.split('/').filter(Boolean).length;
 
@@ -359,6 +412,7 @@ export default function EnhancedTable() {
     });
 
     setFileRows(filteredFiles);
+
   }, [global_file_path, global_file_path_device, allFiles]);
 
 
