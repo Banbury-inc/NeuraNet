@@ -1101,8 +1101,8 @@ export default function EnhancedTable() {
             </Grid>
           </CardContent>
         </Card>
-        <Card variant="outlined" sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
-          <CardContent sx={{ height: '100%', overflow: 'auto' }}>
+        <Card variant="outlined" sx={{ flexGrow: 1, height: '100%', width: '100%', overflow: 'hidden' }}>
+          <CardContent sx={{ height: '100%', width: '100%', overflow: 'auto' }}>
             <Box my={0} sx={{ width: '85vw', height: '100%' }}>
               <TableContainer sx={{ maxHeight: '90%', overflowY: 'auto', overflowX: 'auto' }}>
                 <Table aria-labelledby="tableTitle" size="small">

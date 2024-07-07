@@ -145,7 +145,7 @@ let senderSocket: net.Socket | null = null;
 
 function connectToRelayServer(): net.Socket {
   // const RELAY_HOST = '0.0.0.0'; // Change this to your actual server IP
-  const RELAY_HOST = '216.21.192.85'; // Change this to your actual server IP
+  const RELAY_HOST = '192.168.1.200'; // Change this to your actual server IP
   const RELAY_PORT = 443;
 
   // Create a new socket and connect
