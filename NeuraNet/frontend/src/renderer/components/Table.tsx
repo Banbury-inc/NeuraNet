@@ -938,7 +938,7 @@ export default function EnhancedTable() {
   };
   return (
     // <Box sx={{ width: '100%', pl: 4, pr: 4, mt: 0, pt: 5 }}>
-    <Box sx={{ width: '100%', pl: 0, pr: 0, mt: 0, pt: 5}}>
+    <Box sx={{ width: '100%', pl: 0, pr: 0, mt: 0, pt: 3 }}>
 
       {/* <Stack spacing={2}> */}
       {/*   <Grid container justifyContent="space-between" alignItems="center" spacing={2}> */}
@@ -966,130 +966,132 @@ export default function EnhancedTable() {
 
       <Card variant='outlined' sx={{ flexGrow: 0 }}>
         <CardContent>
-          <Grid container spacing={2}>
-          <Grid item>
-              <Tooltip title="Navigate back">
-              <Button
-              onClick={handleBackClick}
-              >
-                <NavigateBeforeOutlinedIcon
-                  fontSize="inherit"
-                />
-              </Button>
-              </Tooltip>
-            </Grid>
-            <Grid item>
-              <Tooltip title="Navigate forward">
-              <Button
-              onClick={handleForwardClick}
-              >
-                <NavigateNextOutlinedIcon
-                  fontSize="inherit"
-                />
-              </Button>
-              </Tooltip>
-            </Grid>
- 
-           <Grid item>
-              <Tooltip title="New folder">
-              <Button
-              onClick={handleAddFolderClick}
-              >
-                <CreateNewFolderOutlinedIcon
-                  fontSize="inherit"
-                />
-              </Button>
-              </Tooltip>
-            </Grid>
- 
-             <Grid item>
-              <Tooltip title="Upload">
-                <NewInputFileUploadButton />
-              </Tooltip>
-            </Grid>
-            <Grid item>
-              <Tooltip title="Download">
-              <Button
-              onClick={handleDownloadClick}
-              >
-                <DownloadIcon
-                  fontSize="inherit"
-                />
-              </Button>
-              </Tooltip>
-            </Grid>
-            <Grid item>
-              <Tooltip title="Share">
-              <Button
-              onClick={handleDownloadClick}
-              >
-                <PersonAddAlt1Icon
-                  fontSize="inherit"
-                />
-              </Button>
-              </Tooltip>
-            </Grid>
-            <Grid item>
-              <Tooltip title="Delete">
-              <Button
-              onClick={handleDeleteClick}
-              >
-                <DeleteIcon
-                  fontSize="inherit"
-                />
-              </Button>
-              </Tooltip>
-            </Grid>
-
-
-            <Grid item>
-              <Stack spacing={2} sx={{ width: 300, alignItems: 'right', }}>
-                <Autocomplete
-                  freeSolo
-                  fullWidth
-                  id="free-solo-2-demo"
-                  disableClearable
-                  options={top100Films.map((option: any) => option.title)}
-
-                  renderInput={(params: any) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      label="Search input"
-                      size='small'
-                      InputProps={{
-                        ...params.InputProps,
-                        type: 'search',
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={() => console.log('Search icon clicked')}
-                              edge="end"
-                            >
-                              <SearchIcon />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-
-
+          <Stack spacing={2} direction="row">
+            <Grid container spacing={2}>
+              <Grid item>
+                <Tooltip title="Navigate back">
+                  <Button
+                    onClick={handleBackClick}
+                  >
+                    <NavigateBeforeOutlinedIcon
+                      fontSize="inherit"
                     />
-                  )}
-                />
-              </Stack>
-            </Grid>
-            <Grid item>
-              <TaskBadge />
-            </Grid>
-            <Grid item>
-              <AccountMenuIcon />
-            </Grid>
+                  </Button>
+                </Tooltip>
+              </Grid>
+              <Grid item>
+                <Tooltip title="Navigate forward">
+                  <Button
+                    onClick={handleForwardClick}
+                  >
+                    <NavigateNextOutlinedIcon
+                      fontSize="inherit"
+                    />
+                  </Button>
+                </Tooltip>
+              </Grid>
 
-          </Grid>
+              <Grid item>
+                <Tooltip title="New folder">
+                  <Button
+                    onClick={handleAddFolderClick}
+                  >
+                    <CreateNewFolderOutlinedIcon
+                      fontSize="inherit"
+                    />
+                  </Button>
+                </Tooltip>
+              </Grid>
 
+              <Grid item>
+                <Tooltip title="Upload">
+                  <NewInputFileUploadButton />
+                </Tooltip>
+              </Grid>
+              <Grid item>
+                <Tooltip title="Download">
+                  <Button
+                    onClick={handleDownloadClick}
+                  >
+                    <DownloadIcon
+                      fontSize="inherit"
+                    />
+                  </Button>
+                </Tooltip>
+              </Grid>
+              <Grid item>
+                <Tooltip title="Share">
+                  <Button
+                    onClick={handleDownloadClick}
+                  >
+                    <PersonAddAlt1Icon
+                      fontSize="inherit"
+                    />
+                  </Button>
+                </Tooltip>
+              </Grid>
+              <Grid item>
+                <Tooltip title="Delete">
+                  <Button
+                    onClick={handleDeleteClick}
+                  >
+                    <DeleteIcon
+                      fontSize="inherit"
+                    />
+                  </Button>
+                </Tooltip>
+              </Grid>
+            </Grid>
+            <Grid container spacing={0} justifyContent='flex-end' alignItems='flex-end'>
+              {/* <Grid item> */}
+              {/*   <Stack spacing={0} sx={{ width: 300, justifyContent: 'center', mt: 0 }}> */}
+              {/*     <Autocomplete */}
+              {/*       freeSolo */}
+              {/*       fullWidth */}
+              {/*       id="free-solo-2-demo" */}
+              {/*       disableClearable */}
+              {/*       options={top100Films.map((option: any) => option.title)} */}
+
+              {/*       renderInput={(params: any) => ( */}
+              {/*         <TextField */}
+              {/*           {...params} */}
+              {/*           fullWidth */}
+              {/*           label="Search input" */}
+              {/*           size='small' */}
+              {/*           InputProps={{ */}
+              {/*             ...params.InputProps, */}
+              {/*             type: 'search', */}
+              {/*             endAdornment: ( */}
+              {/*               <InputAdornment position="end"> */}
+              {/*                 <IconButton */}
+              {/*                   onClick={() => console.log('Search icon clicked')} */}
+              {/*                   edge="end" */}
+              {/*                 > */}
+              {/*                   <SearchIcon /> */}
+              {/*                 </IconButton> */}
+              {/*               </InputAdornment> */}
+              {/*             ), */}
+              {/*           }} */}
+
+
+              {/*         /> */}
+              {/*       )} */}
+              {/*     /> */}
+              {/*   </Stack> */}
+              {/* </Grid> */}
+              <Grid item>
+                {/* <TaskBadge /> */}
+              </Grid>
+              <Grid item>
+                <AccountMenuIcon />
+              </Grid>
+
+
+            </Grid>
+          </Stack>
         </CardContent>
       </Card>
-      <Stack direction="row" spacing={0} sx={{ width: '100%', height: '85vh', overflow: 'hidden' }}>
+      <Stack direction="row" spacing={0} sx={{ width: '100%', height: '95vh', overflow: 'hidden' }}>
         <Card variant="outlined" sx={{ overflow: 'auto' }}>
           <CardContent>
             <Grid container spacing={4}>
@@ -1101,7 +1103,7 @@ export default function EnhancedTable() {
         </Card>
         <Card variant="outlined" sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
           <CardContent sx={{ height: '100%', overflow: 'auto' }}>
-            <Box my={0} sx={{ width: '80vw', height: '100%' }}>
+            <Box my={0} sx={{ width: '85vw', height: '100%' }}>
               <TableContainer sx={{ maxHeight: '90%', overflowY: 'auto', overflowX: 'auto' }}>
                 <Table aria-labelledby="tableTitle" size="small">
                   <EnhancedTableHead numSelected={selected.length}

@@ -61,10 +61,10 @@ const linuxTheme: TitleBarTheme = {
   bar: {
     palette: 'dark', // Choose between 'light' or 'dark'
     height: '42px', // Set the bar height
-    // background: '#212121', // Slightly lighter for elements considered "paper"
+    background: '#212121', // Slightly lighter for elements considered "paper"
     // background: '#24292e', // Slightly lighter for elements considered "paper"
 
-    background: '#171717', // Slightly lighter for elements considered "paper"
+    // background: '#171717', // Slightly lighter for elements considered "paper"
     color: '#fff', // White text color
     // borderBottom: '2px solid #000', // Slightly darker border at the bottom
 
@@ -84,11 +84,13 @@ const linuxTheme: TitleBarTheme = {
   controls: {
     layout: 'right', // Position the controls on the right
     normal: {
-      default: { background: '#171717', color: '#fff' },
+      // default: { background: '#171717', color: '#fff' },
+      default: { background: '#212121', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
     close: {
-      default: { background: '#171717', color: '#fff' },
+      // default: { background: '#171717', color: '#fff' },
+      default: { background: '#212121', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
   },
@@ -113,10 +115,10 @@ const win32Theme: TitleBarTheme = {
   bar: {
     palette: 'dark', // Choose between 'light' or 'dark'
     height: '42px', // Set the bar height
-    // background: '#212121', // Slightly lighter for elements considered "paper"
+    background: '#212121', // Slightly lighter for elements considered "paper"
     // background: '#24292e', // Slightly lighter for elements considered "paper"
 
-    background: '#171717', // Slightly lighter for elements considered "paper"
+    // background: '#171717', // Slightly lighter for elements considered "paper"
     color: '#fff', // White text color
     // borderBottom: '2px solid #000', // Slightly darker border at the bottom
 
@@ -136,11 +138,13 @@ const win32Theme: TitleBarTheme = {
   controls: {
     layout: 'right', // Position the controls on the right
     normal: {
-      default: { background: '#171717', color: '#fff' },
+      // default: { background: '#171717', color: '#fff' },
+      default: { background: '#212121', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
     close: {
-      default: { background: '#171717', color: '#fff' },
+      // default: { background: '#171717', color: '#fff' },
+      default: { background: '#212121', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
   },
