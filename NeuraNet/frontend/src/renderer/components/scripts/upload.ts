@@ -6,6 +6,7 @@ import * as dotenv from 'dotenv';
 import * as net from 'net';
 import * as crypto from 'crypto';
 import ConfigParser from 'configparser';
+import { useAuth } from '../../context/AuthContext';
 
 dotenv.config();
 
@@ -52,8 +53,9 @@ function saveCredentials(credentials: Record<string, string>): void {
   fs.writeFileSync(credentialsFilePath, JSON.stringify(credentials));
 }
 
-function upload_file(file_path: any) {
+function old_upload_file(file_path: any) {
   const senderSocket = connectToRelayServer();
+
   const endOfHeader = Buffer.from('END_OF_HEADER');
   const credentials = loadCredentials();
   let username = Object.keys(credentials)[0];
@@ -74,9 +76,30 @@ function upload_file(file_path: any) {
   return '';
 }
 
+function upload_file(file_path: any, global_file_path: any) {
 
-function main(file_path: any) {
-  const result = upload_file(file_path);
+  const directory_name: string = "BCloud";
+  const directory_path: string = path.join(os.homedir(), directory_name);
+  console.log("directory_path", directory_path);
+  console.log("file_path", file_path);
+  console.log("global_file_path", global_file_path);
+
+  try {
+    fs.copyFileSync(file_path, path.join(directory_path, path.basename(file_path)));
+    console.log(`File copied successfully to ${directory_name}`);
+  } catch (error) {
+    console.log(`Error copying file: ${error}`);
+  }
+
+  return '';
+}
+
+
+
+
+
+function main(file_path: any, global_file_path: any) {
+  const result = upload_file(file_path, file_path);
 }
 
 export default main;

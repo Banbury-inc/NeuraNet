@@ -7,7 +7,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import LoadingButton from '@mui/lab/LoadingButton';
 import uploadFile from './scripts/upload';
-
+import { useAuth } from '../context/AuthContext';
 
 
 const VisuallyHiddenInput = styled('input')({
@@ -24,7 +24,6 @@ const VisuallyHiddenInput = styled('input')({
 
 const InputFileUploadButton: React.FC = () => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) {
       console.log("No file selected.");
@@ -42,11 +41,11 @@ const InputFileUploadButton: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const runPythonScript = async (file: File) => {
 
-      setLoading(true);
-        uploadFile(file.path);
-         setLoading(false);
+    setLoading(true);
+    uploadFile(file.path, file.path);
+    setLoading(false);
 
-    } 
+  }
 
 
 
@@ -62,7 +61,7 @@ const InputFileUploadButton: React.FC = () => {
       <VisuallyHiddenInput
         type="file"
         onChange={handleFileChange}
-        // If you want to handle multiple files, you might consider adding the "multiple" attribute
+      // If you want to handle multiple files, you might consider adding the "multiple" attribute
       />
     </LoadingButton>
 
