@@ -133,7 +133,7 @@ export default function TaskBadge() {
               }
             }}
           >
-            <ShareIcon color="inherit" />
+            <ShareIcon fontSize="inherit" color="inherit" />
           </Badge>
         </Tooltip>
       </IconButton>

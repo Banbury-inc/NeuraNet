@@ -37,6 +37,7 @@ import { useLocation } from 'react-router-dom';
 import AccountMenuIcon from './AccountMenuIcon';
 import Login from './Login';
 import Profile from './Profile';
+import Tooltip from '@mui/material/Tooltip';
 import net from 'net';
 import * as receiver5 from '../../main/receiver5';
 import { receiver, send_login_request, connectToRelayServer } from './scripts/receiver';
@@ -44,6 +45,7 @@ import { receiver, send_login_request, connectToRelayServer } from './scripts/re
 const { ipcRenderer } = window.require('electron');
 
 const drawerWidth = 240;  // Change the width as needed
+// const drawerWidth = 150;  // Change the width as needed
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -62,7 +64,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   overflowX: 'hidden',
   width: `calc(${theme.spacing(7)} + 1px)`,
   [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
+    width: `calc(${theme.spacing(6)} + 1px)`,
   },
 });
 
@@ -161,27 +163,30 @@ export default function PermanentDrawerLeft() {
         sx={{
           '& .MuiDrawer-paper': {
             marginTop: '42px',
+            backgroundColor: theme.palette.background.default
           },
         }}
         variant="permanent"
         open={open}
         anchor="left"
       >
-        <DrawerHeader>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={toggleDrawer}
-            edge="start"
-            sx={{
-              marginRight: 0,
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-        </DrawerHeader>
+        {/* <DrawerHeader> */}
+        {/*   <IconButton */}
+        {/*     color="inherit" */}
+        {/*     aria-label="open drawer" */}
+        {/*     onClick={toggleDrawer} */}
+        {/*     edge="start" */}
+        {/*     sx={{ */}
+        {/*       marginRight: 0, */}
+        {/*     }} */}
+        {/*   > */}
+        {/*     <MenuIcon /> */}
+        {/*   </IconButton> */}
+        {/* </DrawerHeader> */}
+
         <List>
           {['Dashboard', 'Files', 'Devices', 'AI', 'Profile'].map((text, index) => (
+            <Tooltip title={text} key={text} placement="right">
             <ListItem key={text} disablePadding>
               <ListItemButton
                 sx={{
@@ -197,42 +202,45 @@ export default function PermanentDrawerLeft() {
                   aria-label="open drawer"
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : 'auto',
                     justifyContent: 'center',
                   }}
+
                 >
                   {(() => {
                     switch (index % 5) {
                       case 0:
-                        return <DashboardIcon />;
+                        return <DashboardIcon fontSize='inherit' />;
                       case 1:
-                        return <FolderIcon />;
+                        return <FolderIcon fontSize='inherit' />;
                       case 2:
-                        return <DevicesIcon />;
+                        return <DevicesIcon fontSize='inherit' />;
                       case 3:
-                        return <AutoAwesomeIcon />;
+                        return <AutoAwesomeIcon fontSize='inherit' />;
                       case 4:
-                        return <AccountBoxIcon />;
+                        return <AccountBoxIcon fontSize='inherit' />;
                       default:
                         return null;
                     }
                   })()}
                 </ListItemIcon>
-                <ListItemText
-                  secondary={text}
-                  sx={{
-                    opacity: open ? 1 : 1,
-                    display: 'block',
-                    textAlign: 'center',
-                  }}
-                />
+                {/*   <ListItemText */}
+                {/*     secondary={text} */}
+                {/*     sx={{ */}
+                {/*       opacity: open ? 1 : 1, */}
+                {/*       display: 'block', */}
+                {/*       textAlign: 'center', */}
+                {/*     }} */}
+                {/*   /> */}
               </ListItemButton>
             </ListItem>
+            </Tooltip>
           ))}
         </List>
         <Divider />
         <List>
           {['Settings'].map((text) => (
+
+            <Tooltip title={text} key={text} placement="right">
             <ListItem key={text} disablePadding>
               <ListItemButton
                 sx={{
@@ -248,22 +256,23 @@ export default function PermanentDrawerLeft() {
                   aria-label="open drawer"
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : 'auto',
+                    // mr: open ? 3 : 'auto',
                     justifyContent: 'center',
                   }}
                 >
-                  <SettingsIcon />
+                  <SettingsIcon fontSize='inherit' />
                 </ListItemIcon>
-                <ListItemText
-                  secondary={text}
-                  sx={{
-                    opacity: open ? 1 : 1,
-                    display: 'block',
-                    textAlign: 'center',
-                  }}
-                />
+                {/* <ListItemText */}
+                {/*   secondary={text} */}
+                {/*   sx={{ */}
+                {/*     opacity: open ? 1 : 1, */}
+                {/*     display: 'block', */}
+                {/*     textAlign: 'center', */}
+                {/*   }} */}
+                {/* /> */}
               </ListItemButton>
             </ListItem>
+            </Tooltip>
           ))}
         </List>
       </Drawer>

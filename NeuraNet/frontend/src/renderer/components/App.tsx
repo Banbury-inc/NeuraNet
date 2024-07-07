@@ -1,4 +1,4 @@
-import { Box, CssBaseline, ThemeProvider } from "@mui/material";
+import { Box, CssBaseline, rgbToHex, ThemeProvider } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import theme from "../theme";
 import PermanentDrawerLeft from "./Drawer";
@@ -23,7 +23,8 @@ const DarwinTheme: TitleBarTheme = {
   bar: {
     palette: 'dark', // Choose between 'light' or 'dark'
     height: '42px', // Set the bar height
-    background: '#171717', // Slightly lighter for elements considered "paper"
+    // background: '#171717', // Slightly lighter for elements considered "paper"
+    background: '#212121', // Slightly lighter for elements considered "paper"
     // background: '#24292e', // Slightly lighter for elements considered "paper"
     color: '#fff', // White text color
     borderBottom: 'solid #424242', // Slightly darker border at the bottom
@@ -227,8 +228,8 @@ export default function App(): JSX.Element {
               backgroundColor: (theme) => theme.palette.background.default,
             }}
           >
-          {/*   <main>  */}
-              {/* <Signin /> */}
+            {/*   <main>  */}
+            {/* <Signin /> */}
             {/*   <Routes> */}
             {/*     <Route path="/" element={<Signin />} /> */}
             {/*     <Route path="/main" element={<Main />} /> */}
@@ -241,12 +242,12 @@ export default function App(): JSX.Element {
 
 
             <main>
-            <Signin />
-            {/* <Routes> */}
-            {/*   <Route path="/" element={<Signin />} /> */}
-            {/*   <Route path="/login" element={<Signin />} /> */}
-            {/*   <Route path="/register" element={<Signup />} /> */}
-            {/* </Routes> */}
+              <Signin />
+              {/* <Routes> */}
+              {/*   <Route path="/" element={<Signin />} /> */}
+              {/*   <Route path="/login" element={<Signin />} /> */}
+              {/*   <Route path="/register" element={<Signup />} /> */}
+              {/* </Routes> */}
             </main>
             {/* <Main /> */}
 

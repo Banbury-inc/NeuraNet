@@ -19,7 +19,9 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import DevicesIcon from '@mui/icons-material/Devices';
 import TableCell from '@mui/material/TableCell';
+
 import TableContainer from '@mui/material/TableContainer';
+import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
 import { Skeleton } from '@mui/material';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
@@ -52,6 +54,7 @@ import { CardContent, Container } from "@mui/material";
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import InputFileUploadButton from './uploadfilebutton';
+import NewInputFileUploadButton from './newuploadfilebutton';
 import AccountMenuIcon from './AccountMenuIcon';
 import { useAuth } from '../context/AuthContext';
 import Card from '@mui/material/Card';
@@ -934,111 +937,113 @@ export default function EnhancedTable() {
     }
   };
   return (
-    <Box sx={{ width: '100%', pl: 4, pr: 4, mt: 0, pt: 5 }}>
-      <Stack spacing={2}>
-        <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
-          <Grid item>
-            <Typography variant="h2" textAlign="left">
-              Files
-            </Typography>
-          </Grid>
+    // <Box sx={{ width: '100%', pl: 4, pr: 4, mt: 0, pt: 5 }}>
+    <Box sx={{ width: '100%', pl: 0, pr: 0, mt: 0, pt: 5}}>
 
-          <Grid item>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-              <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
-                <TaskBadge />
-                <AccountMenuIcon />
-              </Stack>
-            </Box>
-          </Grid>
+      {/* <Stack spacing={2}> */}
+      {/*   <Grid container justifyContent="space-between" alignItems="center" spacing={2}> */}
+      {/*     <Grid item> */}
+      {/*       <Typography variant="h2" textAlign="left"> */}
+      {/*         Files */}
+      {/*       </Typography> */}
+      {/*     </Grid> */}
 
-        </Grid>
+      {/*     <Grid item> */}
+      {/*       <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}> */}
+      {/*         <Stack direction="row" spacing={0} sx={{ width: '100%' }}> */}
+      {/*           <TaskBadge /> */}
+      {/*           <AccountMenuIcon /> */}
+      {/*         </Stack> */}
+      {/*       </Box> */}
+      {/*     </Grid> */}
 
-        <Grid container spacing={2}>
-        </Grid>
+      {/*   </Grid> */}
 
-      </Stack>
+      {/*   <Grid container spacing={2}> */}
+      {/*   </Grid> */}
+
+      {/* </Stack> */}
+
       <Card variant='outlined' sx={{ flexGrow: 0 }}>
         <CardContent>
           <Grid container spacing={2}>
+          <Grid item>
+              <Tooltip title="Navigate back">
+              <Button
+              onClick={handleBackClick}
+              >
+                <NavigateBeforeOutlinedIcon
+                  fontSize="inherit"
+                />
+              </Button>
+              </Tooltip>
+            </Grid>
             <Grid item>
-              <LoadingButton
-                variant="outlined"
-                loading={deleteloading}
-                loadingPosition="end"
-                // endIcon={<NavigateBeforeOutlinedIcon />}
-                onClick={handleBackClick} size="small">
-                {/* {buttonText} */}
-                {deleteloading ? '' : "<"}
-              </LoadingButton>
+              <Tooltip title="Navigate forward">
+              <Button
+              onClick={handleForwardClick}
+              >
+                <NavigateNextOutlinedIcon
+                  fontSize="inherit"
+                />
+              </Button>
+              </Tooltip>
+            </Grid>
+ 
+           <Grid item>
+              <Tooltip title="New folder">
+              <Button
+              onClick={handleAddFolderClick}
+              >
+                <CreateNewFolderOutlinedIcon
+                  fontSize="inherit"
+                />
+              </Button>
+              </Tooltip>
+            </Grid>
+ 
+             <Grid item>
+              <Tooltip title="Upload">
+                <NewInputFileUploadButton />
+              </Tooltip>
+            </Grid>
+            <Grid item>
+              <Tooltip title="Download">
+              <Button
+              onClick={handleDownloadClick}
+              >
+                <DownloadIcon
+                  fontSize="inherit"
+                />
+              </Button>
+              </Tooltip>
+            </Grid>
+            <Grid item>
+              <Tooltip title="Share">
+              <Button
+              onClick={handleDownloadClick}
+              >
+                <PersonAddAlt1Icon
+                  fontSize="inherit"
+                />
+              </Button>
+              </Tooltip>
+            </Grid>
+            <Grid item>
+              <Tooltip title="Delete">
+              <Button
+              onClick={handleDeleteClick}
+              >
+                <DeleteIcon
+                  fontSize="inherit"
+                />
+              </Button>
+              </Tooltip>
             </Grid>
 
-            <Grid item>
-              <LoadingButton
-                variant="outlined"
-                loading={deleteloading}
-                loadingPosition="end"
-                // endIcon={<NavigateNextOutlinedIcon />}
-                onClick={handleForwardClick} size="small">
-                {/* {buttonText} */}
-                {deleteloading ? '' : ">"}
-              </LoadingButton>
-            </Grid>
 
             <Grid item>
-              <LoadingButton
-                variant="outlined"
-                loading={deleteloading}
-                loadingPosition="end"
-                endIcon={<AddIcon />}
-                onClick={handleAddFolderClick} size="small">
-                {/* {buttonText} */}
-                {deleteloading ? 'Loading...' : "Folder"}
-              </LoadingButton>
-            </Grid>
-
-            <Grid item>
-              <InputFileUploadButton />
-
-            </Grid>
-            {/* // download button */}
-            <Grid item>
-              <LoadingButton variant="outlined" loading={loading} loadingPosition="end"
-                endIcon={<DownloadIcon />} onClick={handleDownloadClick} size="small">
-                {/* {buttonText} */}
-                {loading ? 'Loading...' : buttonText}
-              </LoadingButton>
-            </Grid>
-
-
-            <Grid item>
-              <LoadingButton
-                variant="outlined"
-                loading={deleteloading}
-                loadingPosition="end"
-                endIcon={<PersonAddAlt1Icon />}
-                onClick={handleDeleteClick} size="small">
-                {/* {buttonText} */}
-                {deleteloading ? 'Loading...' : "Share"}
-              </LoadingButton>
-            </Grid>
-
-            <Grid item>
-              <LoadingButton
-                variant="outlined"
-                loading={deleteloading}
-                loadingPosition="end"
-                endIcon={<DeleteIcon />}
-                onClick={handleDeleteClick} size="small">
-                {/* {buttonText} */}
-                {deleteloading ? 'Loading...' : "Delete"}
-              </LoadingButton>
-            </Grid>
-
-
-
-            <Grid item>
-              <Stack spacing={2} sx={{ width: 300 }}>
+              <Stack spacing={2} sx={{ width: 300, alignItems: 'right', }}>
                 <Autocomplete
                   freeSolo
                   fullWidth
@@ -1072,6 +1077,12 @@ export default function EnhancedTable() {
                   )}
                 />
               </Stack>
+            </Grid>
+            <Grid item>
+              <TaskBadge />
+            </Grid>
+            <Grid item>
+              <AccountMenuIcon />
             </Grid>
 
           </Grid>

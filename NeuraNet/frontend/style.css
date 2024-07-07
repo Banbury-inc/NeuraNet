@@ -8,7 +8,8 @@ body {
   position: fixed;
   height: 32px;
   width: calc(100% - 2px); /*Compensate for body 1px border*/
-  background: #254053;
+  /* background: #254053; */
+  background: rgb(33, 33, 33);
   padding: 4px;
 }
 
