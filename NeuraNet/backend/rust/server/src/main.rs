@@ -28,7 +28,9 @@ async fn main() {
 
     println!("Welcome to the Banbury NeuraNet");
     // Start the async server
-    let listener = TcpListener::bind("127.0.0.1:443").await.unwrap();
+    // let listener = TcpListener::bind("127.0.0.1:443").await.unwrap();
+    let listener = TcpListener::bind("0.0.0.0:443").await.unwrap();
+    // let listener = TcpListener::bind("216.21.192.85:443").await.unwrap();
     // let clients = Arc::new(Mutex::new(Vec::new()));
     let clients = Arc::new(Mutex::new(HashMap::new()));
     loop {
