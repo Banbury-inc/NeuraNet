@@ -47,6 +47,7 @@
     "node-fetch": "^3.3.2",
     "node-process-hider": "^1.0.3",
     "notistack": "^3.0.1",
+    "ollama": "^0.5.2",
     "punycode": "^2.3.1",
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0",

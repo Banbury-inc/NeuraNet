@@ -53,7 +53,7 @@ import AddIcon from '@mui/icons-material/Add';
 import NavigateBeforeOutlinedIcon from '@mui/icons-material/NavigateBeforeOutlined';
 import NavigateNextOutlinedIcon from '@mui/icons-material/NavigateNextOutlined';
 import TextField from '@mui/material/TextField';
-
+import { chat } from './scripts/ai';
 
 
 
@@ -561,6 +561,9 @@ export default function AI() {
       };
     }, []);
 
+
+
+
     const handleClick = async () => {
 
       enqueueSnackbar('Downloading' + { selectedFileNames }, {
@@ -638,6 +641,19 @@ export default function AI() {
             </Box>
           </CardContent>
         </Card >
+        <Card variant='outlined' sx={{ flexGrow: 0 }}>
+          <CardContent>
+            <Button
+              onClick={chat}
+            >
+              Upload
+            </Button>
+
+
+          </CardContent>
+        </Card >
+
+
 
       </Stack>
 
