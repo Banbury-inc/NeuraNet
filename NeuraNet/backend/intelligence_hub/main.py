@@ -1,6 +1,8 @@
 import json
 import requests
 import termcolor
+import re
+from config import Config 
 
 '''
 Property of Banbury Innovations. All rights reserved.
@@ -71,7 +73,9 @@ class CriticAgent:
 
     def chat(self, messages):
         model = "llama3" 
-        title = termcolor.colored("Critic Agent: ", "blue")
+        title = termcolor.colored("Critic Agent: ", "yellow")
+        role = "You are a critic agent. Your responsibilllity is to take the following response and give a rating between 0-10 of how good you think the response is. You are also to provide feedback on why you gave that rating"
+        messages.insert(0, {"role": "system", "content": role})
         r = requests.post(
             "http://0.0.0.0:11434/api/chat",
             json={"model": model, "messages": messages, "stream": True},
@@ -94,12 +98,25 @@ class CriticAgent:
             if body.get("done", False):
                 message["content"] = output
                 return message
+    def parse_rating(self, response_text):
+        # Extract the rating from the response text
+        match = re.search(r'\b(\d+)\b', response_text)
+        if match:
+            rating = int(match.group(1))
+            if 0 <= rating <= 10:
+                return rating
+        return None
+
+
+
 
 class TaskManagementAgent:
 
     def chat(self, messages):
         model = "llama3" 
         title = termcolor.colored("Task Management Agent: ", "yellow")
+        role = "You are a task management agent. Your responsibilllity is to take the following task and break it down into a list of subtasks."
+        messages.insert(0, {"role": "system", "content": role})
         r = requests.post(
             "http://0.0.0.0:11434/api/chat",
             json={"model": model, "messages": messages, "stream": True},
@@ -126,37 +143,59 @@ class TaskManagementAgent:
 
 
 def main():
-    messages1 = []
-    messages2 = []
+    general_agent_messages = []
     task_management_agent_messages = []
     critic_agent_messages = []
 
-    user_input = input("Enter a prompt: ")
-
-
+    critic_rating = 0
+    
     while True:
+        user_input = input("Enter a prompt: ")
         if not user_input:
             exit()
         print()
-        messages1.append({"role": "user", "content": user_input})
 
+        general_agent_messages.append({"role": "user", "content": user_input})
         general_agent = GeneralAgent()
-        message1  = general_agent.chat(messages1)
-        messages1.append(message1)
+        general_agent_message  = general_agent.chat(general_agent_messages)
+        general_agent_messages.append(general_agent_message)
         print("\n\n")
 
-        user_input = message1["content"]
+        general_agent_message_content = general_agent_message["content"]
 
 
+        while critic_rating <= Config.critic_rating_threshold:
+            if Config.use_critic_agent == True:
+                critic_agent_messages.append({"role": "user", "content": general_agent_message_content})
+                critic_agent = CriticAgent()
+                critic_agent_message  = critic_agent.chat(critic_agent_messages)
+                critic_agent_messages.append(critic_agent_message)
+                print("\n\n")
+                #Parse the rating from the response text
+                critic_rating = critic_agent.parse_rating(critic_agent_message["content"])
+                if critic_rating is not None:
+                    print(f"Rating: {critic_rating}")
+                    print("\n\n")
+                else:
+                    print("Rating could not be parsed")
+                    print("\n\n")
+            else:
+                critic_rating = 10
 
-        messages2.append({"role": "user", "content": user_input})
+            if Config.use_task_management_agent == True:
+                task_management_agent_messages.append({"role": "user", "content": user_input})
+                task_management_agent = TaskManagementAgent()
+                task_management_agent_message  = task_management_agent.chat(task_management_agent_messages)
+                task_management_agent_messages.append(task_management_agent_message)
+                print("\n\n")
 
-        general_agent = GeneralAgent2()
-        message2  = general_agent.chat(messages2)
-        messages1.append(message1)
-        print("\n\n")
+            general_agent_messages.append({"role": "user", "content": critic_agent_message["content"]}) 
+            general_agent_message  = general_agent.chat(general_agent_messages)
+            general_agent_messages.append(general_agent_message)
+            print("\n\n")
 
-        user_input = message2["content"]
+            general_agent_message_content = general_agent_message["content"]
+
 
 
 
