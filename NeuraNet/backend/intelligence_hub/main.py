@@ -2,6 +2,7 @@ import json
 import requests
 import termcolor
 import re
+import argparse
 from config import Config 
 
 '''
@@ -16,7 +17,7 @@ class GeneralAgent:
 
     def chat(self, messages):
         model = "llama3" 
-        title = termcolor.colored("General Agent 1: ", "green")
+        title = termcolor.colored("General Agent: ", "green")
         r = requests.post(
             "http://0.0.0.0:11434/api/chat",
             json={"model": model, "messages": messages, "stream": True},
@@ -25,34 +26,6 @@ class GeneralAgent:
         r.raise_for_status()
         output = ""
 
-        print(title)
-        for line in r.iter_lines():
-            body = json.loads(line)
-            if "error" in body:
-                raise Exception(body["error"])
-            if body.get("done") is False:
-                message = body.get("message", "")
-                content = message.get("content", "")
-                output += content
-                # the response streams one token at a time, print that as we receive it
-                print(content, end="", flush=True)
-
-            if body.get("done", False):
-                message["content"] = output
-                return message
-
-class GeneralAgent2:
-
-    def chat(self, messages):
-        model = "llama3" 
-        title = termcolor.colored("General Agent 2: ", "red")
-        r = requests.post(
-            "http://0.0.0.0:11434/api/chat",
-            json={"model": model, "messages": messages, "stream": True},
-        stream=True
-        )
-        r.raise_for_status()
-        output = ""
         print(title)
         for line in r.iter_lines():
             body = json.loads(line)
@@ -146,11 +119,19 @@ def main():
     general_agent_messages = []
     task_management_agent_messages = []
     critic_agent_messages = []
-
     critic_rating = 0
+    loop = True
     
-    while True:
-        user_input = input("Enter a prompt: ")
+    while loop == True:
+        if Config.prompt_as_command_line_argument == True:
+            # Create the parser
+            parser = argparse.ArgumentParser(description='Ollama with two agents talking to each other')
+            parser.add_argument('prompt', type=str, help='The prompt to start the conversation')
+            args = parser.parse_args()
+            user_input = args.prompt
+            loop = False
+        else:
+            user_input = input("Enter a prompt: ")
         if not user_input:
             exit()
         print()
@@ -189,12 +170,14 @@ def main():
                 task_management_agent_messages.append(task_management_agent_message)
                 print("\n\n")
 
-            general_agent_messages.append({"role": "user", "content": critic_agent_message["content"]}) 
-            general_agent_message  = general_agent.chat(general_agent_messages)
-            general_agent_messages.append(general_agent_message)
-            print("\n\n")
+            
+            if Config.use_critic_agent == True:
+                general_agent_messages.append({"role": "user", "content": critic_agent_message["content"]}) 
+                general_agent_message  = general_agent.chat(general_agent_messages)
+                general_agent_messages.append(general_agent_message)
+                print("\n\n")
 
-            general_agent_message_content = general_agent_message["content"]
+                general_agent_message_content = general_agent_message["content"]
 
 
 
