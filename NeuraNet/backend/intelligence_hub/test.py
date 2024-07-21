@@ -6,6 +6,8 @@ from config import Config
 
 '''
 Make sure show agent dialogue is set to false in Config file before running
+
+SQuAD benchmark estimated to take around 6 hours. 
 '''
 
 # count the number of questions
