@@ -9,3 +9,6 @@ class Config:
     critic_rating_threshold = 9
 
 
+    run_squad_benchmark = True
+
+
