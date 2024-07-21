@@ -26,7 +26,8 @@ class GeneralAgent:
         r.raise_for_status()
         output = ""
 
-        print(title)
+        if Config.show_agent_dialogue == True:
+            print(title)
         for line in r.iter_lines():
             body = json.loads(line)
             if "error" in body:
@@ -36,7 +37,8 @@ class GeneralAgent:
                 content = message.get("content", "")
                 output += content
                 # the response streams one token at a time, print that as we receive it
-                print(content, end="", flush=True)
+                if Config.show_agent_dialogue == True:
+                    print(content, end="", flush=True)
 
             if body.get("done", False):
                 message["content"] = output
@@ -113,6 +115,14 @@ class TaskManagementAgent:
                 message["content"] = output
                 return message
 
+def run_as_function(user_input):
+    general_agent_messages = []
+ 
+    general_agent_messages.append({"role": "user", "content": user_input})
+    general_agent = GeneralAgent()
+    general_agent_message  = general_agent.chat(general_agent_messages)
+    general_agent_messages.append(general_agent_message)
+    return general_agent_message["content"]
 
 
 def main():
@@ -178,9 +188,8 @@ def main():
                 print("\n\n")
 
                 general_agent_message_content = general_agent_message["content"]
-
-
-
+        if Config.prompt_as_command_line_argument == True:
+            return general_agent_message_content
 
 
 
