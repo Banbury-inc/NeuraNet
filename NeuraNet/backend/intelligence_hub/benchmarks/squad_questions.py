@@ -36,9 +36,14 @@ def get():
 def save_predictions(predictions):
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    predictions_path = os.path.join(script_dir, 'pred.json')
+    predictions_path = os.path.join('pred.json')
     with open(predictions_path, 'w') as f:
         json.dump(predictions, f)
+
+def get_huggingface_dataset():
+    from datasets import load_dataset
+    ds = load_dataset("rajpurkar/squad_v2")
+    return ds
 
 def main():
     predictions = {}
@@ -50,8 +55,7 @@ def main():
     json_path = os.path.normpath(json_path)
 
     # Call the function with the correct path
-    get()
-    save_predictions(predictions)
+    squad_questions.get()
 
 if __name__ == "__main__":
     main()
