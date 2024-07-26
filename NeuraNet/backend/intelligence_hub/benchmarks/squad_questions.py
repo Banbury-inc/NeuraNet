@@ -42,7 +42,8 @@ def save_predictions(predictions):
 
 def get_huggingface_dataset():
     from datasets import load_dataset
-    ds = load_dataset("rajpurkar/squad_v2")
+    # ds = load_dataset("rajpurkar/squad_v2")
+    ds = load_dataset("rajpurkar/squad")
     return ds
 
 def main():
