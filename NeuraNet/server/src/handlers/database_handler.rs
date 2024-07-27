@@ -52,7 +52,7 @@ pub struct Devices {
     #[serde(default)]
     pub ip_address: String,
     #[serde(default)]
-    pub date_added: String,
+    pub date_added: Vec<String>,
     #[serde(default)]
     pub online: bool,
     #[serde(default)]
@@ -299,7 +299,7 @@ pub async fn update_devices(
     let update_doc = doc! {
         "devices.$.device_number": device_number,
         "devices.$.files": files_bson,
-        "devices.$.date_added": date_added,
+        // "devices.$.date_added": date_added,
         "devices.$.online": true,
     };
 
@@ -361,7 +361,6 @@ pub async fn append_device_info(
     let update_doc = doc! {
         "devices.$.device_number": device_number,
         "devices.$.files": files_bson.clone(),
-        "devices.$.date_added": date_added,
         "devices.$.storage_capacity_gb": storage_capacity_gb,
         "devices.$.ip_address": ip_address,
         "devices.$.avg_network_speed": avg_network_speed,
@@ -404,6 +403,8 @@ pub async fn append_device_info(
                     "devices.$.gpu_usage": gpu_usage,
                     "devices.$.cpu_usage": cpu_usage,
                     "devices.$.ram_usage": ram_usage,
+                    "devices.$.date_added": date_added,
+
                 }},
                 None,
             )
@@ -415,7 +416,7 @@ pub async fn append_device_info(
             "device_number": device_number,
             "files": files_bson,
             "storage_capacity_gb": storage_capacity_gb,
-            "date_added": date_added,
+            "date_added": vec![date_added],
             "ip_address": ip_address,
             "avg_network_speed": avg_network_speed,
             "upload_network_speed": vec![upload_network_speed],
