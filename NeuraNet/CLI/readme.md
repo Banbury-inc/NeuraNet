@@ -1,53 +1,21 @@
-This is a CLI tool for Banbury Cloud. 
+# Usage
 
+## Connect Devices
 
-In order to update the CLI tool:
+neuranet connect --device <device_id>
+neuranet connect --status
 
-python setup.py sdist bdist_wheel
-pip install .
+## Manage File Sharing
 
-In order to uninstall the CLI tool:
+neuranet share list
+neuranet share add <file_path>
+neuranet share remove <file_path>
 
-pip uninstall bcloud
+## Manage Distributed Inference
 
-
-
-In order to create a debain package:
-
-mkdir DEBIAN
-nvim DEBIAN/control
-
-control file:
-
-Package: your-cli-tool
-Version: 1.0
-Architecture: all  # Use "all" for architecture-independent packages
-Maintainer: Your Name <your@email.com>
-Description: Your CLI Tool Description
-Section: utils  # Choose an appropriate section
-Priority: optional
-
-
-This will create a deb file
-
-fpm -s python -t deb .
+neuranet inference start --model <model_path> --data <data_path>
+neuranet inference status <task_id>
+neuranet inference stop <task_id>
 
 
 
-
-
-
-
-
-# Instructions for macos installation
-In the dist directory with executable:
-
-sudo mv dist/bcloud /usr/local/binbcloud 
-
-sudo chmod +x /usr/local/bin/bcloud
-
-
-bcloud
-
-
-the command "cli" works... close enough for now... 
