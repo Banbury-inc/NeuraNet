@@ -68,7 +68,7 @@ const linuxTheme: TitleBarTheme = {
     color: '#fff', // White text color
     // borderBottom: '2px solid #000', // Slightly darker border at the bottom
 
-    borderBottom: '2px solid #424242', // Slightly darker border at the bottom
+    borderBottom: '1px solid #424242', // Slightly darker border at the bottom
     fontFamily: 'Arial, sans-serif', // Font family for the title bar text
     title: {
       align: 'left', // Align the title text to the left
@@ -122,7 +122,7 @@ const win32Theme: TitleBarTheme = {
     color: '#fff', // White text color
     // borderBottom: '2px solid #000', // Slightly darker border at the bottom
 
-    borderBottom: '2px solid #424242', // Slightly darker border at the bottom
+    borderBottom: '1px solid #424242', // Slightly darker border at the bottom
     fontFamily: 'Arial, sans-serif', // Font family for the title bar text
     title: {
       align: 'left', // Align the title text to the left

@@ -168,7 +168,7 @@ export default function PermanentDrawerLeft() {
           '& .MuiDrawer-paper': {
             marginTop: '42px',
             paddingLeft: '2px',
-            backgroundColor: theme.palette.background.default
+            backgroundColor: theme.palette.background.default,
           },
         }}
         variant="permanent"
