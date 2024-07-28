@@ -43,6 +43,9 @@ def main():
         # This assumes the original devices list and performance_data have matching order and contents
         original_device = next(d for d in devices if d['device_name'] == device['device_name'])
         device['capacity'] = original_device['capacity']  # Assign capacity from the original fetched data
+        device['ram_total'] = original_device.get('ram_total', 0)
+        device['ram_free'] = original_device.get('ram_free', 0)
+
 
     allocated_devices = allocate.files(scored_devices, files)
     
@@ -54,10 +57,16 @@ def main():
     for device in allocated_devices_with_cap:
         print(f"Device: {device['device_name']}, Stored Files: {device['files']}, Used Capacity: {device['used_capacity']}/{device['capacity']}")
 
-    allocated_blocks = allocate.blocks(scored_devices, total_num_blocks=32)
-    for device in allocated_blocks:
-        print(f"Device: {device['device_name']}, Blocks: {device['blocks']}")
+    total_num_blocks = 32
+    model_size_in_billion_parameters = 8  # Example size
 
+    block_allocations, is_fully_allocated = allocate.blocks(devices, total_num_blocks, model_size_in_billion_parameters)
+
+    print("Block Allocations:")
+    for device_name, blocks in block_allocations.items():
+        print(f"{device_name}: blocks: {blocks}")
+
+    print(f"Is fully allocated: {is_fully_allocated}")
 
 
 if __name__ == "__main__":
