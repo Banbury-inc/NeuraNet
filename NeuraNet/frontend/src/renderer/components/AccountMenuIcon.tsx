@@ -19,6 +19,7 @@ import { useAuth } from '../context/AuthContext';
 import Login from './Login';
 import isAuthenticated from './Login';
 import setshowMain from './Login';
+import { fontSize } from '@mui/system';
 export default function AccountMenuIcon() {
   const { username, first_name, last_name, setFirstname, setLastname, redirect_to_login, setredirect_to_login } = useAuth();
   const [showLogin, setShowLogin] = useState<boolean>(false);
@@ -65,17 +66,21 @@ export default function AccountMenuIcon() {
 
   return (
     <React.Fragment>
-      <Box sx={{ mr: '20px', display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+      <Box sx={{ mr: '20px', pb: '2px', display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         <Tooltip title="Account">
           <Chip
             avatar={
-              <Avatar>{first_name?.charAt(0) || ''}</Avatar>
+              <Avatar sx={{}} variant="circular">
+                {first_name?.charAt(0) || ''}
+              </Avatar>
             }
             label={`${first_name || ''} ${last_name || ''}`}
             onClick={handleClick}
+            size="small"
             aria-controls={open ? 'account-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
+            sx={{ fontSize: '12px' }}
           />
         </Tooltip>
       </Box>
@@ -88,14 +93,15 @@ export default function AccountMenuIcon() {
         PaperProps={{
           elevation: 0,
           sx: {
+            fontSize: 'inherit',
             overflow: 'visible',
             filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
             mt: 1.5,
             '& .MuiAvatar-root': {
-              width: 32,
-              height: 32,
+              width: 22,
+              height: 22,
               ml: -0.5,
-              mr: 1,
+              mr: 2,
             },
             '&::before': {
               content: '""',
@@ -105,7 +111,7 @@ export default function AccountMenuIcon() {
               right: 14,
               width: 10,
               height: 10,
-              bgcolor: 'background.paper',
+              bgcolor: 'background.default',
               transform: 'translateY(-50%) rotate(45deg)',
               zIndex: 0,
             },
@@ -115,24 +121,24 @@ export default function AccountMenuIcon() {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <MenuItem onClick={handleClose}>
-          <Avatar /> Profile
+          <Avatar sx={{ width: 2, height: 2 }} /> Profile
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
-            <PersonAddIcon fontSize="small" />
+            <PersonAddIcon fontSize="inherit" />
           </ListItemIcon>
           Add another account
         </MenuItem>
         <MenuItem onClick={handleSettingsClick}>
           <ListItemIcon>
-            <SettingsIcon fontSize="small" />
+            <SettingsIcon fontSize="inherit" />
           </ListItemIcon>
           Settings
         </MenuItem>
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
-            <LogoutIcon fontSize="small" />
+            <LogoutIcon fontSize="inherit" />
           </ListItemIcon>
           Logout
         </MenuItem>

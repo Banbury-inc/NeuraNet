@@ -52,20 +52,21 @@ const NewInputFileUploadButton: React.FC = () => {
 
   return (
     <Tooltip title="Upload file">
-   <LoadingButton component="label"
-      loading={loading}
-      loadingPosition="end"
+      <LoadingButton component="label"
+        loading={loading}
+        loadingPosition="end"
+        sx={{ paddingLeft: '4px', paddingRight: '4px', minWidth: '30px' }} // Adjust the left and right padding as needed
       // endIcon={<FileUploadIcon />}
-    >
-      <FileUploadIcon 
-        fontSize="inherit"
-        /> 
-      <VisuallyHiddenInput
-        type="file"
-        onChange={handleFileChange}
-      // If you want to handle multiple files, you might consider adding the "multiple" attribute
-      />
-    </LoadingButton>
+      >
+        <FileUploadIcon
+          fontSize="inherit"
+        />
+        <VisuallyHiddenInput
+          type="file"
+          onChange={handleFileChange}
+        // If you want to handle multiple files, you might consider adding the "multiple" attribute
+        />
+      </LoadingButton>
 
 
     </Tooltip>

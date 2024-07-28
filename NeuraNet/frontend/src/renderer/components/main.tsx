@@ -11,7 +11,9 @@ import MuiDrawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Icon from '@mui/material/Icon';
 import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -62,9 +64,9 @@ const closedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
+  width: `calc(${theme.spacing(4)} + 8px)`,
   [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(6)} + 1px)`,
+    width: `calc(${theme.spacing(4)} + 8px)`,
   },
 });
 
@@ -72,7 +74,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',
-  padding: theme.spacing(0, 1),
+  padding: theme.spacing(1, 1),
   ...theme.mixins.toolbar,
 }));
 
@@ -163,6 +165,7 @@ export default function PermanentDrawerLeft() {
         sx={{
           '& .MuiDrawer-paper': {
             marginTop: '42px',
+            paddingLeft: '2px',
             backgroundColor: theme.palette.background.default
           },
         }}
@@ -187,52 +190,47 @@ export default function PermanentDrawerLeft() {
         <List>
           {['Dashboard', 'Files', 'Devices', 'AI', 'Profile'].map((text, index) => (
             <Tooltip title={text} key={text} placement="right">
-            <ListItem key={text} disablePadding>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  flexDirection: open ? 'row' : 'column',
-                  px: 2.5,
-                }}
-                onClick={() => setActiveTab(text)}
-              >
-                <ListItemIcon
-                  color="inherit"
-                  aria-label="open drawer"
+              <ListItem key={text} sx={{ padding: '2px', paddingTop: '2px' }}>
+                <Button
+                  onClick={() => setActiveTab(text)}
                   sx={{
-                    minWidth: 0,
-                    justifyContent: 'center',
-                  }}
+                    paddingLeft: '4px',
+                    paddingRight: '4px',
+                    minWidth: '30px',
+                  }} // Adjust the left and right padding as needed
 
                 >
-                  {(() => {
-                    switch (index % 5) {
-                      case 0:
-                        return <DashboardIcon fontSize='inherit' />;
-                      case 1:
-                        return <FolderIcon fontSize='inherit' />;
-                      case 2:
-                        return <DevicesIcon fontSize='inherit' />;
-                      case 3:
-                        return <AutoAwesomeIcon fontSize='inherit' />;
-                      case 4:
-                        return <AccountBoxIcon fontSize='inherit' />;
-                      default:
-                        return null;
-                    }
-                  })()}
-                </ListItemIcon>
-                {/*   <ListItemText */}
-                {/*     secondary={text} */}
-                {/*     sx={{ */}
-                {/*       opacity: open ? 1 : 1, */}
-                {/*       display: 'block', */}
-                {/*       textAlign: 'center', */}
-                {/*     }} */}
-                {/*   /> */}
-              </ListItemButton>
-            </ListItem>
+                  <Icon
+                    fontSize="inherit"
+                  >
+
+                    {(() => {
+                      switch (index % 5) {
+                        case 0:
+                          return <DashboardIcon fontSize='inherit' />;
+                        case 1:
+                          return <FolderIcon fontSize='inherit' />;
+                        case 2:
+                          return <DevicesIcon fontSize='inherit' />;
+                        case 3:
+                          return <AutoAwesomeIcon fontSize='inherit' />;
+                        case 4:
+                          return <AccountBoxIcon fontSize='inherit' />;
+                        default:
+                          return null;
+                      }
+                    })()}
+                  </Icon>
+                  {/*   <ListItemText */}
+                  {/*     secondary={text} */}
+                  {/*     sx={{ */}
+                  {/*       opacity: open ? 1 : 1, */}
+                  {/*       display: 'block', */}
+                  {/*       textAlign: 'center', */}
+                  {/*     }} */}
+                  {/*   /> */}
+                </Button>
+              </ListItem>
             </Tooltip>
           ))}
         </List>
@@ -241,37 +239,31 @@ export default function PermanentDrawerLeft() {
           {['Settings'].map((text) => (
 
             <Tooltip title={text} key={text} placement="right">
-            <ListItem key={text} disablePadding>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  flexDirection: open ? 'row' : 'column',
-                  px: 2.5,
-                }}
-                onClick={() => setActiveTab(text)}
-              >
-                <ListItemIcon
-                  color="inherit"
-                  aria-label="open drawer"
+              <ListItem key={text} sx={{ padding: '2px' }}>
+                <Button
                   sx={{
-                    minWidth: 0,
-                    // mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
+                    paddingLeft: '4px',
+                    paddingRight: '4px',
+                    minWidth: '30px',
+                  }} // Adjust the left and right padding as needed
+
+                  onClick={() => setActiveTab(text)}
                 >
-                  <SettingsIcon fontSize='inherit' />
-                </ListItemIcon>
-                {/* <ListItemText */}
-                {/*   secondary={text} */}
-                {/*   sx={{ */}
-                {/*     opacity: open ? 1 : 1, */}
-                {/*     display: 'block', */}
-                {/*     textAlign: 'center', */}
-                {/*   }} */}
-                {/* /> */}
-              </ListItemButton>
-            </ListItem>
+                  <Icon
+                    fontSize='inherit'
+                  >
+                    <SettingsIcon fontSize='inherit' />
+                  </Icon>
+                  {/* <ListItemText */}
+                  {/*   secondary={text} */}
+                  {/*   sx={{ */}
+                  {/*     opacity: open ? 1 : 1, */}
+                  {/*     display: 'block', */}
+                  {/*     textAlign: 'center', */}
+                  {/*   }} */}
+                  {/* /> */}
+                </Button>
+              </ListItem>
             </Tooltip>
           ))}
         </List>
@@ -299,7 +291,7 @@ export default function PermanentDrawerLeft() {
           }
         })()}
       </Box>
-    </Box>
+    </Box >
   );
 }
 

@@ -20,7 +20,6 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import DevicesIcon from '@mui/icons-material/Devices';
 import TableCell from '@mui/material/TableCell';
-
 import TableContainer from '@mui/material/TableContainer';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
 import { Skeleton } from '@mui/material';
@@ -944,7 +943,7 @@ export default function EnhancedTable() {
   };
   return (
     // <Box sx={{ width: '100%', pl: 4, pr: 4, mt: 0, pt: 5 }}>
-    <Box sx={{ width: '100%', pl: 0, pr: 0, mt: 0, pt: 3 }}>
+    <Box sx={{ width: '100%', pt: 0 }}>
 
       {/* <Stack spacing={2}> */}
       {/*   <Grid container justifyContent="space-between" alignItems="center" spacing={2}> */}
@@ -970,14 +969,15 @@ export default function EnhancedTable() {
 
       {/* </Stack> */}
 
-      <Card variant='outlined' sx={{ flexGrow: 0 }}>
-        <CardContent>
-          <Stack spacing={2} direction="row" sx={{ flexWrap: 'nowrap' }}>
-            <Grid container spacing={2} sx={{ display: 'flex', flexWrap: 'nowrap' }}>
-              <Grid item>
+      <Card variant='outlined'>
+        <CardContent sx={{ paddingBottom: '4px !important', paddingTop: '46px' }}>
+          <Stack direction="row" spacing={2}>
+            <Grid container spacing={0} sx={{ display: 'flex', flexWrap: 'nowrap', pt: 0 }}>
+              <Grid item sx={{ pr: 1 }}>
                 <Tooltip title="Navigate back">
                   <Button
                     onClick={handleBackClick}
+                    sx={{ minWidth: '30px' }} // Adjust the left and right padding as needed
                   >
                     <NavigateBeforeOutlinedIcon
                       fontSize="inherit"
@@ -985,10 +985,12 @@ export default function EnhancedTable() {
                   </Button>
                 </Tooltip>
               </Grid>
-              <Grid item>
+              <Grid item sx={{ pr: 1 }}>
                 <Tooltip title="Navigate forward">
                   <Button
                     onClick={handleForwardClick}
+
+                    sx={{ paddingLeft: '4px', paddingRight: '4px', minWidth: '30px' }} // Adjust the left and right padding as needed
                   >
                     <NavigateNextOutlinedIcon
                       fontSize="inherit"
@@ -997,10 +999,12 @@ export default function EnhancedTable() {
                 </Tooltip>
               </Grid>
 
-              <Grid item>
+              <Grid item sx={{ pr: 1 }}>
                 <Tooltip title="New folder">
                   <Button
                     onClick={handleAddFolderClick}
+
+                    sx={{ paddingLeft: '4px', paddingRight: '4px', minWidth: '30px' }} // Adjust the left and right padding as needed
                   >
                     <CreateNewFolderOutlinedIcon
                       fontSize="inherit"
@@ -1009,15 +1013,16 @@ export default function EnhancedTable() {
                 </Tooltip>
               </Grid>
 
-              <Grid item>
+              <Grid item sx={{ pr: 1 }}>
                 <Tooltip title="Upload">
                   <NewInputFileUploadButton />
                 </Tooltip>
               </Grid>
-              <Grid item>
+              <Grid item sx={{ pr: 1 }}>
                 <Tooltip title="Download">
                   <Button
                     onClick={handleDownloadClick}
+                    sx={{ paddingLeft: '4px', paddingRight: '4px', minWidth: '30px' }} // Adjust the left and right padding as needed
                   >
                     <DownloadIcon
                       fontSize="inherit"
@@ -1025,10 +1030,11 @@ export default function EnhancedTable() {
                   </Button>
                 </Tooltip>
               </Grid>
-              <Grid item>
+              <Grid item sx={{ pr: 1 }}>
                 <Tooltip title="Share">
                   <Button
                     onClick={handleDownloadClick}
+                    sx={{ paddingLeft: '4px', paddingRight: '4px', minWidth: '30px' }} // Adjust the left and right padding as needed
                   >
                     <PersonAddAlt1Icon
                       fontSize="inherit"
@@ -1036,10 +1042,15 @@ export default function EnhancedTable() {
                   </Button>
                 </Tooltip>
               </Grid>
-              <Grid item>
+              <Grid item sx={{ pr: 1 }}>
                 <Tooltip title="Delete">
                   <Button
                     onClick={handleDeleteClick}
+                    sx={{
+                      paddingLeft: '4px',
+                      paddingRight: '4px',
+                      minWidth: '30px',
+                    }} // Adjust the left and right padding as needed
                   >
                     <DeleteIcon
                       fontSize="inherit"
@@ -1048,7 +1059,7 @@ export default function EnhancedTable() {
                 </Tooltip>
               </Grid>
             </Grid>
-            <Grid container spacing={0} justifyContent='flex-end' alignItems='flex-end'>
+            <Grid container justifyContent='flex-end' alignItems='flex-end'>
               {/* <Grid item> */}
               {/*   <Stack spacing={0} sx={{ width: 300, justifyContent: 'center', mt: 0 }}> */}
               {/*     <Autocomplete */}
@@ -1089,7 +1100,13 @@ export default function EnhancedTable() {
                 {/* <TaskBadge /> */}
               </Grid>
               <Grid item>
-                <AccountMenuIcon />
+
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                  <Stack direction="row">
+                    {/* <TaskBadge /> */}
+                    <AccountMenuIcon />
+                  </Stack>
+                </Box>
               </Grid>
 
 
