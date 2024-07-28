@@ -60,7 +60,7 @@ def main():
     total_num_blocks = 32
     model_size_in_billion_parameters = 8  # Example size
 
-    block_allocations, is_fully_allocated = allocate.blocks(devices, total_num_blocks, model_size_in_billion_parameters)
+    block_allocations, is_fully_allocated = allocate.blocks(scored_devices, total_num_blocks, model_size_in_billion_parameters)
 
     print("Block Allocations:")
     for device_name, blocks in block_allocations.items():
