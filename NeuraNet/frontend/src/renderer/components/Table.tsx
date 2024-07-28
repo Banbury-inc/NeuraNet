@@ -7,6 +7,7 @@ import { join } from 'path';
 import { shell } from 'electron';
 import isEqual from 'lodash/isEqual';
 import axios from 'axios';
+import { useMediaQuery } from '@mui/material';
 import ButtonBase from '@mui/material/ButtonBase';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -120,14 +121,13 @@ interface FileInfo {
   File_Path: string;
   Original_Device: string;
 }
-
 const headCells: HeadCell[] = [
-  { id: 'fileName', numeric: false, label: 'Name' },
-  { id: 'fileSize', numeric: false, label: 'Size' },
-  { id: 'kind', numeric: false, label: 'Kind' },
-  { id: 'deviceName', numeric: false, label: 'Location' },
-  { id: 'available', numeric: true, label: 'Status' },
-  { id: 'dateUploaded', numeric: true, label: 'Date Uploaded' },
+  { id: 'fileName', numeric: false, label: 'Name', isVisibleOnSmallScreen: true },
+  { id: 'fileSize', numeric: false, label: 'Size', isVisibleOnSmallScreen: true },
+  { id: 'kind', numeric: false, label: 'Kind', isVisibleOnSmallScreen: true },
+  { id: 'deviceName', numeric: false, label: 'Location', isVisibleOnSmallScreen: false },
+  { id: 'available', numeric: true, label: 'Status', isVisibleOnSmallScreen: false },
+  { id: 'dateUploaded', numeric: true, label: 'Date Uploaded', isVisibleOnSmallScreen: false },
 ];
 
 type Order = 'asc' | 'desc';
@@ -137,6 +137,7 @@ interface HeadCell {
   id: keyof FileData;
   label: string;
   numeric: boolean;
+  isVisibleOnSmallScreen: boolean;
 }
 
 interface EnhancedTableProps {
@@ -151,6 +152,7 @@ interface EnhancedTableProps {
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const isSmallScreen = useMediaQuery('(max-width:960px)');
   const createSortHandler = (property: keyof FileData) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
@@ -230,26 +232,28 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             }}
           />
         </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
+        {headCells
+          .filter(headCell => !isSmallScreen || headCell.isVisibleOnSmallScreen)
+          .map(headCell => (
+            <TableCell
+              key={headCell.id}
+              align={headCell.numeric ? 'right' : 'left'}
+              sortDirection={orderBy === headCell.id ? order : false}
             >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : 'asc'}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <Box component="span" sx={visuallyHidden}>
+                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  </Box>
+                ) : null}
+              </TableSortLabel>
+            </TableCell>
+          ))}
       </TableRow>
     </TableHead>
   );
@@ -258,6 +262,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 
 export default function EnhancedTable() {
+  const isSmallScreen = useMediaQuery('(max-width:960px)');
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof FileData>('fileName');
   const [selected, setSelected] = useState<readonly number[]>([]);
@@ -929,6 +934,7 @@ export default function EnhancedTable() {
     setIsAddingFolder(false);
   };
 
+
   const handleKeyPress = async (e: any) => {
     if (e.key === "Enter") {
       await handleFolderNameSave();
@@ -1103,7 +1109,7 @@ export default function EnhancedTable() {
         </Card>
         <Card variant="outlined" sx={{ flexGrow: 1, height: '100%', width: '100%', overflow: 'hidden' }}>
           <CardContent sx={{ height: '100%', width: '100%', overflow: 'auto' }}>
-            <Box my={0} sx={{ width: '85vw', height: '100%' }}>
+            <Box my={0}>
               <TableContainer sx={{ maxHeight: '90%', overflowY: 'auto', overflowX: 'auto' }}>
                 <Table aria-labelledby="tableTitle" size="small">
                   <EnhancedTableHead numSelected={selected.length}
@@ -1176,7 +1182,13 @@ export default function EnhancedTable() {
                                 </TableCell>
 
                                 <TableCell
-                                  sx={{ borderBottomColor: "#424242" }}
+                                  sx={{
+                                    borderBottomColor: "#424242",
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+
+                                  }}
                                   component="th"
                                   id={labelId}
                                   scope="row"
@@ -1231,14 +1243,18 @@ export default function EnhancedTable() {
 
 
                                 }} >{row.kind}</TableCell>
-                                <TableCell align="left" sx={{
-                                  borderBottomColor: "#424242",
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
+
+                                {(!isSmallScreen || headCells.find(cell => cell.id === 'deviceName')?.isVisibleOnSmallScreen) && (
+                                  <TableCell align="left" sx={{
+                                    borderBottomColor: "#424242",
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
 
 
-                                }} >{row.deviceName}</TableCell>
+                                  }} >{row.deviceName}
+                                  </TableCell>
+                                )}
 
                                 {/* <TableCell */}
                                 {/*   padding="normal" */}
@@ -1252,30 +1268,33 @@ export default function EnhancedTable() {
 
 
 
-                                <TableCell
-                                  padding="normal"
-                                  align="right"
-                                  sx={{
-                                    borderBottomColor: "#424242",
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    color: row.available === "Available" ? '#1DB954' : row.available === "Unavailable" ? 'red' : 'inherit',  // Default color is 'inherit'
-                                  }}
-                                >
-                                  {row.available}
-                                </TableCell>
-                                <TableCell
+                                {(!isSmallScreen || headCells.find(cell => cell.id === 'available')?.isVisibleOnSmallScreen) && (
+                                  <TableCell
+                                    align="right"
+                                    padding="normal"
+                                    sx={{
+                                      borderBottomColor: "#424242",
+                                      whiteSpace: 'nowrap',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      color: row.available === "Available" ? '#1DB954' : row.available === "Unavailable" ? 'red' : 'inherit',  // Default color is 'inherit'
+                                    }}
+                                  >
+                                    {row.available}
+                                  </TableCell>
+                                )}
 
-                                  padding="normal"
-                                  align="right" sx={{
+                                {(!isSmallScreen || headCells.find(cell => cell.id === 'dateUploaded')?.isVisibleOnSmallScreen) && (
+                                  <TableCell
+                                    padding="normal"
+                                    align="right" sx={{
 
-                                    borderBottomColor: "#424242",
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                  }} >{row.dateUploaded}</TableCell>
-
+                                      borderBottomColor: "#424242",
+                                      whiteSpace: 'nowrap',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                    }} >{row.dateUploaded}</TableCell>
+                                )}
 
 
 
