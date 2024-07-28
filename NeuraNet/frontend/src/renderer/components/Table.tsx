@@ -972,8 +972,8 @@ export default function EnhancedTable() {
 
       <Card variant='outlined' sx={{ flexGrow: 0 }}>
         <CardContent>
-          <Stack spacing={2} direction="row">
-            <Grid container spacing={2}>
+          <Stack spacing={2} direction="row" sx={{ flexWrap: 'nowrap' }}>
+            <Grid container spacing={2} sx={{ display: 'flex', flexWrap: 'nowrap' }}>
               <Grid item>
                 <Tooltip title="Navigate back">
                   <Button
