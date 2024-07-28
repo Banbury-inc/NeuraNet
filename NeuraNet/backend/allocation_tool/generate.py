@@ -1,8 +1,7 @@
-
 from transformers import AutoTokenizer
 from petals import AutoDistributedModelForCausalLM
 
-INITIAL_PEERS = ["/ip4/10.123.1.93/tcp/44903/p2p/QmNR1bpUDiHvpfLYYT5XSiuvT4xw7WQZFViUtgtBj7fZEw"]
+INITIAL_PEERS = ["/ip4/127.0.0.1/tcp/44331/p2p/QmTYiPX9ADQhNyMP6hWHkpwjdjpkFJMVAthU34orC6cgqg"]
 # Choose any model available at https://health.petals.dev
 # model_name = "meta-llama/Meta-Llama-3-8B-instruct"
 model_name = "meta-llama/Meta-Llama-3-8B-instruct"

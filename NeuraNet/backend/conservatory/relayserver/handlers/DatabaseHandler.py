@@ -73,6 +73,8 @@ class DatabaseHandler:
                               gpu_usage, 
                               cpu_usage, 
                               ram_usage, 
+                                ram_total,
+                               ram_free
                               predicted_upload_network_speed, 
                               predicted_download_network_speed, 
                               predicted_gpu_usage, 

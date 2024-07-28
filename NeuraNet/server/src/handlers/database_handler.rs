@@ -96,6 +96,10 @@ pub struct UsageStats {
     #[serde(default)]
     pub ram_usage: f64,
     #[serde(default)]
+    pub ram_total: f64,
+    #[serde(default)]
+    pub ram_free: f64,
+    #[serde(default)]
     pub timestamp: String,
 }
 
@@ -346,6 +350,8 @@ pub async fn append_device_info(
     gpu_usage: f64,
     cpu_usage: f64,
     ram_usage: f64,
+    ram_total: f64,
+    ram_free: f64,
     network_reliability: f64,
     average_time_online: f64,
     device_priority: i64,
@@ -403,6 +409,8 @@ pub async fn append_device_info(
                     "devices.$.gpu_usage": gpu_usage,
                     "devices.$.cpu_usage": cpu_usage,
                     "devices.$.ram_usage": ram_usage,
+                    "devices.$.ram_total": ram_total,
+                    "devices.$.ram_free": ram_free,
                     "devices.$.date_added": date_added,
 
                 }},
@@ -424,6 +432,8 @@ pub async fn append_device_info(
             "gpu_usage": vec![gpu_usage],
             "cpu_usage": vec![cpu_usage],
             "ram_usage": vec![ram_usage],
+            "ram_total": vec![ram_total],
+            "ram_free": vec![ram_free],
             "network_reliability": network_reliability,
             "average_time_online": average_time_online,
             "device_priority": device_priority,

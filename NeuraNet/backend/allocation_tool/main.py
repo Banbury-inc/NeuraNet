@@ -1,4 +1,3 @@
-
 from api.get_data import Get
 from services.prediction_service import PredictionService
 from services.scoring_service import ScoringService
@@ -14,9 +13,12 @@ def main():
     for device in devices:
         device['capacity'] = device.get('storage_capacity_GB', 0)  # Default to 0 if not found
 
-    # date = f'2024-08-5 19:25:50'
-    date = f'2024-08-05 19:25:50'
-    performance_data = predict.performance_data(devices, date, show_graph=False)
+    date = f'2024-05-5 19:25:50.473372'
+    try:
+        performance_data = predict.performance_data(devices, date, show_graph=False)
+    except Exception as e:
+        print(f"Error: {e}")
+        return
 
     score = ScoringService() 
     scored_devices = score.devices(performance_data)
@@ -42,15 +44,22 @@ def main():
         original_device = next(d for d in devices if d['device_name'] == device['device_name'])
         device['capacity'] = original_device['capacity']  # Assign capacity from the original fetched data
 
-    allocated_devices = allocate.devices(scored_devices, files)
+    allocated_devices = allocate.files(scored_devices, files)
     
     for device in allocated_devices:
         print(f"Device: {device['device_name']}, Stored Files: {device['files']}, Used Capacity: {device['used_capacity']}/{device['capacity']}")
 
     print("")
-    allocated_devices_with_cap = allocate.devices_with_capacity_cap(scored_devices, files, .0001)
+    allocated_devices_with_cap = allocate.files_with_capacity_cap(scored_devices, files, .0001)
     for device in allocated_devices_with_cap:
         print(f"Device: {device['device_name']}, Stored Files: {device['files']}, Used Capacity: {device['used_capacity']}/{device['capacity']}")
 
+    allocated_blocks = allocate.blocks(scored_devices, total_num_blocks=32)
+    for device in allocated_blocks:
+        print(f"Device: {device['device_name']}, Blocks: {device['blocks']}")
+
+
+
 if __name__ == "__main__":
     main()
+

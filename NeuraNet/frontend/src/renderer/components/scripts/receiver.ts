@@ -45,6 +45,8 @@ interface DeviceInfo {
   gpu_usage: number;
   cpu_usage: number;
   ram_usage: number;
+  ram_total: number;
+  ram_free: number;
   predicted_upload_network_speed: number;
   predicted_download_network_speed: number;
   predicted_gpu_usage: number;
@@ -303,6 +305,8 @@ async function receiver(username: any, senderSocket: net.Socket): Promise<void> 
           let gpu_usage = await get_gpu_usage();
           let cpu_usage = await get_cpu_usage();
           let ram_usage = await get_ram_usage();
+          let ram_total = await get_ram_total();
+          let ram_free = await get_ram_free();
           let predicted_upload_network_speed = 0;
           let predicted_download_network_speed = 0;
           let predicted_gpu_usage = 0;
@@ -332,6 +336,8 @@ async function receiver(username: any, senderSocket: net.Socket): Promise<void> 
             gpu_usage,
             cpu_usage,
             ram_usage,
+            ram_total,
+            ram_free,
             predicted_upload_network_speed,
             predicted_download_network_speed,
             predicted_gpu_usage,
@@ -685,6 +691,53 @@ async function get_ram_usage(): Promise<number> {
     throw error; // Rethrow error to handle externally
   }
 }
+async function get_ram_total(): Promise<number> {
+  try {
+    const memData = await si.mem();
+    const totalMemory = memData.total || 0;
+    const usedMemory = memData.used || 0;
+    const freeMemory = memData.free || 0;
+
+    const usagePercentage = (usedMemory / totalMemory) * 100;
+
+    const ramUsage: memUsage = {
+      total: totalMemory,
+      free: freeMemory,
+      used: usedMemory,
+      usagePercentage: isNaN(usagePercentage) ? 0 : usagePercentage // Handle NaN case
+    };
+
+    return isNaN(totalMemory) ? 0 : totalMemory; // Handle NaN case
+  } catch (error) {
+    console.error('Error retrieving RAM usage:', error);
+    throw error; // Rethrow error to handle externally
+  }
+}
+async function get_ram_free(): Promise<number> {
+  try {
+    const memData = await si.mem();
+    const totalMemory = memData.total || 0;
+    const usedMemory = memData.used || 0;
+    const freeMemory = memData.free || 0;
+
+    const usagePercentage = (usedMemory / totalMemory) * 100;
+
+    const ramUsage: memUsage = {
+      total: totalMemory,
+      free: freeMemory,
+      used: usedMemory,
+      usagePercentage: isNaN(usagePercentage) ? 0 : usagePercentage // Handle NaN case
+    };
+
+    return isNaN(freeMemory) ? 0 : freeMemory; // Handle NaN case
+  } catch (error) {
+    console.error('Error retrieving RAM usage:', error);
+    throw error; // Rethrow error to handle externally
+  }
+}
+
+
+
 
 async function get_ip_address(): Promise<string> {
   let ip_address: string | null = null;

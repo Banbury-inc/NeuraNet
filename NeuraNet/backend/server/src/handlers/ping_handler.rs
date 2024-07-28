@@ -192,6 +192,14 @@ pub async fn process_ping_request_response(
             .get("ram_usage")
             .and_then(Value::as_f64)
             .unwrap_or_default();
+        let ram_total = json_value
+            .get("ram_total")
+            .and_then(Value::as_f64)
+            .unwrap_or_default();
+        let ram_free = json_value
+            .get("ram_free")
+            .and_then(Value::as_f64)
+            .unwrap_or_default();
         let network_reliability = json_value
             .get("network_reliability")
             .and_then(Value::as_f64)
@@ -227,6 +235,8 @@ pub async fn process_ping_request_response(
             gpu_usage,
             cpu_usage,
             ram_usage,
+            ram_total,
+            ram_free,
             network_reliability,
             average_time_online,
             device_priority,
@@ -310,6 +320,14 @@ pub async fn process_new_ping_request_response(
             .get("ram_usage")
             .and_then(Value::as_f64)
             .unwrap_or_default();
+        let ram_total = json_value
+            .get("ram_total")
+            .and_then(Value::as_f64)
+            .unwrap_or_default();
+        let ram_free = json_value
+            .get("ram_free")
+            .and_then(Value::as_f64)
+            .unwrap_or_default();
         let network_reliability = json_value
             .get("network_reliability")
             .and_then(Value::as_f64)
@@ -345,6 +363,8 @@ pub async fn process_new_ping_request_response(
             gpu_usage,
             cpu_usage,
             ram_usage,
+            ram_total,
+            ram_free,
             network_reliability,
             average_time_online,
             device_priority,

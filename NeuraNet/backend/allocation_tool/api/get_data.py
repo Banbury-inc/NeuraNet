@@ -26,11 +26,11 @@ class Get():
             device_files = device.get('files', [])  # Ensure there's a 'files' key in the device document
             for file in device_files:
                 # Validate the expected keys in each file dictionary
-                if 'File Name' in file and 'File Size' in file:
+                if 'file_name' in file and 'file_size' in file:
                     all_files.append({
-                        'file_name': file['File Name'],
+                        'file_name': file['file_name'],
                         'priority': "high",
-                        'size': file['File Size']
+                        'size': file['file_size']
                     })
         
         return all_files

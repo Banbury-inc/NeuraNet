@@ -299,7 +299,7 @@ pub async fn update_devices(
     let update_doc = doc! {
         "devices.$.device_number": device_number,
         "devices.$.files": files_bson,
-        "devices.$.date_added": date_added,
+        // "devices.$.date_added": date_added,
         "devices.$.online": true,
     };
 
@@ -346,6 +346,8 @@ pub async fn append_device_info(
     gpu_usage: f64,
     cpu_usage: f64,
     ram_usage: f64,
+    ram_total: f64,
+    ram_free: f64,
     network_reliability: f64,
     average_time_online: f64,
     device_priority: i64,
@@ -361,7 +363,7 @@ pub async fn append_device_info(
     let update_doc = doc! {
         "devices.$.device_number": device_number,
         "devices.$.files": files_bson.clone(),
-        "devices.$.date_added": date_added,
+        // "devices.$.date_added": date_added,
         "devices.$.storage_capacity_gb": storage_capacity_gb,
         "devices.$.ip_address": ip_address,
         "devices.$.avg_network_speed": avg_network_speed,
@@ -401,9 +403,12 @@ pub async fn append_device_info(
                 doc! { "$push": {
                     "devices.$.upload_network_speed": upload_network_speed,
                     "devices.$.download_network_speed": download_network_speed,
+                    "devices.$.date_added": date_added,
                     "devices.$.gpu_usage": gpu_usage,
                     "devices.$.cpu_usage": cpu_usage,
                     "devices.$.ram_usage": ram_usage,
+                    "devices.$.ram_total": ram_total,
+                    "devices.$.ram_free": ram_free,
                 }},
                 None,
             )
@@ -415,7 +420,7 @@ pub async fn append_device_info(
             "device_number": device_number,
             "files": files_bson,
             "storage_capacity_gb": storage_capacity_gb,
-            "date_added": date_added,
+            "date_added": vec![date_added],
             "ip_address": ip_address,
             "avg_network_speed": avg_network_speed,
             "upload_network_speed": vec![upload_network_speed],
@@ -423,6 +428,8 @@ pub async fn append_device_info(
             "gpu_usage": vec![gpu_usage],
             "cpu_usage": vec![cpu_usage],
             "ram_usage": vec![ram_usage],
+            "ram_total": vec![ram_total],
+            "ram_free": vec![ram_free],
             "network_reliability": network_reliability,
             "average_time_online": average_time_online,
             "device_priority": device_priority,
