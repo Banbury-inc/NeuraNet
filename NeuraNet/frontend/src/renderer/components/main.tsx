@@ -15,6 +15,7 @@ import Icon from '@mui/material/Icon';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import AI from './AI';
@@ -22,6 +23,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import Files from './files';
+import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
 import DevicesIcon from '@mui/icons-material/Devices';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -207,9 +209,9 @@ export default function PermanentDrawerLeft() {
                     {(() => {
                       switch (index % 5) {
                         case 0:
-                          return <DashboardIcon fontSize='inherit' />;
+                          return <SpaceDashboardOutlinedIcon fontSize='inherit' />;
                         case 1:
-                          return <FolderIcon fontSize='inherit' />;
+                          return <FolderOutlinedIcon fontSize='inherit' />;
                         case 2:
                           return <DevicesIcon fontSize='inherit' />;
                         case 3:
