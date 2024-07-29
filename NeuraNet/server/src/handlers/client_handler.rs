@@ -1,5 +1,8 @@
 extern crate tungstenite;
 extern crate url;
+use super::super::config::get_bind_address;
+use super::super::config::PRINT_HEADER;
+use super::super::config::PRINT_MESSAGE;
 use super::database_handler;
 use super::device_handler;
 use super::device_handler::ClientList;
@@ -61,7 +64,10 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) -> io::Re
         }
 
         let message: String = String::from_utf8_lossy(&buffer[..bytes_read]).to_string();
-        println!("Received message: {}", message);
+        let print_message = PRINT_MESSAGE;
+        if print_message {
+            println!("Received message: {}", message);
+        }
 
         let end_of_header = "END_OF_HEADER";
 
@@ -69,7 +75,9 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) -> io::Re
             let parts: Vec<&str> = message.split(end_of_header).collect();
             let header = parts[0];
             let buffer_str = parts[1];
-            println!("Header: {}", header);
+            if PRINT_HEADER {
+                println!("Header: {}", header);
+            }
 
             let header_parts: Vec<&str> = header.split(':').collect();
             if header_parts.len() < 4 {
@@ -89,7 +97,7 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) -> io::Re
                     complete_data.push_str(&data_chunk);
 
                     if complete_data.contains("END_OF_JSON") {
-                        println!("complete message: {}", complete_data);
+                        // println!("complete message: {}", complete_data);
                         break;
                     }
                 }
@@ -112,7 +120,7 @@ pub async fn handle_connection(stream: TcpStream, clients: ClientList) -> io::Re
                     complete_data.push_str(&data_chunk);
 
                     if complete_data.contains("END_OF_JSON") {
-                        println!("complete message: {}", complete_data);
+                        // println!("complete message: {}", complete_data);
                         break;
                     }
                 }
@@ -154,7 +162,6 @@ pub async fn process_message(
         let parts: Vec<&str> = message.split(end_of_header).collect();
         let header = parts[0];
         let buffer_str = parts[1];
-        println!("Header: {}", header);
 
         let header_parts: Vec<&str> = header.split(':').collect();
         if header_parts.len() < 4 {
@@ -170,7 +177,6 @@ pub async fn process_message(
         match file_type {
             "GREETINGS" => {
                 // println!("Received greetings from {}", client_id);
-                println!("1");
                 let stream_clone = Arc::clone(&stream);
                 tokio::spawn(async move {
                     ping_handler::begin_single_small_ping_loop(stream_clone);

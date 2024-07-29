@@ -303,8 +303,6 @@ pub async fn update_devices(
         "devices.$.online": true,
     };
 
-    println!("Checking if device already exists");
-
     let pipeline = vec![
         doc! { "$match": { "username": user }},
         doc! { "$unwind": "$devices" },
@@ -317,7 +315,9 @@ pub async fn update_devices(
         .await?;
 
     if device_exists.is_some() {
-        println!("Device already exists, updating device info");
+        if PRINT_DEVICE_EXISTS_UPDATING_INFO {
+            println!("Device already exists, updating device info");
+        }
         collection
             .update_one(
                 doc! { "username": user, "devices.device_name": device_name },

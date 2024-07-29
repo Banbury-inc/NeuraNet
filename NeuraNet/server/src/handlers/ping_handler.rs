@@ -1,3 +1,11 @@
+use super::super::config::PRINT_CHECKING_IF_DEVICE_EXISTS;
+use super::super::config::PRINT_DEVICE_EXISTS_UPDATING_INFO;
+
+use super::super::config::PRINT_MESSAGE;
+use super::super::config::PRINT_RECEIVED_PING_REQUEST;
+use super::super::config::PRINT_RECEIVED_SMALL_PING_REQUEST;
+use super::super::config::PRINT_SEND_PING_REQUEST;
+use super::super::config::PRINT_SEND_SMALL_PING_REQUEST;
 use super::database_handler;
 use super::database_handler::Files;
 use serde_json::{from_value, Value};
@@ -11,22 +19,27 @@ use tokio::time::{sleep, Duration};
 pub type ClientList = Arc<Mutex<HashMap<String, Vec<Arc<Mutex<TcpStream>>>>>>;
 
 pub async fn send_message(stream: Arc<Mutex<WriteHalf<TcpStream>>>, message: &str) {
-    println!("Sending message: {}", message);
+    if PRINT_MESSAGE {
+        println!("Sending message: {}", message);
+    }
     {
         let mut stream_lock = stream.lock().await; // Lock the mutex asynchronously
-        println!("Locked stream");
         if let Err(e) = stream_lock.write_all(message.as_bytes()).await {
             println!("Failed to send message: {}", e);
         }
     } // Release the lock here
-    println!("Message sent");
+    if PRINT_MESSAGE {
+        println!("Message sent");
+    }
 }
 
 // Function that continually sends a ping message to the stream.
 pub fn begin_single_small_ping_loop(stream: Arc<Mutex<WriteHalf<TcpStream>>>) {
     tokio::spawn(async move {
         loop {
-            println!("Sending small ping request");
+            if PRINT_SEND_SMALL_PING_REQUEST {
+                println!("Sending small ping request");
+            }
             send_message(stream.clone(), "SMALL_PING_REQUEST:::END_OF_HEADER").await;
             sleep(Duration::from_secs(60)).await;
         }
@@ -36,7 +49,9 @@ pub fn begin_single_ping_loop(stream: Arc<Mutex<WriteHalf<TcpStream>>>) {
     tokio::spawn(async move {
         loop {
             sleep(Duration::from_secs(10)).await;
-            println!("Sending ping request");
+            if PRINT_SEND_PING_REQUEST {
+                println!("Sending ping request");
+            }
             send_message(stream.clone(), "PING_REQUEST:::END_OF_HEADER").await;
             sleep(Duration::from_secs(120)).await;
         }
@@ -46,7 +61,9 @@ pub fn begin_single_ping_loop(stream: Arc<Mutex<WriteHalf<TcpStream>>>) {
 // Function that continually sends a ping message to the stream.
 pub fn send_ping(stream: Arc<Mutex<WriteHalf<TcpStream>>>) {
     tokio::spawn(async move {
-        println!("Sending small ping request");
+        if PRINT_SEND_SMALL_PING_REQUEST {
+            println!("Sending small ping request");
+        }
         send_message(stream.clone(), "SMALL_PING_REQUEST:::END_OF_HEADER").await;
     });
 }
@@ -55,7 +72,9 @@ pub async fn process_small_ping_request_response(
     stream: Arc<Mutex<WriteHalf<TcpStream>>>,
     buffer: &str,
 ) {
-    println!("Received small ping request response");
+    if PRINT_RECEIVED_SMALL_PING_REQUEST {
+        println!("Received small ping request response");
+    }
     let end_of_json = "END_OF_JSON";
 
     if buffer.contains(end_of_json) {
@@ -123,7 +142,9 @@ pub async fn process_ping_request_response(
     _device_name: &str,
     _file_size: &str,
 ) {
-    println!("Received ping request response");
+    if PRINT_RECEIVED_PING_REQUEST {
+        println!("Received ping request response");
+    }
     let end_of_json = "END_OF_JSON";
 
     if buffer.contains(end_of_json) {
@@ -220,7 +241,6 @@ pub async fn process_ping_request_response(
             .get("optimization_status")
             .and_then(Value::as_bool)
             .unwrap_or_default();
-        println!("Calling append device info");
         database_handler::append_device_info(
             username,
             device_number,
@@ -244,14 +264,18 @@ pub async fn process_ping_request_response(
             optimization_status,
         )
         .await;
-        println!("Uploaded device info");
+        if PRINT_DEVICE_EXISTS_UPDATING_INFO {
+            println!("Uploaded device info");
+        }
     }
 }
 pub async fn process_new_ping_request_response(
     stream: Arc<Mutex<WriteHalf<TcpStream>>>,
     buffer: &str,
 ) {
-    println!("Received ping request response");
+    if PRINT_RECEIVED_PING_REQUEST {
+        println!("Received ping request response");
+    }
     let end_of_json = "END_OF_JSON";
 
     if buffer.contains(end_of_json) {
@@ -324,11 +348,11 @@ pub async fn process_new_ping_request_response(
             .get("ram_total")
             .and_then(Value::as_f64)
             .unwrap_or_default();
-         let ram_free = json_value
+        let ram_free = json_value
             .get("ram_free")
             .and_then(Value::as_f64)
             .unwrap_or_default();
- 
+
         let network_reliability = json_value
             .get("network_reliability")
             .and_then(Value::as_f64)
@@ -349,7 +373,6 @@ pub async fn process_new_ping_request_response(
             .get("optimization_status")
             .and_then(Value::as_bool)
             .unwrap_or_default();
-        println!("Calling append device info");
         database_handler::append_device_info(
             username,
             device_number,
@@ -373,6 +396,8 @@ pub async fn process_new_ping_request_response(
             optimization_status,
         )
         .await;
-        println!("Uploaded device info");
+        if PRINT_DEVICE_EXISTS_UPDATING_INFO {
+            println!("Uploaded device info");
+        }
     }
 }

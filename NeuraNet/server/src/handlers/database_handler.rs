@@ -1,3 +1,9 @@
+use super::super::config::PRINT_CHECKING_IF_DEVICE_EXISTS;
+use super::super::config::PRINT_DEVICE_EXISTS_UPDATING_INFO;
+use super::super::config::PRINT_RECEIVED_PING_REQUEST;
+use super::super::config::PRINT_RECEIVED_SMALL_PING_REQUEST;
+use super::super::config::PRINT_SEND_PING_REQUEST;
+use super::super::config::PRINT_SEND_SMALL_PING_REQUEST;
 use super::ping_handler;
 use futures::stream::TryStreamExt;
 use mongodb::bson;
@@ -306,8 +312,9 @@ pub async fn update_devices(
         // "devices.$.date_added": date_added,
         "devices.$.online": true,
     };
-
-    println!("Checking if device already exists");
+    if PRINT_CHECKING_IF_DEVICE_EXISTS {
+        println!("Checking if device already exists");
+    }
 
     let pipeline = vec![
         doc! { "$match": { "username": user }},
@@ -321,7 +328,9 @@ pub async fn update_devices(
         .await?;
 
     if device_exists.is_some() {
-        println!("Device already exists, updating device info");
+        if PRINT_DEVICE_EXISTS_UPDATING_INFO {
+            println!("Device already exists, updating device info");
+        }
         collection
             .update_one(
                 doc! { "username": user, "devices.device_name": device_name },
@@ -358,7 +367,6 @@ pub async fn append_device_info(
     sync_status: bool,
     optimization_status: bool,
 ) -> mongodb::error::Result<Option<Users>> {
-    println!("Appending device info for user: {}", user);
     let client = get_client().await?;
     let collection: Collection<Users> = client.database("myDatabase").collection("users");
 
@@ -378,7 +386,9 @@ pub async fn append_device_info(
         "devices.$.online": true,
     };
 
-    println!("Checking if device already exists");
+    if PRINT_CHECKING_IF_DEVICE_EXISTS {
+        println!("Checking if device already exists");
+    }
 
     let pipeline = vec![
         doc! { "$match": { "username": user }},
@@ -392,7 +402,6 @@ pub async fn append_device_info(
         .await?;
 
     if device_exists.is_some() {
-        println!("Device already exists, updating device info");
         collection
             .update_one(
                 doc! { "username": user, "devices.device_name": device_name },
@@ -418,7 +427,6 @@ pub async fn append_device_info(
             )
             .await?;
     } else {
-        println!("Device does not exist, appending device info");
         let device_doc = doc! {
             "device_name": device_name,
             "device_number": device_number,

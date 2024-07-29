@@ -1,4 +1,5 @@
-mod handlers;
+pub mod config;
+pub mod handlers;
 use handlers::database_handler;
 
 pub fn add(left: usize, right: usize) -> usize {
@@ -21,8 +22,4 @@ mod tests {
         let result2 = database_handler::get_total_data_processed();
         assert_eq!(result, 4);
     }
-
-
 }
-
-

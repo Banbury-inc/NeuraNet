@@ -13,7 +13,9 @@ use tokio::sync::Mutex;
 use tokio::task;
 use tungstenite::accept_hdr;
 use tungstenite::handshake::server::{Request, Response};
+mod config;
 mod handlers;
+use crate::config::get_bind_address;
 use handlers::client_handler::handle_connection;
 use handlers::file_handler;
 
@@ -29,7 +31,8 @@ async fn main() {
     println!("Welcome to the Banbury NeuraNet");
     // Start the async server
     // let listener = TcpListener::bind("127.0.0.1:443").await.unwrap();
-    let listener = TcpListener::bind("0.0.0.0:443").await.unwrap();
+    let bind_address = get_bind_address();
+    let listener = TcpListener::bind(bind_address).await.unwrap();
     // let listener = TcpListener::bind("216.21.192.85:443").await.unwrap();
     // let clients = Arc::new(Mutex::new(Vec::new()));
     let clients = Arc::new(Mutex::new(HashMap::new()));
