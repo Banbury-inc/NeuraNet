@@ -190,7 +190,7 @@ export default function PermanentDrawerLeft() {
         {/* </DrawerHeader> */}
 
         <List>
-          {['Dashboard', 'Files', 'Devices', 'AI', 'Profile'].map((text, index) => (
+          {['Files', 'Devices', 'Profile'].map((text, index) => (
             <Tooltip title={text} key={text} placement="right">
               <ListItem key={text} sx={{ padding: '2px', paddingTop: '2px' }}>
                 <Button
@@ -208,15 +208,15 @@ export default function PermanentDrawerLeft() {
 
                     {(() => {
                       switch (index % 5) {
+                        // case 0:
+                        // return <SpaceDashboardOutlinedIcon fontSize='inherit' />;
                         case 0:
-                          return <SpaceDashboardOutlinedIcon fontSize='inherit' />;
-                        case 1:
                           return <FolderOutlinedIcon fontSize='inherit' />;
-                        case 2:
+                        case 1:
                           return <DevicesIcon fontSize='inherit' />;
-                        case 3:
-                          return <AutoAwesomeIcon fontSize='inherit' />;
-                        case 4:
+                        // case 3:
+                        // return <AutoAwesomeIcon fontSize='inherit' />;
+                        case 2:
                           return <AccountBoxIcon fontSize='inherit' />;
                         default:
                           return null;

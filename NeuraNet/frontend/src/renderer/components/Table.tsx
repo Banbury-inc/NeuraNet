@@ -1031,18 +1031,20 @@ export default function EnhancedTable() {
                   </Button>
                 </Tooltip>
               </Grid>
-              <Grid item paddingRight={1}>
-                <Tooltip title="Share">
-                  <Button
-                    onClick={handleDownloadClick}
-                    sx={{ paddingLeft: '4px', paddingRight: '4px', minWidth: '30px' }} // Adjust the left and right padding as needed
-                  >
-                    <PersonAddAlt1Icon
-                      fontSize="inherit"
-                    />
-                  </Button>
-                </Tooltip>
-              </Grid>
+
+              {/* <Grid item paddingRight={1}> */}
+              {/*   <Tooltip title="Share"> */}
+              {/*     <Button */}
+              {/*       onClick={handleDownloadClick} */}
+              {/*       sx={{ paddingLeft: '4px', paddingRight: '4px', minWidth: '30px' }} // Adjust the left and right padding as needed */}
+              {/*     > */}
+              {/*       <PersonAddAlt1Icon */}
+              {/*         fontSize="inherit" */}
+              {/*       /> */}
+              {/*     </Button> */}
+              {/*   </Tooltip> */}
+              {/* </Grid> */}
+
               <Grid item paddingRight={1}>
                 <Tooltip title="Delete">
                   <Button
