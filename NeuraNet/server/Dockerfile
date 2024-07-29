@@ -23,5 +23,5 @@ COPY --from=builder /target/release/server /usr/local/bin/server
 ENTRYPOINT ["server"]
 
 # Expose the port your application runs on
-EXPOSE 8080
+EXPOSE 443
 
