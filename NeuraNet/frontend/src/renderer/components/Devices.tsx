@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import DevicesList from "./DevicesList";
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
-
+import TaskBadge from "./TaskBadge";
 import AccountMenuIcon from './AccountMenuIcon';
 export default function Greetings(): JSX.Element {
 
@@ -58,7 +58,16 @@ export default function Greetings(): JSX.Element {
 
             <Grid item>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+              <Stack direction="row" spacing={0} sx={{ width: '100%' }}>
+                <TaskBadge />
                 <AccountMenuIcon />
+          <Typography variant="h2" textAlign="left">
+            Files
+          </Typography>
+
+
+                </Stack>
+ 
       </Box>
  
             </Grid>

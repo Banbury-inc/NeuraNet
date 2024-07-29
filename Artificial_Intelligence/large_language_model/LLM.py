@@ -207,6 +207,8 @@ class CriticAgent:
         as to why you gave it that rating.
 
         '''
+
+
     def evaluate(self, prompt):
         interpretation = self.responsibility + prompt 
         response = self.llm.predict(interpretation)

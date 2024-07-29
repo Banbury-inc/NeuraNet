@@ -84,6 +84,7 @@ export default function Profile() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { username } = useAuth();
   const [firstname, setFirstname] = useState<string>('');
+  const [phone_number, setPhonenumber] = useState<string>('');
   const [lastname, setLastname] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -97,34 +98,37 @@ export default function Profile() {
   };
 
 
-const handleApiCall = async () => {
-  const selectedDeviceNames = getSelectedDeviceNames();
+
+
+  function formatBytes(gigabytes: number, decimals: number = 2): string {
+    if (gigabytes === 0) return '0 GB';
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    // Since we're starting from GB, there's no need to find the initial index based on the log.
+    // Instead, we convert the input gigabytes to bytes to use the original formula,
+    // adjusting it to start from GB.
+    const bytes = gigabytes * Math.pow(k, 3); // Converting GB to Bytes for calculation
+    const i = Math.floor(Math.log(bytes) / Math.log(k)) - 3; // Adjusting index to start from GB
+
+    // Ensure the index does not fall below 0
+    const adjustedIndex = Math.max(i, 0);
+    return parseFloat((gigabytes / Math.pow(k, adjustedIndex)).toFixed(dm)) + ' ' + sizes[adjustedIndex];
   }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
-
-        const data = response.data;
-        // Processing data for the frontend, assuming your API returns data directly usable by the UI
-        const roundedDevices = data.devices.map(device => ({
-          ...device,
-          average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
-          storage_capacity_GB: formatBytes(device.storage_capacity_GB),
-          average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
-          average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
-          average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
-          average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
-          date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
-          onlineStatus: device.online ? "Online" : "Offline"
-        }));
-
-        setDevices(roundedDevices);
-        setDeviceRows(roundedDevices);
-        setFirstname(data.first_name);
-        setEmail(data.email);
-        setLastname(data.last_name);
-        setPassword(data.password);
+        const response = await axios.get(`https://website2-v3xlkt54dq-uc.a.run.app/get_small_user_info/${username}/`);
+        const fetchedFirstname = response.data.first_name;
+        const fetchedLastname = response.data.last_name;
+        const fetchedPhonenumber = response.data.phone_number;
+        const fetchedemail = response.data.email;
+        setFirstname(fetchedFirstname);
+        setLastname(fetchedLastname);
+        setPhonenumber(fetchedPhonenumber);
+        setEmail(fetchedemail);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -132,60 +136,28 @@ const handleApiCall = async () => {
     fetchData();
   }, []);
 
-
-
-function formatBytes(gigabytes: number, decimals: number = 2): string {
-  if (gigabytes === 0) return '0 GB';
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-  // Since we're starting from GB, there's no need to find the initial index based on the log.
-  // Instead, we convert the input gigabytes to bytes to use the original formula,
-  // adjusting it to start from GB.
-  const bytes = gigabytes * Math.pow(k, 3); // Converting GB to Bytes for calculation
-  const i = Math.floor(Math.log(bytes) / Math.log(k)) - 3; // Adjusting index to start from GB
-
-  // Ensure the index does not fall below 0
-  const adjustedIndex = Math.max(i, 0);
-  return parseFloat((gigabytes / Math.pow(k, adjustedIndex)).toFixed(dm)) + ' ' + sizes[adjustedIndex];
-}
-
   useEffect(() => {
-    const interval = setInterval(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get<UserResponse>('https://website2-v3xlkt54dq-uc.a.run.app/getuserinfo2/' + username + '/');
-        const data = response.data;
-        // Processing data for the frontend, assuming your API returns data directly usable by the UI
-        const roundedDevices = data.devices.map(device => ({
-          ...device,
-          average_upload_speed: parseFloat(device.average_upload_speed.toFixed(2)),
-          storage_capacity_GB: formatBytes(device.storage_capacity_GB),
-          average_download_speed: parseFloat(device.average_download_speed.toFixed(2)),
-          average_gpu_usage: parseFloat(device.average_gpu_usage.toFixed(2)),
-          average_cpu_usage: parseFloat(device.average_cpu_usage.toFixed(2)),
-          average_ram_usage: parseFloat(device.average_ram_usage.toFixed(2)),
-          date_added: device.date_added.map(dateStr => new Date(dateStr)), // Transforming date strings to Date objects
-          onlineStatus: device.online ? "Online" : "Offline"
-        }));
 
-        setDevices(roundedDevices);
-        setDeviceRows(roundedDevices);
-        setFirstname(data.first_name);
-        setEmail(data.email);
-        setLastname(data.last_name);
-        setPassword(data.password);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-  }, 1000); // Refresh every 10 seconds 
+    const interval = setInterval(() => {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(`https://website2-v3xlkt54dq-uc.a.run.app/get_small_user_info/${username}/`);
+          const fetchedFirstname = response.data.first_name;
+          const fetchedLastname = response.data.last_name;
+
+          // Processing data for the frontend, assuming your API returns data directly usable by the UI
+          setFirstname(fetchedFirstname);
+          setLastname(fetchedLastname);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+      fetchData();
+    }, 1000); // Refresh every 10 seconds 
 
     return () => clearInterval(interval);
   },
-  []);
+    []);
 
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -232,35 +204,35 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   const [showFirstnameTextField, setShowFirstnameTextField] = useState(false);
   const [new_first_name, set_new_first_name] = useState('');
   const handleFirstnameClick = async () => {
-    try{
+    try {
       setShowFirstnameTextField(!showFirstnameTextField);
     } catch (error) {
       console.error('There was an error!', error);
-    } 
+    }
   };
   const handleFirstnameConfirmClick = async () => {
 
-      setShowFirstnameTextField(!showFirstnameTextField);
+    setShowFirstnameTextField(!showFirstnameTextField);
 
-      change_profile_info.change_profile_info(new_first_name, lastname, username, email, "undefined");
+    change_profile_info.change_profile_info(new_first_name, lastname, username, email, "undefined");
   };
 
   const [showLastnameTextField, setShowLastnameTextField] = useState(false);
   const [new_last_name, set_new_last_name] = useState('');
   const handleLastnameClick = async () => {
-    try{
+    try {
       setShowLastnameTextField(!showLastnameTextField);
     } catch (error) {
       console.error('There was an error!', error);
-    } 
+    }
   };
   const handleLastnameConfirmClick = async () => {
-    try{
+    try {
       change_profile_info.change_profile_info(firstname, new_last_name, username, email, "undefined");
-   } catch (error) {
+    } catch (error) {
       console.error('There was an error!', error);
- 
-    } 
+
+    }
   };
 
 
@@ -268,301 +240,300 @@ function formatBytes(gigabytes: number, decimals: number = 2): string {
   const [showUsernameTextField, setShowUsernameTextField] = useState(false);
   const [new_username, set_new_username] = useState('');
   const handleUsernameClick = async () => {
-    try{
+    try {
       setShowUsernameTextField(!showUsernameTextField);
     } catch (error) {
       console.error('There was an error!', error);
-    } 
+    }
   };
   const handleUsernameConfirmClick = async () => {
-    try{
+    try {
       change_profile_info.change_profile_info(firstname, lastname, new_username, email, "undefined");
     } catch (error) {
       console.error('There was an error!', error);
- 
-    } 
+
+    }
   };
 
   const [showEmailTextField, setShowEmailTextField] = useState(false);
   const [new_email, set_new_email] = useState('');
   const handleEmailClick = async () => {
-    try{
+    try {
       setShowEmailTextField(!showEmailTextField);
     } catch (error) {
       console.error('There was an error!', error);
-    } 
+    }
   };
   const handleEmailConfirmClick = async () => {
-    try{
+    try {
       change_profile_info.change_profile_info(firstname, lastname, username, new_email, "undefined");
-   } catch (error) {
+    } catch (error) {
       console.error('There was an error!', error);
- 
-    } 
+
+    }
   };
 
 
   const [showPasswordTextField, setShowPasswordTextField] = useState(false);
   const [new_password, set_new_password] = useState('');
   const handlePasswordClick = async () => {
-    try{
+    try {
       setShowPasswordTextField(!showPasswordTextField);
     } catch (error) {
       console.error('There was an error!', error);
-    } 
+    }
   };
   const handlePasswordConfirmClick = async () => {
-    try{
+    try {
       change_profile_info.change_profile_info(firstname, lastname, username, email, new_password);
-   } catch (error) {
+    } catch (error) {
       console.error('There was an error!', error);
- 
-    } 
+
+    }
   };
 
 
   return (
-    <Container>
-      <Box sx={{ width: '100%', mt: 0, pt: 5 }}>
-        <Stack spacing={2}>
-         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
-            <Grid item>
-          <Typography variant="h2" textAlign="left">
-            Profile
-          </Typography>
-            </Grid>
-            <Grid item>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-                <AccountMenuIcon />
-      </Box>
-            </Grid>
-            </Grid>
-          <Grid container spacing={1}>
-         </Grid>
+
+    <Box sx={{ width: '100%', pl: 4, pr: 4, mt: 0, pt: 5 }}>
+      <Stack spacing={2}>
+        <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+          <Grid item>
+            <Typography variant="h2" textAlign="left">
+              Profile
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+              <AccountMenuIcon />
+            </Box>
+          </Grid>
+        </Grid>
+        <Grid container spacing={1}>
+        </Grid>
       </Stack>
-<Grid container spacing={2} columns={1}>
-<Grid item xs={8}>
-    <Card variant='outlined'>
-      <CardContent>
-      <Box my={0}>
-        <Stack spacing={4}>
-        <Typography variant="h4" gutterBottom>Account</Typography>
-        <Stack spacing={1}>
-         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+      <Grid container spacing={2} columns={1}>
+        <Grid item xs={8}>
+          <Card variant='outlined'>
+            <CardContent>
+              <Box my={0}>
+                <Stack spacing={4}>
+                  <Typography variant="h4" gutterBottom>Account</Typography>
+                  <Stack spacing={1}>
+                    <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
 
-            <Grid item>
-        <Typography variant="subtitle1" gutterBottom>First Name</Typography>
-       {showFirstnameTextField ?  (
-          <TextField
-            id="Firstname"
-            size='small'
-            defaultValue={firstname}
-            onChange={(event) => set_new_first_name(event.target.value)}
-          />
-        ) : (
-          <Typography variant="body2" gutterBottom>{firstname}</Typography>
-        )}
-            </Grid>
-       {showFirstnameTextField ?  (
-            <Grid item pr={4}>
-              <Stack direction="row" spacing={2}>
-              <Button variant="outlined" onClick={handleFirstnameClick} size="small">
-                {showFirstnameTextField ? 'Cancel' : 'Change'}
-              </Button>
-              <Button variant="contained" color='success'onClick={handleFirstnameConfirmClick} size="small">
-              Submit
-              </Button>
-            </Stack> 
-            </Grid>
- 
-        ) : (
-            <Grid item pr={4}>
-              <Button variant="outlined" onClick={handleFirstnameClick} size="small">
-                {showFirstnameTextField ? 'Cancel' : 'Change'}
-              </Button>
-            </Grid>
-        )}
-            </Grid>
-        <Divider orientation="horizontal" variant="middle" />
+                      <Grid item>
+                        <Typography variant="subtitle1" gutterBottom>First Name</Typography>
+                        {showFirstnameTextField ? (
+                          <TextField
+                            id="Firstname"
+                            size='small'
+                            defaultValue={firstname}
+                            onChange={(event) => set_new_first_name(event.target.value)}
+                          />
+                        ) : (
+                          <Typography variant="body2" gutterBottom>{firstname}</Typography>
+                        )}
+                      </Grid>
+                      {showFirstnameTextField ? (
+                        <Grid item pr={4}>
+                          <Stack direction="row" spacing={2}>
+                            <Button variant="outlined" onClick={handleFirstnameClick} size="small">
+                              {showFirstnameTextField ? 'Cancel' : 'Change'}
+                            </Button>
+                            <Button variant="contained" color='success' onClick={handleFirstnameConfirmClick} size="small">
+                              Submit
+                            </Button>
+                          </Stack>
+                        </Grid>
 
-
-         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
-            <Grid item>
-        <Typography variant="subtitle1" gutterBottom>Last Name</Typography>
-       {showLastnameTextField ?  (
-          <TextField
-            id="Lastname"
-            size='small'
-            defaultValue={lastname}
-            onChange={(event) => set_new_last_name(event.target.value)}
-          />
-        ) : (
-          <Typography variant="body2" gutterBottom>{lastname}</Typography>
-        )}
-            </Grid>
-       {showLastnameTextField ?  (
-            <Grid item pr={4}>
-              <Stack direction="row" spacing={2}>
-              <Button variant="outlined" onClick={handleLastnameClick} size="small">
-                {showLastnameTextField ? 'Cancel' : 'Change'}
-              </Button>
-              <Button variant="contained" color='success'onClick={handleLastnameConfirmClick} size="small">
-              Submit
-              </Button>
-            </Stack> 
-            </Grid>
- 
-        ) : (
-            <Grid item pr={4}>
-              <Button variant="outlined" onClick={handleLastnameClick} size="small">
-                {showUsernameTextField ? 'Cancel' : 'Change'}
-              </Button>
-            </Grid>
-        )}
-            </Grid>
-            <Divider orientation="horizontal" variant="middle" />
+                      ) : (
+                        <Grid item pr={4}>
+                          <Button variant="outlined" onClick={handleFirstnameClick} size="small">
+                            {showFirstnameTextField ? 'Cancel' : 'Change'}
+                          </Button>
+                        </Grid>
+                      )}
+                    </Grid>
+                    <Divider orientation="horizontal" variant="middle" />
 
 
-         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
-            <Grid item>
-        <Typography variant="subtitle1" gutterBottom>Username</Typography>
-       {showUsernameTextField ?  (
-          <TextField
-            id="Username"
-            size='small'
-            defaultValue={username}
-            onChange={(event) => set_new_username(event.target.value)}
-          />
-        ) : (
-          <Typography variant="body2" gutterBottom>{username}</Typography>
-        )}
-            </Grid>
-       {showUsernameTextField ?  (
-            <Grid item pr={4}>
-              <Stack direction="row" spacing={2}>
-              <Button variant="outlined" onClick={handleUsernameClick} size="small">
-                {showUsernameTextField ? 'Cancel' : 'Change'}
-              </Button>
-              <Button variant="contained" color='success'onClick={handleUsernameConfirmClick} size="small">
-              Submit
-              </Button>
-            </Stack> 
-            </Grid>
- 
-        ) : (
-            <Grid item pr={4}>
-              <Button variant="outlined" onClick={handleUsernameClick} size="small">
-                {showUsernameTextField ? 'Cancel' : 'Change'}
-              </Button>
-            </Grid>
-        )}
-            </Grid>
-            <Divider orientation="horizontal" variant="middle" />
+                    <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+                      <Grid item>
+                        <Typography variant="subtitle1" gutterBottom>Last Name</Typography>
+                        {showLastnameTextField ? (
+                          <TextField
+                            id="Lastname"
+                            size='small'
+                            defaultValue={lastname}
+                            onChange={(event) => set_new_last_name(event.target.value)}
+                          />
+                        ) : (
+                          <Typography variant="body2" gutterBottom>{lastname}</Typography>
+                        )}
+                      </Grid>
+                      {showLastnameTextField ? (
+                        <Grid item pr={4}>
+                          <Stack direction="row" spacing={2}>
+                            <Button variant="outlined" onClick={handleLastnameClick} size="small">
+                              {showLastnameTextField ? 'Cancel' : 'Change'}
+                            </Button>
+                            <Button variant="contained" color='success' onClick={handleLastnameConfirmClick} size="small">
+                              Submit
+                            </Button>
+                          </Stack>
+                        </Grid>
+
+                      ) : (
+                        <Grid item pr={4}>
+                          <Button variant="outlined" onClick={handleLastnameClick} size="small">
+                            {showUsernameTextField ? 'Cancel' : 'Change'}
+                          </Button>
+                        </Grid>
+                      )}
+                    </Grid>
+                    <Divider orientation="horizontal" variant="middle" />
 
 
+                    <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+                      <Grid item>
+                        <Typography variant="subtitle1" gutterBottom>Username</Typography>
+                        {showUsernameTextField ? (
+                          <TextField
+                            id="Username"
+                            size='small'
+                            defaultValue={username}
+                            onChange={(event) => set_new_username(event.target.value)}
+                          />
+                        ) : (
+                          <Typography variant="body2" gutterBottom>{username}</Typography>
+                        )}
+                      </Grid>
+                      {showUsernameTextField ? (
+                        <Grid item pr={4}>
+                          <Stack direction="row" spacing={2}>
+                            <Button variant="outlined" onClick={handleUsernameClick} size="small">
+                              {showUsernameTextField ? 'Cancel' : 'Change'}
+                            </Button>
+                            <Button variant="contained" color='success' onClick={handleUsernameConfirmClick} size="small">
+                              Submit
+                            </Button>
+                          </Stack>
+                        </Grid>
 
-         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
-            <Grid item>
-        <Typography variant="subtitle1" gutterBottom>Email</Typography>
-       {showEmailTextField ?  (
-          <TextField
-            id="email"
-            size='small'
-            defaultValue={Email}
-            onChange={(event) => set_new_email(event.target.value)}
-          />
-        ) : (
-          <Typography variant="body2" gutterBottom>{email}</Typography>
-        )}
-            </Grid>
-       {showEmailTextField ?  (
-            <Grid item pr={4}>
-              <Stack direction="row" spacing={2}>
-              <Button variant="outlined" onClick={handleEmailClick} size="small">
-                {showEmailTextField ? 'Cancel' : 'Change'}
-              </Button>
-              <Button variant="contained" color='success'onClick={handleEmailConfirmClick} size="small">
-              Submit
-              </Button>
-            </Stack> 
-            </Grid>
- 
-        ) : (
-            <Grid item pr={4}>
-              <Button variant="outlined" onClick={handleEmailClick} size="small">
-                {showEmailTextField ? 'Cancel' : 'Change'}
-              </Button>
-            </Grid>
-        )}
-            </Grid>
-            <Divider orientation="horizontal" variant="middle" />
-
-
-         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
-            <Grid item>
-        <Typography variant="subtitle1" gutterBottom>Password</Typography>
-       {showPasswordTextField ?  (
-          <TextField
-            id="password"
-            size='small'
-            defaultValue=""
-            type="password"
-            onChange={(event) => set_new_password(event.target.value)}
-          />
-        ) : (
-          <Typography variant="body2" gutterBottom>Change your account password.</Typography>
-        )}
-            </Grid>
-       {showPasswordTextField ?  (
-            <Grid item pr={4}>
-              <Stack direction="row" spacing={2}>
-              <Button variant="outlined" onClick={handlePasswordClick} size="small">
-                {showPasswordTextField ? 'Cancel' : 'Change'}
-              </Button>
-              <Button variant="contained" color='success'onClick={handlePasswordConfirmClick} size="small">
-              Submit
-              </Button>
-            </Stack> 
-            </Grid>
- 
-        ) : (
-            <Grid item pr={4}>
-              <Button variant="outlined" onClick={handlePasswordClick} size="small">
-                {showPasswordTextField ? 'Cancel' : 'Change'}
-              </Button>
-            </Grid>
-        )}
-            </Grid>
-            <Divider orientation="horizontal" variant="middle" />
+                      ) : (
+                        <Grid item pr={4}>
+                          <Button variant="outlined" onClick={handleUsernameClick} size="small">
+                            {showUsernameTextField ? 'Cancel' : 'Change'}
+                          </Button>
+                        </Grid>
+                      )}
+                    </Grid>
+                    <Divider orientation="horizontal" variant="middle" />
 
 
 
+                    <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+                      <Grid item>
+                        <Typography variant="subtitle1" gutterBottom>Email</Typography>
+                        {showEmailTextField ? (
+                          <TextField
+                            id="email"
+                            size='small'
+                            defaultValue={Email}
+                            onChange={(event) => set_new_email(event.target.value)}
+                          />
+                        ) : (
+                          <Typography variant="body2" gutterBottom>{email}</Typography>
+                        )}
+                      </Grid>
+                      {showEmailTextField ? (
+                        <Grid item pr={4}>
+                          <Stack direction="row" spacing={2}>
+                            <Button variant="outlined" onClick={handleEmailClick} size="small">
+                              {showEmailTextField ? 'Cancel' : 'Change'}
+                            </Button>
+                            <Button variant="contained" color='success' onClick={handleEmailConfirmClick} size="small">
+                              Submit
+                            </Button>
+                          </Stack>
+                        </Grid>
 
-        <Stack spacing={1}>
-         <Grid container columns={12} justifyContent="space-between" alignItems="center" spacing={2}>
-            <Grid item>
-        <Typography variant="subtitle1" gutterBottom>Delete Account</Typography>
-        <Typography variant="body2" gutterBottom>Permanently delete your account, licenses, and subscriptions. 
-        You will be asked for confirmation before deletion proceeds.</Typography>
-            </Grid>
-            <Grid item pr={4}>
-              <Button variant="outlined" color="error" onClick={handleFirstnameClick} size="small">
-                Delete
-              </Button>
-            </Grid>
-            </Grid>
- 
-      </Stack>
-      </Stack>
-      </Stack>
-      </Box>
-    </CardContent>
-    </Card>
-    </Grid>
-</Grid>
-        </Box>
+                      ) : (
+                        <Grid item pr={4}>
+                          <Button variant="outlined" onClick={handleEmailClick} size="small">
+                            {showEmailTextField ? 'Cancel' : 'Change'}
+                          </Button>
+                        </Grid>
+                      )}
+                    </Grid>
+                    <Divider orientation="horizontal" variant="middle" />
 
-    </Container>
+
+                    <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
+                      <Grid item>
+                        <Typography variant="subtitle1" gutterBottom>Password</Typography>
+                        {showPasswordTextField ? (
+                          <TextField
+                            id="password"
+                            size='small'
+                            defaultValue=""
+                            type="password"
+                            onChange={(event) => set_new_password(event.target.value)}
+                          />
+                        ) : (
+                          <Typography variant="body2" gutterBottom>Change your account password.</Typography>
+                        )}
+                      </Grid>
+                      {showPasswordTextField ? (
+                        <Grid item pr={4}>
+                          <Stack direction="row" spacing={2}>
+                            <Button variant="outlined" onClick={handlePasswordClick} size="small">
+                              {showPasswordTextField ? 'Cancel' : 'Change'}
+                            </Button>
+                            <Button variant="contained" color='success' onClick={handlePasswordConfirmClick} size="small">
+                              Submit
+                            </Button>
+                          </Stack>
+                        </Grid>
+
+                      ) : (
+                        <Grid item pr={4}>
+                          <Button variant="outlined" onClick={handlePasswordClick} size="small">
+                            {showPasswordTextField ? 'Cancel' : 'Change'}
+                          </Button>
+                        </Grid>
+                      )}
+                    </Grid>
+                    <Divider orientation="horizontal" variant="middle" />
+
+
+
+
+                    <Stack spacing={1}>
+                      <Grid container columns={12} justifyContent="space-between" alignItems="center" spacing={2}>
+                        <Grid item>
+                          <Typography variant="subtitle1" gutterBottom>Delete Account</Typography>
+                          <Typography variant="body2" gutterBottom>Permanently delete your account, licenses, and subscriptions.
+                            You will be asked for confirmation before deletion proceeds.</Typography>
+                        </Grid>
+                        <Grid item pr={4}>
+                          <Button variant="outlined" color="error" onClick={handleFirstnameClick} size="small">
+                            Delete
+                          </Button>
+                        </Grid>
+                      </Grid>
+
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
+
   );
 }
 

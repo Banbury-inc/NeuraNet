@@ -72,6 +72,7 @@ def getuserinfo2(request, username):
                 last_name = user.get('last_name')
                 phone_number = user.get('phone_number')
                 email = user.get('email')
+                password = user.get('password')
 
                 devices = user.get('devices', [])
                 number_of_files = user.get('number_of_files', [])
@@ -84,6 +85,8 @@ def getuserinfo2(request, username):
                 user_data = {
                         "first_name": first_name,
                         "last_name": last_name,
+                        "username": username,
+                        "password": password,
                         "phone_number": phone_number,
                         "email": email,
                         "devices": devices,

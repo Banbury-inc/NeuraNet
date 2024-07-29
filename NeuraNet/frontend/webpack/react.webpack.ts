@@ -55,12 +55,7 @@ const config: Configuration = {
   },
   plugins: [
     new HtmlWebpackPlugin({ template: path.resolve(rootPath, "index.html") }),
-    new CopyWebpackPlugin({
-      patterns: [
-        { from: path.resolve(rootPath, "venv"), to: path.resolve(rootPath, "dist/renderer/venv") }, // Copy venv directory to dist/renderer/venv
-      ],
-    }),
-  ],
+ ],
 };
 export default config;
 

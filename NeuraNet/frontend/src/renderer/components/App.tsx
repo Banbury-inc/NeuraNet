@@ -1,4 +1,4 @@
-import { Box, CssBaseline, ThemeProvider } from "@mui/material";
+import { Box, CssBaseline, rgbToHex, ThemeProvider } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import theme from "../theme";
 import PermanentDrawerLeft from "./Drawer";
@@ -23,7 +23,8 @@ const DarwinTheme: TitleBarTheme = {
   bar: {
     palette: 'dark', // Choose between 'light' or 'dark'
     height: '42px', // Set the bar height
-    background: '#171717', // Slightly lighter for elements considered "paper"
+    // background: '#171717', // Slightly lighter for elements considered "paper"
+    background: '#212121', // Slightly lighter for elements considered "paper"
     // background: '#24292e', // Slightly lighter for elements considered "paper"
     color: '#fff', // White text color
     borderBottom: 'solid #424242', // Slightly darker border at the bottom
@@ -60,14 +61,14 @@ const linuxTheme: TitleBarTheme = {
   bar: {
     palette: 'dark', // Choose between 'light' or 'dark'
     height: '42px', // Set the bar height
-    // background: '#212121', // Slightly lighter for elements considered "paper"
+    background: '#212121', // Slightly lighter for elements considered "paper"
     // background: '#24292e', // Slightly lighter for elements considered "paper"
 
-    background: '#171717', // Slightly lighter for elements considered "paper"
+    // background: '#171717', // Slightly lighter for elements considered "paper"
     color: '#fff', // White text color
     // borderBottom: '2px solid #000', // Slightly darker border at the bottom
 
-    borderBottom: '2px solid #424242', // Slightly darker border at the bottom
+    borderBottom: '1px solid #424242', // Slightly darker border at the bottom
     fontFamily: 'Arial, sans-serif', // Font family for the title bar text
     title: {
       align: 'left', // Align the title text to the left
@@ -83,11 +84,13 @@ const linuxTheme: TitleBarTheme = {
   controls: {
     layout: 'right', // Position the controls on the right
     normal: {
-      default: { background: '#171717', color: '#fff' },
+      // default: { background: '#171717', color: '#fff' },
+      default: { background: '#212121', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
     close: {
-      default: { background: '#171717', color: '#fff' },
+      // default: { background: '#171717', color: '#fff' },
+      default: { background: '#212121', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
   },
@@ -112,14 +115,14 @@ const win32Theme: TitleBarTheme = {
   bar: {
     palette: 'dark', // Choose between 'light' or 'dark'
     height: '42px', // Set the bar height
-    // background: '#212121', // Slightly lighter for elements considered "paper"
+    background: '#212121', // Slightly lighter for elements considered "paper"
     // background: '#24292e', // Slightly lighter for elements considered "paper"
 
-    background: '#171717', // Slightly lighter for elements considered "paper"
+    // background: '#171717', // Slightly lighter for elements considered "paper"
     color: '#fff', // White text color
     // borderBottom: '2px solid #000', // Slightly darker border at the bottom
 
-    borderBottom: '2px solid #424242', // Slightly darker border at the bottom
+    borderBottom: '1px solid #424242', // Slightly darker border at the bottom
     fontFamily: 'Arial, sans-serif', // Font family for the title bar text
     title: {
       align: 'left', // Align the title text to the left
@@ -135,11 +138,13 @@ const win32Theme: TitleBarTheme = {
   controls: {
     layout: 'right', // Position the controls on the right
     normal: {
-      default: { background: '#171717', color: '#fff' },
+      // default: { background: '#171717', color: '#fff' },
+      default: { background: '#212121', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
     close: {
-      default: { background: '#171717', color: '#fff' },
+      // default: { background: '#171717', color: '#fff' },
+      default: { background: '#212121', color: '#fff' },
       hover: { background: '#444', color: '#fff' },
     },
   },
@@ -227,8 +232,8 @@ export default function App(): JSX.Element {
               backgroundColor: (theme) => theme.palette.background.default,
             }}
           >
-          {/*   <main>  */}
-              {/* <Signin /> */}
+            {/*   <main>  */}
+            {/* <Signin /> */}
             {/*   <Routes> */}
             {/*     <Route path="/" element={<Signin />} /> */}
             {/*     <Route path="/main" element={<Main />} /> */}
@@ -241,12 +246,12 @@ export default function App(): JSX.Element {
 
 
             <main>
-            <Signin />
-            {/* <Routes> */}
-            {/*   <Route path="/" element={<Signin />} /> */}
-            {/*   <Route path="/login" element={<Signin />} /> */}
-            {/*   <Route path="/register" element={<Signup />} /> */}
-            {/* </Routes> */}
+              <Signin />
+              {/* <Routes> */}
+              {/*   <Route path="/" element={<Signin />} /> */}
+              {/*   <Route path="/login" element={<Signin />} /> */}
+              {/*   <Route path="/register" element={<Signup />} /> */}
+              {/* </Routes> */}
             </main>
             {/* <Main /> */}
 
