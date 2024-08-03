@@ -146,7 +146,8 @@ if (!fs.existsSync(CONFIG_FILE)) {
 let senderSocket: net.Socket | null = null;
 
 function connectToRelayServer(): net.Socket {
-  const RELAY_HOST = '0.0.0.0'; // Change this to your actual server IP
+  // const RELAY_HOST = '0.0.0.0'; // Change this to your actual server IP
+  const RELAY_HOST = 'https://neuranet-v3xlkt54dq-uc.a.run.app'; // Change this to your actual server IP
   // const RELAY_HOST = '192.168.1.200'; // Change this to your actual server IP
   const RELAY_PORT = 443;
 
