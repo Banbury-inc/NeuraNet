@@ -1,4 +1,0 @@
-Error: Timeout 30000ms exceeded.
-=========================== logs ===========================
-navigating to "https://www.nba.com/player/1628964/mo-bamba", waiting until "load"
-============================================================

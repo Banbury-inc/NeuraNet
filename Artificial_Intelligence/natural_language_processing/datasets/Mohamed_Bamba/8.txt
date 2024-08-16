@@ -1,4 +1,0 @@
-Error: Timeout 30000ms exceeded.
-=========================== logs ===========================
-navigating to "https://basketball.realgm.com/player/Mohamed-Bamba/Summary/88784", waiting until "load"
-============================================================

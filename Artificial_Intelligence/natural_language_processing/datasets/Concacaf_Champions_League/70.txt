@@ -1,4 +1,0 @@
-Error: Timeout 30000ms exceeded.
-=========================== logs ===========================
-navigating to "https://playingfor90.com/2022/06/02/concacaf-champions-league-format/", waiting until "load"
-============================================================

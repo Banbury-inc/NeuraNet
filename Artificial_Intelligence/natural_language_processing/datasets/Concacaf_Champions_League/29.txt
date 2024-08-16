@@ -1,4 +1,0 @@
-Error: Timeout 30000ms exceeded.
-=========================== logs ===========================
-navigating to "https://laxsportsnation.com/2023/05/02/lafc-one-step-to-the-concacaf-champions-league-final/", waiting until "load"
-============================================================
