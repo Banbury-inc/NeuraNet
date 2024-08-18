@@ -4,9 +4,13 @@
 # sudo sysctl -w net.ipv4.ip_unprivileged_port_start=0
 
 
-# Run via docker
+# compile as an executable
 
-sudo docker run server
+cargo build --release
+
+# run the executable
+
+./target/release/server
 
 
 
