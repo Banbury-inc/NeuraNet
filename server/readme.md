@@ -4,5 +4,10 @@
 # sudo sysctl -w net.ipv4.ip_unprivileged_port_start=0
 
 
+# Run via docker
+
+sudo docker run server
+
+
 
 
