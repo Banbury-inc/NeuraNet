@@ -5,6 +5,7 @@ use handlers::database_handler;
 use handlers::login_handler;
 use std::collections::HashMap;
 
+use reqwest::Client;
 use std::sync::Arc;
 use std::thread;
 use tokio::net::TcpListener;
@@ -26,6 +27,13 @@ async fn main() {
     if let Err(e) = initialize_database().await {
         println!("Error initializing database: {}", e);
         return;
+    }
+
+    // Fetch and print the public IP address
+    if let Some(public_ip) = get_public_ip().await {
+        println!("Public IP address: {}", public_ip);
+    } else {
+        println!("Could not fetch public IP address.");
     }
 
     println!("Welcome to the Banbury NeuraNet");
@@ -56,4 +64,19 @@ async fn initialize_database() -> mongodb::error::Result<()> {
     database_handler::initialize().await?;
     println!("Database Initialized");
     Ok(())
+}
+
+async fn get_public_ip() -> Option<String> {
+    let client = Client::new();
+    match client.get("https://api.ipify.org?format=json").send().await {
+        Ok(response) => {
+            if let Ok(json) = response.json::<serde_json::Value>().await {
+                return json.get("ip").and_then(|ip| ip.as_str().map(String::from));
+            }
+        }
+        Err(e) => {
+            println!("Failed to fetch public IP address: {}", e);
+        }
+    }
+    None
 }
