@@ -427,6 +427,7 @@ pub async fn append_device_info(
             )
             .await?;
     } else {
+        println!("Device does not exist, creating new device");
         let device_doc = doc! {
             "device_name": device_name,
             "device_number": device_number,

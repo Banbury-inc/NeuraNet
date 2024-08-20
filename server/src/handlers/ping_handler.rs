@@ -59,12 +59,21 @@ pub fn begin_single_ping_loop(stream: Arc<Mutex<WriteHalf<TcpStream>>>) {
 }
 
 // Function that continually sends a ping message to the stream.
-pub fn send_ping(stream: Arc<Mutex<WriteHalf<TcpStream>>>) {
+pub fn send_small_ping(stream: Arc<Mutex<WriteHalf<TcpStream>>>) {
     tokio::spawn(async move {
         if PRINT_SEND_SMALL_PING_REQUEST {
             println!("Sending small ping request");
         }
         send_message(stream.clone(), "SMALL_PING_REQUEST:::END_OF_HEADER").await;
+    });
+}
+// Function that continually sends a ping message to the stream.
+pub fn send_ping(stream: Arc<Mutex<WriteHalf<TcpStream>>>) {
+    tokio::spawn(async move {
+        if PRINT_SEND_SMALL_PING_REQUEST {
+            println!("Sending ping request");
+        }
+        send_message(stream.clone(), "PING_REQUEST:::END_OF_HEADER").await;
     });
 }
 
