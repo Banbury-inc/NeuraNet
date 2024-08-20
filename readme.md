@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/Banbury-inc/NeuraNet/public/icon-512.png" height="300" alt="Athena Logo"/>
+  <img src="https://github.com/Banbury-inc/NeuraNet/blob/main/public/icon-512.png" height="300" alt="Athena Logo"/>
 </p>
 <p align="center">  
   <em>🤖 Empowering Decentralized AI Advancement through Personal Device Networks 🤖  </em>
