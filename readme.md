@@ -19,6 +19,7 @@ NeuraNet combines the concepts of web 3.0 file services and machine learning. Th
 
 
 
+
 NeuraNet serves as the decentralized file sharing network. This tool transforms personal and corporate networks into a decentralized cloud storage system, eliminating reliance on traditional cloud providers and offering unparalleled control over data security, compliance, and sovereignty. Our revolutionary concept aims to transform every household into a personal data center, leveraging the unused potential of existing devices for cloud storage needs. This addresses the common issue of limited storage capacity on individual devices and traditional cloud services. We have just released a beta version of the CLI tool. This serves as a prototype to the file sharing network. From here, you can connect devices, upload files, and download files without the use of a cloud service like Google Drive. Click here for more information on how to get started: https://website2-v3xlkt54dq-uc.a.run.app/
 
 ## NeuraNet Features
